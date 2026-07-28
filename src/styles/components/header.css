@@ -1,0 +1,73 @@
+header nav .frameBox{
+    padding: 16px 16px 0;
+}
+header nav .navBox{
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+}
+header nav .logo{
+    background-color: #242EF7;
+    padding: 16px 36px;
+    border-left: 28px #000 solid;
+}
+header nav .menu a{
+    padding: 16px 36px;
+    font-weight: 700;
+    font-style: Bold;
+    font-size: 20px;
+    line-height: 32px;
+    letter-spacing: 0%;
+    text-align: center;
+}
+header nav .switch{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 24px;
+    margin-left: auto;
+}
+header nav .switch span{
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 22px;
+    letter-spacing: 0%;
+    text-align: center;
+}
+header nav .switch .btn{
+    position: relative;
+    display: inline-block;
+    width: 56px;
+    height: 32px;
+}
+header nav .switch .btn input{
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+header nav .switch .btn .slider{
+    position: absolute;
+    inset: 0;
+    background-color: #000;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+header nav .switch .btn .slider::before{
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 24px;
+    height: 24px;
+    background-color: #fff;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+header nav .switch .btn input:checked + .slider{
+    background-color: #242EF7;
+}
+header nav .switch .btn input:checked + .slider::before{
+    transform: translateX(24px);
+}

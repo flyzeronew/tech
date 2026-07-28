@@ -1,10 +1,98 @@
 @import '@fontsource/noto-sans-tc/400.css';
+@import '@fontsource/noto-sans-tc/500.css';
 @import '@fontsource/noto-sans-tc/700.css';
 
 :root {
-	--font-sans: 'Noto Sans TC', sans-serif;
+	--font-sans: "Roboto","Roboto Flex","Noto Sans TC",sans-serif;
 }
 
-body {
-	font-family: var(--font-sans);
+body {    
+    position: relative;
+    margin: 0;
+    padding: 0;
+    outline: none;
+    font-family: var(--font-sans);
+    font-size: 18px;
+    background-color:#F2F2F2;
+    transition: 0.3s;
 }
+
+p,
+ul,
+li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    transition: 0.3s;
+}
+div{
+    caret-color: transparent;
+    transition: 0.3s;
+}
+a:link,
+a:visited,
+a:active {
+    text-decoration: none;
+}
+
+a {
+    transition: 0.3s;
+    color: #000;
+}
+
+a:hover {
+    transition: 0.3s;
+    text-decoration: none;
+}
+
+a:hover .txt {
+    transition: 0.3s;
+    text-decoration: none;
+}
+
+img {
+    width: 100%;
+    height: auto;
+    border: 0;
+}
+
+.img {
+    position: relative;
+    line-height: 0;
+    overflow: hidden;
+}
+
+.img img {
+    width: 100%;
+    height: auto;
+}
+
+
+/*外框*/
+.frameBox {
+    width: 1440px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+@media (max-width:1599px) {
+    .frameBox {
+        width:960px;
+        margin: 0 auto;
+    }
+}
+@media (max-width:1023px) {
+    .frameBox {
+        width:728px;
+    }
+}
+@media (max-width:767px) {
+    .frameBox {
+        width:450px;
+    }
+}
+@media (max-width:449px) {
+    .frameBox {
+        width:100%;
+    }
+}
+/*外框*/

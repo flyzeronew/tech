@@ -1,13 +1,52 @@
 ---
 import '../styles/global.css';
+import '../styles/components/header.css';
 ---
 <html lang="zh-Hant">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Astro</title>
+		<title>TVBS TECH</title>
+		<meta name="keywords" content="">
+		<meta name="description" content="">
+		<meta property="og:title" content="">
+		<meta property="og:image" content="">
+		<link rel="icon" href="" type="image/icon">
 	</head>
 	<body>
-		<h1>Hello, Astro!</h1>
+		<h1 style="display: none;">TVBS TECH</h1>
+		<header>
+			<nav>
+				<div class="frameBox">
+					<div class="navBox">
+						<div class="logo">
+							<img width="164" height="24" src="/tvbs-logo.svg" alt="logo" />
+						</div>
+						<div class="menu">
+							<a href="#">頭條</a>
+							<a href="#">最新</a>
+							<a href="#">專題</a>
+							<a href="#">影音</a>
+							<a href="#">財經</a>
+							<a href="#">專欄</a>
+							<a href="#">出版</a>
+							<a href="#">合作</a>
+						</div>
+						<div class="switch">
+							<span>Classic</span>
+							<label class="btn">
+								<input type="checkbox" id="viewSwitch" />
+								<span class="slider"></span>
+							</label>
+							<span>Story</span>
+						</div>
+					</div>
+				</div>
+			</nav>
+		</header>
+		<main>
+			<section></section>
+		</main>
+		<footer></footer>
 	</body>
 </html>
