@@ -1,0 +1,22 @@
+{
+  "name": "astro",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@fontsource/noto-sans-tc": "^5.2.9",
+    "@fontsource/roboto": "^5.2.10",
+    "@fontsource/roboto-flex": "^5.2.8",
+    "astro": "^6.4.2",
+    "sharp": "^0.35.2",
+    "swiper": "^14.0.0"
+  }
+}
