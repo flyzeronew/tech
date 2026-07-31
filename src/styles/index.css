@@ -3,12 +3,6 @@
 #hero .kv .img{
     margin-bottom: 30px;
 }
-#hero .kv .itemTitle p{
-    font-weight: 700;
-    font-size: 20px;
-    line-height: 28px;
-    letter-spacing: 0%;    
-}
 #hero .kv .txtBox .inBox{
     display: flex;
     margin-bottom: 120px;
@@ -96,6 +90,66 @@
 /* 最新 */
 #new{
     background-color: #F0F0F0;
+    background-image: url('/news-bg-01.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
-
+#new .titleBox{
+    width: 50%;
+    padding:120px 0;  
+}
+#new .list{
+    width: 50%;
+    padding:120px 0; 
+}
+#new .titleBox .title{
+    font-weight: 400;
+    font-size: 80px;
+    line-height: 100px;
+    letter-spacing: 0%; 
+}
+#new .titleBox .itemTitle{
+    margin-bottom: 15%;
+}
+#new .titleBox .title span{
+    font-weight: 700;
+}
+#new .list .item{
+    padding: 30px;
+    background-color:rgba(255,255,255, 0.3);
+    backdrop-filter: blur(40px);
+    border-radius: 8px;
+    border: 1px solid #fff;
+}
+#new .list .item .txtBox{
+    padding: 30px 20px 0;
+}
+#new .list .item .title{
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 40px;
+    letter-spacing: 0%;
+    margin-bottom: 20px;
+}
+#new .list .item .description{
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 22px;
+    letter-spacing: 0%;
+    margin-bottom: 20px;
+}
+#new .list .item .tag{
+    display: flex;
+    column-gap: 10px;
+}
+#new .list .item .tag a{
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0%;
+    background-color: #242EF7;
+    color: #fff;
+    padding: 2px 10px;
+}
 /* 最新 ed*/

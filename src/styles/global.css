@@ -131,3 +131,14 @@ img {
 }
 
 /* 看更多 ed*/
+
+.itemTitle p{
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 28px;
+    letter-spacing: 0%;    
+}
+
+.flex{
+    display: flex;
+}
