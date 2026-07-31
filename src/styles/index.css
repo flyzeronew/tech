@@ -1,5 +1,8 @@
 /* 頭條 */
-
+#hero{
+    background-color: #fff;
+    padding-bottom: 120px;
+}
 #hero .kv .img{
     margin-bottom: 30px;
 }
@@ -30,14 +33,15 @@
     letter-spacing: 0%;
     margin-bottom: 30px;
 }
-#hero .newslist{
-    margin-bottom: 120px;
-}
+
 #hero .newslist ul li{
     width: 100%;
     border-bottom:#50514F 1px solid;
     padding-bottom: 15px;
     margin-bottom: 15px;
+}
+#hero .newslist ul li:last-child{
+    margin-bottom: 0;
 }
 #hero .newslist ul li a{
     display: flex;

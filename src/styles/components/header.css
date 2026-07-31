@@ -6,6 +6,7 @@ header nav{
 }
 header nav .frameBox{
     padding: 16px 16px 0;
+    backdrop-filter: blur(10px);
 }
 header nav .navBox{
     display: flex;
