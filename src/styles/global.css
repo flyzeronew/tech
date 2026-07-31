@@ -1,6 +1,6 @@
 @import '@fontsource/noto-sans-tc/400.css';
-@import '@fontsource/noto-sans-tc/500.css';
 @import '@fontsource/noto-sans-tc/700.css';
+@import '@fontsource/noto-sans-tc/900.css';
 
 :root {
 	--font-sans: "Roboto","Roboto Flex","Noto Sans TC",sans-serif;
@@ -14,9 +14,7 @@ body {
     font-family: var(--font-sans);
     font-size: 18px;
     transition: 0.3s;
-	background-color:#F2F2F2;
 }
-
 p,
 ul,
 li {
@@ -73,6 +71,12 @@ img {
     width: 1440px;
     margin: 0 auto;
     box-sizing: border-box;
+    overflow: hidden;
+}
+.inBox {
+    width: 1280px;
+    margin: 0 auto;
+    box-sizing: border-box;
 }
 @media (max-width:1599px) {
     .frameBox {
@@ -96,3 +100,34 @@ img {
     }
 }
 /*外框*/
+
+/* 看更多 */
+.more a{
+    width: max-content;
+    display: flex;
+    align-items: center;
+    border: 1px solid #242EF7;
+}
+.more a span{
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 22px;
+    letter-spacing: 0%;
+    color: #242EF7;
+    padding: 0 30px;
+}
+.more a .arraw{
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px solid #242EF7;    
+}
+.more a .arraw img{
+    width: 28px;
+    height: 28px;
+    transform: rotate(-45deg);
+}
+
+/* 看更多 ed*/

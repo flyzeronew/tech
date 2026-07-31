@@ -1,0 +1,101 @@
+/* 頭條 */
+
+#hero .kv .img{
+    margin-bottom: 30px;
+}
+#hero .kv .itemTitle p{
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 28px;
+    letter-spacing: 0%;    
+}
+#hero .kv .txtBox .inBox{
+    display: flex;
+    margin-bottom: 120px;
+}
+#hero .kv .txtBox .inBox .itemTitle{
+    width: 40%;
+}
+#hero .kv .txtBox .inBox .itemTitle{
+    width: 40%;
+}
+#hero .kv .txtBox .inBox .newsBox{
+    width: 60%;
+}
+#hero .kv .txtBox .inBox .newsBox .title{
+    font-weight: 900;
+    font-size: 48px;
+    line-height: 64px;
+    letter-spacing: 0%;
+    margin-bottom: 15px;
+}
+#hero .kv .txtBox .inBox .newsBox .description{
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 30px;
+    letter-spacing: 0%;
+    margin-bottom: 30px;
+}
+#hero .newslist{
+    margin-bottom: 120px;
+}
+#hero .newslist ul li{
+    width: 100%;
+    border-bottom:#50514F 1px solid;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+#hero .newslist ul li a{
+    display: flex;
+    align-items: center;
+}
+#hero .newslist ul li .date{
+    width: 120px;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 18px;
+    letter-spacing: 3%;
+    color: #50514F;
+}
+#hero .newslist ul li .news{
+    display: flex;
+    align-items: center;
+    column-gap: 20px;
+    flex: 1;
+    min-width: 0;
+}
+#hero .newslist ul li .title{
+    flex: 1;
+    min-width: 0;
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 30px;
+    letter-spacing: 0%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#hero .newslist ul li .arraw{
+    width: 48px;
+    aspect-ratio: 1/1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+}
+#hero .newslist ul li .img{
+    width: 96px;
+    aspect-ratio: 16/9;
+}
+
+#hero .newslist ul li .arraw img{
+    width: 50%;
+}
+/* 頭條 */
+
+/* 最新 */
+#new{
+    background-color: #F0F0F0;
+}
+
+/* 最新 ed*/
