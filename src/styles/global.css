@@ -145,6 +145,15 @@ img {
     display: flex;
 }
 
+.justify-between{
+    justify-content: space-between;
+}
+.justify-center{
+    justify-content: center;
+}
+.align-center{
+    align-items: center;
+}
 
 /* 列表文章 */
 
@@ -199,7 +208,6 @@ img {
     width: 96px;
     aspect-ratio: 16/9;
 }
-
 .newslist ul li .arraw img{
     width: 50%;
 }
