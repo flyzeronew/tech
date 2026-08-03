@@ -78,6 +78,7 @@ img {
     width: 1280px;
     margin: 0 auto;
     box-sizing: border-box;
+    position: relative;
 }
 @media (max-width:1599px) {
     .frameBox {
