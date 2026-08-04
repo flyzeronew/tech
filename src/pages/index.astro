@@ -1025,7 +1025,7 @@ import Header from '../components/Header.astro';
                                                 數據中心用電量呈指數級爆發，乾淨且穩定的電力供給，正取代晶片成為 AI 發展最大瓶頸
                                             </div>
                                         </div>
-                                        <div class="box">
+                                        <a class="box" href="#">
                                             <div class="img">
                                                 <img width="800" height="450" src="/issue-image-02.jpg" alt="img" loading="lazy" />
                                             </div>
@@ -1038,7 +1038,7 @@ import Header from '../components/Header.astro';
                                                     企業級 AI 落地再下一城，OpenAI 在大型製造業者的滲透加速。
                                                 </div>
                                             </div>
-                                        </div>
+                                        </a>
                                     </li>
                                     <li>
                                         <div class="project">
@@ -1049,7 +1049,7 @@ import Header from '../components/Header.astro';
                                                 各國法規與出口限制正在撕裂全球供應鏈，技術不再只是商業競賽，更演變為地緣政治的角力。
                                             </div>
                                         </div>
-                                        <div class="box">
+                                        <a class="box" href="#">
                                             <div class="img">
                                                 <img width="800" height="450" src="/issue-image-01.jpg" alt="img" loading="lazy" />
                                             </div>
@@ -1062,7 +1062,7 @@ import Header from '../components/Header.astro';
                                                     企業級 AI 落地再下一城，OpenAI 在大型製造業者的滲透加速。
                                                 </div>
                                             </div>
-                                        </div>
+                                        </a>
                                     </li>
                                     <li>
                                         <div class="project">
@@ -1073,7 +1073,7 @@ import Header from '../components/Header.astro';
                                                 資本市場正從驚嘆技術轉為審視回報，缺乏實質商業模式的 AI 應用，將面臨第一波淘汰洗
                                             </div>
                                         </div>
-                                        <div class="box">
+                                        <a class="box" href="#">
                                             <div class="img">
                                                 <img width="800" height="450" src="/issue-image-03.jpg" alt="img" loading="lazy" />
                                             </div>
@@ -1086,7 +1086,7 @@ import Header from '../components/Header.astro';
                                                     企業級 AI 落地再下一城，OpenAI 在大型製造業者的滲透加速。
                                                 </div>
                                             </div>
-                                        </div>
+                                        </a>
                                     </li>
                                 </ul>
                             </div>
@@ -1115,6 +1115,9 @@ import Header from '../components/Header.astro';
                 let isHover = false;
                 let startX = 0;
                 let scrollStart = 0;
+
+                // 圖片預設可以被瀏覽器原生拖曳，會打斷我們自己的拖曳捲動，這裡直接擋掉
+                books.addEventListener('dragstart', (e) => e.preventDefault());
 
                 books.addEventListener('pointerdown', (e) => {
                     isDown = true;
@@ -1207,6 +1210,9 @@ import Header from '../components/Header.astro';
                 let isDown = false;
                 let startX = 0;
                 let scrollStart = 0;
+
+                // 圖片預設可以被瀏覽器原生拖曳，會打斷我們自己的拖曳捲動，這裡直接擋掉
+                moreList.addEventListener('dragstart', (e) => e.preventDefault());
 
                 moreList.addEventListener('pointerdown', (e) => {
                     isDown = true;
