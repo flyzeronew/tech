@@ -1031,10 +1031,17 @@ import Header from '../components/Header.astro';
 
                 // 左右按鍵：把目前位置平滑捲動到目標位置
                 const step = 300;
-                function animateScrollTo(target: number, duration = 400) {
+                let scrollAnimFrame: number | null = null;
+                function animateScrollBy(delta: number, duration = 400) {
+                    if (scrollAnimFrame !== null) {
+                        cancelAnimationFrame(scrollAnimFrame);
+                        scrollAnimFrame = null;
+                    }
                     isManual = true;
                     const loopWidth = booksList.scrollWidth / 2;
-                    const start = scrollPos;
+                    // 用畫面上「當下實際」的捲動位置當起點，避免連續點擊時從過期的 scrollPos 起跳造成跳動
+                    const start = books.scrollLeft;
+                    const target = start + delta;
                     const startTime = performance.now();
 
                     function tick(now: number) {
@@ -1045,19 +1052,20 @@ import Header from '../components/Header.astro';
                         if (pos >= loopWidth) pos -= loopWidth;
                         books.scrollLeft = pos;
                         if (t < 1) {
-                            requestAnimationFrame(tick);
+                            scrollAnimFrame = requestAnimationFrame(tick);
                         } else {
                             scrollPos = pos;
                             isManual = false;
+                            scrollAnimFrame = null;
                         }
                     }
-                    requestAnimationFrame(tick);
+                    scrollAnimFrame = requestAnimationFrame(tick);
                 }
 
                 const prevBtn = document.querySelector<HTMLButtonElement>('#publications .booksPrev');
                 const nextBtn = document.querySelector<HTMLButtonElement>('#publications .booksNext');
-                prevBtn?.addEventListener('click', () => animateScrollTo(scrollPos - step));
-                nextBtn?.addEventListener('click', () => animateScrollTo(scrollPos + step));
+                prevBtn?.addEventListener('click', () => animateScrollBy(-step));
+                nextBtn?.addEventListener('click', () => animateScrollBy(step));
             }
         </script>
     </body>
