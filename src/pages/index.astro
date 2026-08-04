@@ -959,9 +959,146 @@ import Header from '../components/Header.astro';
                     </div>
                 </div>
             </section>
+
+            <section>
+                <div id="editorPick">
+                    <div class="inBox">
+                        <div class="titleBox">
+                            <div class="itemTitle">
+                                <p>編輯選讀</p>
+                                <p>EDITOR'S PICK</p>
+                            </div>
+                        </div>
+                        <div class="flex align-center">
+                            <div class="editor">
+                                <div class="img">
+                                    <img width="400" height="400" src="/expert02.jpg" alt="expert" loading="lazy" />
+                                </div>
+                                <div class="txtBox">
+                                    <div class="info">
+                                        <div class="name">
+                                            Dimitri Bruyas
+                                        </div>
+                                        <div class="job">
+                                            英語新聞組組長・《英文中國郵報》總編輯
+                                        </div>
+                                        <div class="description">
+                                            在台深耕媒體超過 20 年，擅長融合國際新聞觀點，以全英語、全方位角度報導台灣科技與半導體產業脈動，為海外決策者提供深度台灣視角。
+                                        </div>
+                                    </div>   
+                                </div>
+                            </div>
+                            <div class="motto">
+                                「亞利桑那正在複製的，其實是台灣三十年的產業經驗——半導體人才，沒有捷徑。」
+                            </div>
+                        </div>
+
+                        <div class="moreArea">
+                            <div class="areaTitleBox">
+                                <div class="title"> 
+                                    影響 AI 的十件事
+                                </div>
+                                <div class="description">
+                                    <p>
+                                        當 AI 以前所未有的速度改寫世界，決定這場革命走向的，早已遠不止技術本身。
+                                        從晶片與能源的實體考驗，到地緣政治與監管規範的重新界定，每一道暗潮都在重
+                                        塑未來的商業秩序。
+                                    </p>
+                                    <div class="btn">
+                                        <button type="button" class="prevBtn" aria-label="上一個">
+                                            <img width="20" height="20" src="/arraw-right-02.svg" alt="prev" />
+                                        </button>
+                                        <button type="button" class="nextBtn" aria-label="下一個">
+                                            <img width="20" height="20" src="/arraw-right-02.svg" alt="next" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="list">
+                                <ul>
+                                    <li>
+                                        <div class="project">
+                                            <div class="title">
+                                                01 能源
+                                            </div>
+                                            <div class="description">
+                                                數據中心用電量呈指數級爆發，乾淨且穩定的電力供給，正取代晶片成為 AI 發展最大瓶頸
+                                            </div>
+                                        </div>
+                                        <div class="box">
+                                            <div class="img">
+                                                <img width="800" height="450" src="/issue-image-02.jpg" alt="img" loading="lazy" />
+                                            </div>
+                                            <div class="txtBox">
+                                                <div class="tag">專題</div>
+                                                <div class="title">
+                                                    三星全球導入 ChatGPT 與 Codex　OpenAI 拿下最大企業部署案之一
+                                                </div>
+                                                <div class="description">
+                                                    企業級 AI 落地再下一城，OpenAI 在大型製造業者的滲透加速。
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="project">
+                                            <div class="title">
+                                                02 地緣政治與監管
+                                            </div>
+                                            <div class="description">
+                                                各國法規與出口限制正在撕裂全球供應鏈，技術不再只是商業競賽，更演變為地緣政治的角力。
+                                            </div>
+                                        </div>
+                                        <div class="box">
+                                            <div class="img">
+                                                <img width="800" height="450" src="/issue-image-01.jpg" alt="img" loading="lazy" />
+                                            </div>
+                                            <div class="txtBox">
+                                                <div class="tag">專題</div>
+                                                <div class="title">
+                                                    三星全球導入 ChatGPT 與 Codex　OpenAI 拿下最大企業部署案之一
+                                                </div>
+                                                <div class="description">
+                                                    企業級 AI 落地再下一城，OpenAI 在大型製造業者的滲透加速。
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="project">
+                                            <div class="title">
+                                                03 ROI 考驗
+                                            </div>
+                                            <div class="description">
+                                                資本市場正從驚嘆技術轉為審視回報，缺乏實質商業模式的 AI 應用，將面臨第一波淘汰洗
+                                            </div>
+                                        </div>
+                                        <div class="box">
+                                            <div class="img">
+                                                <img width="800" height="450" src="/issue-image-03.jpg" alt="img" loading="lazy" />
+                                            </div>
+                                            <div class="txtBox">
+                                                <div class="tag">專題</div>
+                                                <div class="title">
+                                                    三星全球導入 ChatGPT 與 Codex　OpenAI 拿下最大企業部署案之一
+                                                </div>
+                                                <div class="description">
+                                                    企業級 AI 落地再下一城，OpenAI 在大型製造業者的滲透加速。
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
         </main>
         <footer></footer>
         <script>
+            // ===== 精選出版品（#publications）書本清單：無限循環自動捲動、拖曳、左右按鈕 =====
             const books = document.querySelector<HTMLElement>('#publications .books');
             const booksList = books?.querySelector<HTMLUListElement>('ul');
 
@@ -979,11 +1116,8 @@ import Header from '../components/Header.astro';
                 let startX = 0;
                 let scrollStart = 0;
 
-                let dragMoved = false;
-
                 books.addEventListener('pointerdown', (e) => {
                     isDown = true;
-                    dragMoved = false;
                     books.classList.add('dragging');
                     startX = e.clientX;
                     scrollStart = books.scrollLeft;
@@ -992,7 +1126,6 @@ import Header from '../components/Header.astro';
 
                 books.addEventListener('pointermove', (e) => {
                     if (!isDown) return;
-                    if (Math.abs(e.clientX - startX) > 5) dragMoved = true;
                     books.scrollLeft = scrollStart - (e.clientX - startX);
                 });
 
@@ -1066,6 +1199,65 @@ import Header from '../components/Header.astro';
                 const nextBtn = document.querySelector<HTMLButtonElement>('#publications .booksNext');
                 prevBtn?.addEventListener('click', () => animateScrollBy(-step));
                 nextBtn?.addEventListener('click', () => animateScrollBy(step));
+            }
+
+            // ===== 編輯選讀（#editorPick）影響 AI 的十件事清單：拖曳捲動、左右按鈕 =====
+            const moreList = document.querySelector<HTMLElement>('#editorPick .moreArea .list');
+            if (moreList) {
+                let isDown = false;
+                let startX = 0;
+                let scrollStart = 0;
+
+                moreList.addEventListener('pointerdown', (e) => {
+                    isDown = true;
+                    moreList.classList.add('dragging');
+                    startX = e.clientX;
+                    scrollStart = moreList.scrollLeft;
+                    moreList.setPointerCapture(e.pointerId);
+                });
+
+                moreList.addEventListener('pointermove', (e) => {
+                    if (!isDown) return;
+                    moreList.scrollLeft = scrollStart - (e.clientX - startX);
+                });
+
+                const endDrag = () => {
+                    isDown = false;
+                    moreList.classList.remove('dragging');
+                };
+
+                moreList.addEventListener('pointerup', endDrag);
+                moreList.addEventListener('pointercancel', endDrag);
+                moreList.addEventListener('pointerleave', endDrag);
+
+                // 左右按鍵：平滑捲動到目標位置
+                const morePrevBtn = document.querySelector<HTMLButtonElement>('#editorPick .moreArea .btn .prevBtn');
+                const moreNextBtn = document.querySelector<HTMLButtonElement>('#editorPick .moreArea .btn .nextBtn');
+                const moreStep = 300;
+                let moreScrollAnimFrame: number | null = null;
+                function animateMoreListScrollBy(delta: number, duration = 400) {
+                    if (moreScrollAnimFrame !== null) {
+                        cancelAnimationFrame(moreScrollAnimFrame);
+                        moreScrollAnimFrame = null;
+                    }
+                    const start = moreList.scrollLeft;
+                    const target = start + delta;
+                    const startTime = performance.now();
+
+                    function tick(now: number) {
+                        const t = Math.min((now - startTime) / duration, 1);
+                        const eased = 1 - Math.pow(1 - t, 3);
+                        moreList.scrollLeft = start + (target - start) * eased;
+                        if (t < 1) {
+                            moreScrollAnimFrame = requestAnimationFrame(tick);
+                        } else {
+                            moreScrollAnimFrame = null;
+                        }
+                    }
+                    moreScrollAnimFrame = requestAnimationFrame(tick);
+                }
+                morePrevBtn?.addEventListener('click', () => animateMoreListScrollBy(-moreStep));
+                moreNextBtn?.addEventListener('click', () => animateMoreListScrollBy(moreStep));
             }
         </script>
     </body>

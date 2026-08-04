@@ -646,7 +646,7 @@
     align-items: center;
     justify-content: center;
     background-color: transparent;
-    border: 1px solid #cecece;
+    border: 1px solid #000;
     cursor: pointer;
 }
 #publications .booksNav button img{
@@ -731,3 +731,235 @@
     transform: rotate(0deg);
 }
 /* 精選出版品 ed*/
+
+/* 編輯選讀 */
+#editorPick{
+    background-color: #242EF7;
+    color: #fff;
+}
+#editorPick .inBox{
+    padding: 120px 0;
+}
+#editorPick .titleBox{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 60px;
+}
+#editorPick .editor{
+    width: 60%;
+    display: flex;
+    column-gap: 20px;
+    margin-bottom: 60px;
+}
+#editorPick .editor .img{
+    width: 240px;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+}
+#editorPick .editor .txtBox{
+    width: 60%;
+}
+#editorPick .editor .txtBox .info{
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+}
+#editorPick .editor .txtBox .info .name{
+    font-weight: 700;
+    font-size: 36px;
+    line-height: 48px;
+    letter-spacing: 0%;
+}
+#editorPick .editor .txtBox .info .Job{
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: 0%;
+    margin-bottom: 20px;
+}
+#editorPick .editor .txtBox .info .description{
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 26px;
+    letter-spacing: 0%;
+}
+#editorPick .motto{
+    position: relative;
+    width: 40%;
+    padding-top: 50px;
+    font-weight: 700;
+    font-size: 36px;
+    line-height: 48px;
+    letter-spacing: 0%;
+    padding: 40px;
+}
+#editorPick .motto::before{
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 37px;
+    height: 31px;
+    background-image: url('/deco-upper.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+#editorPick .motto::after{
+    content: "";
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    width: 37px;
+    height: 31px;
+    background-image: url('/deco-lower.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+#editorPick .moreArea{
+    background-color: #F0F0F0;
+    padding: 40px 0 80px;
+    color: #242EF7;
+}
+#editorPick .moreArea .areaTitleBox{
+    padding: 0 80px 40px;
+}
+#editorPick .moreArea .title{
+    font-weight: 900;
+    font-size: 48px;
+    line-height: 64px;
+    letter-spacing: 0%;
+    margin-bottom: 20px;    
+    margin-bottom: 60px;
+}
+#editorPick .moreArea .description{
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    column-gap: 40px;
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 30px;
+    letter-spacing: 0%;
+    margin-bottom: 20px;
+}
+#editorPick .moreArea .description p{
+    width: 60%;
+    flex: none;
+}
+#editorPick .moreArea .btn{
+    display: flex;
+    gap: 12px;
+    flex-shrink: 0;
+}
+#editorPick .moreArea .btn button{
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: 1px solid #000;
+    cursor: pointer;
+}
+#editorPick .moreArea .btn button img{
+    width: 20px;
+    height: 20px;
+}
+#editorPick .moreArea .btn .prevBtn img{
+    transform: rotate(180deg);
+}
+#editorPick .moreArea .list{
+    padding-left: 80px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    cursor: grab;
+    user-select: none;
+}
+#editorPick .moreArea .list.dragging{
+    cursor: grabbing;
+}
+#editorPick .moreArea .project .title {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 50px;
+    margin-bottom: 10px;
+}
+#editorPick .moreArea .project .description {
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 26px;
+    letter-spacing: 0%;
+}
+#editorPick .moreArea .list ul{
+    width: max-content;
+    display: flex;
+}
+#editorPick .moreArea .list ul li{
+    width: 450px;
+    margin-right: 20px;
+}
+#editorPick .moreArea .list ul li .box{
+    width: 100%;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+#editorPick .moreArea .list ul li .box .img{
+    width: 100%;
+    height: auto;
+    margin-bottom: 36px;
+}
+#editorPick .moreArea .list ul li .box .txtBox{
+    padding: 20px;
+}
+#editorPick .moreArea .list ul li .box .txtBox .tag{
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16px;
+    letter-spacing: 0%;
+}
+#editorPick .moreArea .list ul li .box .txtBox .title{
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 26px;
+    letter-spacing: 0%;
+    margin-bottom: 10px;
+}
+#editorPick .moreArea .list ul li .box .txtBox .tag{
+    width: max-content;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16px;
+    letter-spacing: 0%;
+    background-color: #242EF7;
+    color: #fff;
+    padding: 4px 8px;
+    margin-bottom: 20px;
+}
+#editorPick .moreArea .list ul li .box .txtBox .title{
+    color: #000;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 40px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    margin-bottom: 16px;
+}
+#editorPick .moreArea .list ul li .box .txtBox .description{
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    letter-spacing: 0%;
+    color: #000;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+/* 編輯選讀 ed*/
