@@ -4,42 +4,98 @@ header nav{
     top:0;
     z-index: 1;
 }
-header nav .frameBox{
+header nav .box{
     padding: 16px 16px 0;
     backdrop-filter: blur(10px);
+    overflow: visible;
 }
 header nav .navBox{
+    width: max-content;
     display: flex;
     align-items: stretch;
-    overflow: hidden;
+    overflow: visible;
     background-color: #fff;
     min-height: max-content;
+    margin: 0 auto;
 }
 header nav .logo{
     display: flex;
     align-items: center;
-    background-color: #242EF7;
+    background-color: #000;
     padding: 16px 36px;
-    border-left: 28px #000 solid;
+    /* border-left: 28px #000 solid; */
 }
 header nav .menu{
     display: flex;
+}
+header nav .menu ul{
+    display: flex;
     gap: 0;
+}
+header nav .menu li{
+    display: flex;
 }
 header nav .menu a{
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 16px 36px;
+    padding: 16px 24px;
     font-weight: 700;
     font-size: 20px;
     letter-spacing: 0%;
     text-align: center;
     color: #000;
 }
-header nav .menu a:hover{
+header nav .menu a.act{
     background-color: #242EF7;
     color: #fff;
+}
+header nav .menu a:hover.act{
+    background-color: #2029E0;
+}
+header nav .menu a.dropdown{
+    gap: 8px;
+}
+header nav .menu a.dropdown .arraw{
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s;
+}
+header nav .menu li.hasSub{
+    position: relative;
+}
+header nav .menu li.hasSub:hover .arraw,
+header nav .menu li.hasSub:focus-within .arraw{
+    transform: rotate(180deg);
+}
+header nav .menu .subMenu{
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    min-width: max-content;
+    background-color: #fff;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+header nav .menu li.hasSub:hover .subMenu,
+header nav .menu li.hasSub:focus-within .subMenu{
+    display: flex;
+}
+header nav .menu .subMenu a{
+    width: 100%;
+    padding: 12px 24px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #000;
+    text-align: center;
+}
+header nav .menu .subMenu a:hover{
+    background-color: rgba(0, 0, 0, 0.1)
 }
 header nav .switch{
     display: flex;
