@@ -1,0 +1,162 @@
+/* 國際媒體夥伴 */
+#partners{
+    background-color: #fff;
+    color: #000;
+}
+#partners .inBox{
+    padding: 120px 0 0px;
+}
+#partners .bigTitleBox{
+    margin-bottom: 100px;
+}
+#partners .bigTitleBox .title{
+    font-size: 80px;
+    font-weight: 400;
+    line-height: 100px;
+    letter-spacing: 0%;
+    margin-bottom: 24px;
+}
+#partners .bigTitleBox .title span{
+    font-weight: 700;
+}
+#partners .bigTitleBox .description{
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 36px;
+    letter-spacing: 0%;
+}
+#partners .form .list ul li{
+    display: flex;
+    margin-bottom: 100px;
+}
+#partners .form .list ul li .titleBox{
+    width: 40%;
+}
+#partners .form .list ul li .logos{
+    width: 60%;
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 80px;
+    row-gap: 40px;
+}
+#partners .form .list ul li .logos a{
+    display: block;
+    width: auto;
+    height: 48px;
+    object-fit: cover;
+}
+#partners .form .list ul li .data{
+    width: 60%;
+}
+#partners .collabForm{
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+}
+#partners .collabForm .row{
+    display: flex;
+    column-gap: 20px;
+}
+#partners .collabForm .field{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    row-gap: 4px;
+}
+#partners .collabForm label{
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: 0%;
+}
+#partners .collabForm input{
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #000;
+    padding: 8px 0;
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: 0%;
+    color: #000;
+    background: transparent;
+    outline: none;
+    box-sizing: border-box;
+}
+#partners .collabForm input::placeholder{
+    color: rgba(0, 0, 0, 0.35);
+}
+#partners .submitBtn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: 8px;
+    border: 1px solid #000;
+    background: none;
+    cursor: pointer;
+    font-family: var(--font-sans);
+}
+#partners .submitBtn span{
+    flex: 1;
+    padding: 20px;
+    border-right: 1px solid #000;
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 30px;
+    letter-spacing: 0%;
+    color: #000;
+    text-align: center;
+}
+#partners .submitBtn .arraw{
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+#partners .submitBtn .arraw img{
+    width: 28px;
+    height: 28px;
+}
+#partners .form .list ul li .follow{
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+}
+#partners .followItem{
+    display: flex;
+    align-items: center;
+    column-gap: 20px;
+    padding: 8px 0 8px 24px;
+    border-bottom: 1px solid #000;
+}
+#partners .followItem img:first-child{
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+#partners .followItem span{
+    flex: 1;
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 30px;
+    letter-spacing: 0%;
+    color: #000;
+}
+#partners .followItem .arraw{
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+#partners .followItem .arraw img{
+    width: 28px;
+    height: 28px;
+}
+
+/* 國際媒體夥伴 ed*/

@@ -1,0 +1,41 @@
+/* 消費性電子 */
+#tech{
+    background-color: #C8E1FF;
+    color: #000;
+}
+#tech .inBox{
+    padding: 120px 0;
+}
+#tech .itemTitle{
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 28px;
+    letter-spacing: 0%;
+}
+#tech .titleBox{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#tech .titleBox .more a{
+    border: 1px solid #000;
+}
+#tech .titleBox .more a span{
+    color: #000;
+    padding: 0 60px;
+}
+#tech .titleBox .more a .arraw{
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px solid #000;
+}
+#tech .newslist ul li{
+    border-bottom:#000 1px solid;
+}
+#tech .newslist ul li .title{
+    color: #000 ;
+}
+/* 消費性電子 ed*/

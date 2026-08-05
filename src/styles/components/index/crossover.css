@@ -1,0 +1,44 @@
+/* 科技與財經 */
+#crossover{
+    background-color: #242EF7;
+    color: #fff;
+}
+#crossover .inBox{
+    padding: 120px 0;
+}
+#crossover .itemTitle{
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 28px;
+    letter-spacing: 0%;
+}
+#crossover .titleBox{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#crossover .titleBox .more a{
+    border: 1px solid #fff;
+}
+#crossover .titleBox .more a span{
+    color: #fff;
+    padding: 0 60px;
+}
+#crossover .titleBox .more a .arraw{
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px solid #fff;
+}
+#crossover .newslist ul li{
+    border-bottom:#fff 1px solid;
+}
+#crossover .newslist ul li .date{
+    color: #fff;
+}
+#crossover .newslist ul li .title{
+    color: #fff ;
+}
+/* 科技與財經 ed*/

@@ -323,3 +323,58 @@ img {
 /* 議題樣式 ed*/
 
 /* 列表文章 ed*/
+
+/* 標題進場動畫（所有 itemTitle 共用）*/
+.animLabel{
+    position: relative;
+}
+.animLabel p{
+    position: relative;
+    width: fit-content;
+    white-space: nowrap;
+    opacity: 0;
+    animation: animLabelLine1 2s linear forwards;
+}
+.animLabel p:nth-child(2){
+    animation-name: animLabelLine2;
+}
+.animLabel p::before{
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 3px;
+    width: 100%;
+    height: 22px;
+    background-color: #242EF7;
+    pointer-events: none;
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+}
+.animLabel p:nth-child(1)::before{
+    animation: animBarLine1 2s linear forwards;
+}
+.animLabel p:nth-child(2)::before{
+    animation: animBarLine2 2s linear forwards;
+}
+@keyframes animLabelLine1{
+    0%, 19.9%{ opacity: 0; }
+    20%, 100%{ opacity: 1; }
+}
+@keyframes animLabelLine2{
+    0%, 59.9%{ opacity: 0; }
+    60%, 100%{ opacity: 1; }
+}
+@keyframes animBarLine1{
+    0%{ opacity: 1; clip-path: inset(0 100% 0 0); }
+    20%{ opacity: 1; clip-path: inset(0 0 0 0); }
+    40%{ opacity: 1; clip-path: inset(0 0 0 100%); }
+    40.01%, 100%{ opacity: 0; clip-path: inset(0 0 0 100%); }
+}
+@keyframes animBarLine2{
+    0%, 20%{ opacity: 0; clip-path: inset(0 100% 0 0); }
+    20.01%{ opacity: 1; }
+    40%, 60%{ opacity: 1; clip-path: inset(0 0 0 0); }
+    80%{ opacity: 1; clip-path: inset(0 0 0 100%); }
+    80.01%, 100%{ opacity: 0; clip-path: inset(0 0 0 100%); }
+}
+/* 標題進場動畫 ed */

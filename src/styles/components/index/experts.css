@@ -1,0 +1,109 @@
+/* 專欄 */
+#experts{
+    background-color: #1A1A1A;
+    color: #fff;
+}
+#experts .bg{
+    position: relative;
+    background-image: url('/noice circle.svg');
+    background-position: center bottom;
+    background-repeat: no-repeat;
+}
+#experts .inBox{
+    padding: 120px 0 80px;
+}
+#experts .titleBox{
+    display: flex;
+    justify-content: space-between;
+}
+#experts .titleBox{
+    width: 35%;
+}
+#experts .list{
+    width: 65%;
+}
+#experts .list .item{
+    display: flex;
+    column-gap: 30px;
+    margin-bottom: 80px;
+}
+#experts .list .item .img{
+    width: 50%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+}
+#experts .list .item .txtBox{
+    width: 50%;
+}
+#experts .list .item .txtBox .name{
+    font-weight: 700;
+    font-size: 36px;
+    line-height: 48px;
+    letter-spacing: 0%;
+    margin-bottom: 10px;
+}
+#experts .list .item .txtBox .tag{
+    display: flex;
+    column-gap: 10px;
+    margin-bottom: 15px;
+}
+#experts .list .item .txtBox .tag a{
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0%;
+    background-color: #242EF7;
+    color: #fff;
+    padding: 2px 10px;
+}
+#experts .list .item .txtBox .description{
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: 0%;
+    margin-bottom: 30px;
+}
+#experts .list .item .txtBox .intro{
+    margin-bottom: 30px;
+}
+#experts .list .item .txtBox .intro a{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 10px;
+    color: #fff;
+}
+#experts .list .item .txtBox .intro a .arraw{
+    width: 48px;
+    aspect-ratio: 1/1;
+}
+#experts .list .item .txtBox .intro a{
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 30px;
+    letter-spacing: 0%;
+    padding: 15px 0;
+    border-top: 1px solid #fff;
+}
+#experts .list .item .txtBox .more a{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    column-gap: 10px;
+    border: 1px solid #fff;
+}
+#experts .list .item .txtBox .more a .arraw{
+    border-left: 1px solid #fff;
+}
+#experts .list .item .txtBox .more a span{
+    width: 90%;
+    color: #fff;
+    text-align: center;
+}
+#experts .list .item .txtBox .more a span{
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: 0%;
+}
+/* 專欄 ed*/
