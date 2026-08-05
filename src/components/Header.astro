@@ -23,25 +23,25 @@ import '../styles/components/header.css';
                             </ul>
                         </li>
                         <li>
-                            <a href="#" class="act">亞利桑那觀察</a>
+                            <a href="#new" class="act">亞利桑那觀察</a>
                         </li>
                         <li>
-                            <a href="#">專題</a>
+                            <a href="#issue">專題</a>
                         </li>
                         <li>
-                            <a href="#">影音</a>
+                            <a href="#video">影音</a>
                         </li>
                         <li>
-                            <a href="#">財經</a>
+                            <a href="#crossover">財經</a>
                         </li>
                         <li>
-                            <a href="#">專欄</a>
+                            <a href="#experts">專欄</a>
                         </li>
                         <li>
-                            <a href="#">出版</a>
+                            <a href="#publications">出版</a>
                         </li>
                         <li>
-                            <a href="#">合作</a>
+                            <a href="#partners">合作</a>
                         </li>
                     </ul>
                 </div>
@@ -57,3 +57,40 @@ import '../styles/components/header.css';
         </div>
     </nav>
 </header>
+
+<script>
+    // ===== 導覽列錨點連結：緩速滑動至目標區塊（原生 smooth 速度太快，改用自訂緩動動畫）=====
+    const DURATION = 1200; // 捲動時間（毫秒），數字越大滑動越慢
+    // 導覽列是浮在內容上方的透明懸浮列，捲動時直接讓區塊頂到「視窗最頂端」即可，不用再扣除導覽列高度
+
+    function easeInOutCubic(t: number) {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+
+    document.querySelectorAll<HTMLAnchorElement>('header nav a[href^="#"]').forEach((link) => {
+        link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
+            if (!href) return;
+            const id = href.slice(1);
+            // href="#"（例如「AI最新趨勢」）沒有對應區塊，代表滑回頁首
+            const target = id ? document.getElementById(id) : null;
+            if (id && !target) return;
+
+            e.preventDefault();
+
+            const startY = window.scrollY;
+            const targetY = target
+                ? target.getBoundingClientRect().top + startY
+                : 0;
+            const startTime = performance.now();
+
+            function tick(now: number) {
+                const t = Math.min((now - startTime) / DURATION, 1);
+                // 明確指定 behavior: 'auto'，避免與 CSS 的 scroll-behavior: smooth 疊加造成頓挫
+                window.scrollTo({ top: startY + (targetY - startY) * easeInOutCubic(t), behavior: 'auto' });
+                if (t < 1) requestAnimationFrame(tick);
+            }
+            requestAnimationFrame(tick);
+        });
+    });
+</script>

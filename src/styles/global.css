@@ -6,7 +6,11 @@
 	--font-sans: "Roboto","Roboto Flex","Noto Sans TC",sans-serif;
 }
 
-body {    
+html {
+    scroll-behavior: smooth;
+}
+
+body {
     position: relative;
     margin: 0;
     padding: 0;
