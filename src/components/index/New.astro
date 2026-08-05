@@ -1,41 +1,118 @@
 ---
 import '../../styles/components/index/new.css';
+
+const newsItems = [
+    {
+        image: '/news-image-07.jpg',
+        title: '三星全球導入 ChatGPT 與 Codex　OpenAI 拿下最大企業部署案之一',
+        description: '企業級 AI 落地再下一城，OpenAI 在大型製造業者的滲透加速。',
+        tags: ['AI', '半導體'],
+    },
+    {
+        image: '/news-image-01.jpg',
+        title: '台積電美國廠稼動率衝高　法人喊上調全年資本支出',
+        description: '隨先進封裝與 CoWoS 產能持續擴充，法人圈預期今年資本支出可望再上修。',
+        tags: ['半導體', '資本支出'],
+    },
+    {
+        image: '/news-image-02.jpg',
+        title: '輝達加碼投資機器人新創　押注實體 AI 下一波浪潮',
+        description: '黃仁勳看好「實體 AI」為下一個成長引擎，宣布加碼投資多家機器人新創公司。',
+        tags: ['AI', '機器人'],
+    },
+];
 ---
 <section>
     <div id="new">
-        <div class="inBox">
-            <div class="flex">
-                <div class="titleBox">
-                    <div class="itemTitle">
-                        <p>最新科技情報</p>
-                        <p>TECH SIGNALS</p>
-                    </div>
-                    <div class="title">
-                        讀懂<span>趨勢</span><br>
-                        再<span>行動</span>
-                    </div>
-                </div>
-                <div class="list">
-                    <div class="item">
-                        <div class="img">
-                            <img width="600" height="342 " src="/news-image-07.jpg" alt="img" />
-                        </div>
-                        <div class="txtBox">
+        <div class="stickyWrap">
+            <div class="pinInner">
+                <div class="inBox">
+                    <div class="flex">
+                        <div class="titleBox">
+                            <div class="itemTitle">
+                                <p>最新科技情報</p>
+                                <p>TECH SIGNALS</p>
+                            </div>
                             <div class="title">
-                                三星全球導入 ChatGPT 與 Codex　OpenAI 拿下最大企業部署案之一
+                                讀懂<span>趨勢</span><br>
+                                再<span>行動</span>
                             </div>
-                            <div class="description">
-                                企業級 AI 落地再下一城，OpenAI 在大型製造業者的滲透加速。
-                            </div>
-                            <div class="tag">
-                                <a href="#">AI</a>
-                                <a href="#">半導體</a>
+                        </div>
+                        <div class="list">
+                            <div class="itemTrack">
+                                {newsItems.map((item, i) => (
+                                    <div class="item" class:list={{ 'is-active': i === 0 }} data-index={i} data-rel={Math.min(2, i)}>
+                                        <div class="img">
+                                            <img width="600" height="342" src={item.image} alt="img" />
+                                        </div>
+                                        <div class="txtBox">
+                                            <div class="title">
+                                                {item.title}
+                                            </div>
+                                            <div class="description">
+                                                {item.description}
+                                            </div>
+                                            <div class="tag">
+                                                {item.tags.map((tag) => <a href="#">{tag}</a>)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </section>
+
+<script>
+    // ===== 最新科技情報（#new）：捲動連動切換 3 則新聞卡 =====
+    // 用一段「釘住 + 加高」的區塊模擬 Apple 官網式 scrollytelling：
+    // 區塊釘在畫面上，使用者往下捲動時依序切到下一則新聞卡；捲完最後一則後自然放行接續到下一區塊。
+    // 因為是純粹依據捲動位置計算（而非攔截 wheel 事件），滾輪、觸控板、鍵盤、觸控捲動都能正確運作，往上捲動也會自動反向切換。
+    const stickyWrap = document.querySelector<HTMLElement>('#new .stickyWrap');
+    const items = document.querySelectorAll<HTMLElement>('#new .list .item');
+
+    if (stickyWrap && items.length) {
+        function setHeight() {
+            stickyWrap!.style.height = `${items.length * 100}vh`;
+        }
+
+        let activeIndex = 0;
+
+        function setActive(index: number) {
+            if (index === activeIndex && stickyWrap!.dataset.inited) return;
+            activeIndex = index;
+            stickyWrap!.dataset.inited = 'true';
+            items.forEach((item, i) => {
+                item.classList.toggle('is-active', i === index);
+                // 相對位置：0 為當前卡片，正數為疊在下方待出現的卡片，負數為已經翻過去的卡片
+                const rel = Math.max(-1, Math.min(2, i - index));
+                item.dataset.rel = String(rel);
+            });
+        }
+
+        function update() {
+            const rect = stickyWrap!.getBoundingClientRect();
+            const scrollable = stickyWrap!.offsetHeight - window.innerHeight;
+            if (scrollable <= 0) {
+                setActive(0);
+                return;
+            }
+            const scrolled = Math.min(Math.max(-rect.top, 0), scrollable);
+            const progress = scrolled / scrollable;
+            const index = Math.min(items.length - 1, Math.floor(progress * items.length));
+            setActive(index);
+        }
+
+        setHeight();
+        update();
+        window.addEventListener('scroll', update, { passive: true });
+        window.addEventListener('resize', () => {
+            setHeight();
+            update();
+        });
+    }
+</script>
