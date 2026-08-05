@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import '../styles/index.css';
 import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 ---
 <html lang="zh-Hant">
     <head>
@@ -1015,8 +1016,8 @@ import Header from '../components/Header.astro';
                                 </div>
                             </div>
                             <div class="list">
-                                <ul>
-                                    <li>
+                                <swiper-container init="false" class="moreSwiper">
+                                    <swiper-slide>
                                         <div class="project">
                                             <div class="title">
                                                 01 能源
@@ -1039,8 +1040,8 @@ import Header from '../components/Header.astro';
                                                 </div>
                                             </div>
                                         </a>
-                                    </li>
-                                    <li>
+                                    </swiper-slide>
+                                    <swiper-slide>
                                         <div class="project">
                                             <div class="title">
                                                 02 地緣政治與監管
@@ -1063,8 +1064,8 @@ import Header from '../components/Header.astro';
                                                 </div>
                                             </div>
                                         </a>
-                                    </li>
-                                    <li>
+                                    </swiper-slide>
+                                    <swiper-slide>
                                         <div class="project">
                                             <div class="title">
                                                 03 ROI 考驗
@@ -1087,6 +1088,133 @@ import Header from '../components/Header.astro';
                                                 </div>
                                             </div>
                                         </a>
+                                    </swiper-slide>
+                                    <swiper-slide>
+                                        <div class="project">
+                                            <div class="title">
+                                                01 能源
+                                            </div>
+                                            <div class="description">
+                                                數據中心用電量呈指數級爆發，乾淨且穩定的電力供給，正取代晶片成為 AI 發展最大瓶頸
+                                            </div>
+                                        </div>
+                                        <a class="box" href="#">
+                                            <div class="img">
+                                                <img width="800" height="450" src="/issue-image-02.jpg" alt="img" loading="lazy" />
+                                            </div>
+                                            <div class="txtBox">
+                                                <div class="tag">專題</div>
+                                                <div class="title">
+                                                    三星全球導入 ChatGPT 與 Codex　OpenAI 拿下最大企業部署案之一
+                                                </div>
+                                                <div class="description">
+                                                    企業級 AI 落地再下一城，OpenAI 在大型製造業者的滲透加速。
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </swiper-slide>
+                                    <swiper-slide>
+                                        <div class="project">
+                                            <div class="title">
+                                                02 地緣政治與監管
+                                            </div>
+                                            <div class="description">
+                                                各國法規與出口限制正在撕裂全球供應鏈，技術不再只是商業競賽，更演變為地緣政治的角力。
+                                            </div>
+                                        </div>
+                                        <a class="box" href="#">
+                                            <div class="img">
+                                                <img width="800" height="450" src="/issue-image-01.jpg" alt="img" loading="lazy" />
+                                            </div>
+                                            <div class="txtBox">
+                                                <div class="tag">專題</div>
+                                                <div class="title">
+                                                    三星全球導入 ChatGPT 與 Codex　OpenAI 拿下最大企業部署案之一
+                                                </div>
+                                                <div class="description">
+                                                    企業級 AI 落地再下一城，OpenAI 在大型製造業者的滲透加速。
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </swiper-slide>
+                                    <swiper-slide>
+                                        <div class="project">
+                                            <div class="title">
+                                                03 ROI 考驗
+                                            </div>
+                                            <div class="description">
+                                                資本市場正從驚嘆技術轉為審視回報，缺乏實質商業模式的 AI 應用，將面臨第一波淘汰洗
+                                            </div>
+                                        </div>
+                                        <a class="box" href="#">
+                                            <div class="img">
+                                                <img width="800" height="450" src="/issue-image-03.jpg" alt="img" loading="lazy" />
+                                            </div>
+                                            <div class="txtBox">
+                                                <div class="tag">專題</div>
+                                                <div class="title">
+                                                    三星全球導入 ChatGPT 與 Codex　OpenAI 拿下最大企業部署案之一
+                                                </div>
+                                                <div class="description">
+                                                    企業級 AI 落地再下一城，OpenAI 在大型製造業者的滲透加速。
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </swiper-slide>
+                                </swiper-container>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <div id="techLeaders">
+                    <div class="inBox">
+                        <div class="titleBox">
+                            <div class="itemTitle">
+                                <p>科技大人物</p>
+                                <p>TECH LEADERS</p>
+                            </div>
+                            <div class="nameBox">
+                                <p class="name">黃仁勳</p>
+                                <p class="job">NVIDIA 共同創辦人暨執行長</p>
+                            </div>
+                        </div>
+                        <div class="people">
+                            <div class="img">
+                                <img width="400" height="400" src="/techLeader01.jpg" alt="techLeader" loading="lazy" />
+                            </div>
+                            <div class="peoTitle">
+                                別怕 AI 搶飯碗！籲親自使用 AI 縮小科技落差，揭能源供應成美 AI 發展重要瓶頸。
+                            </div>
+                            <div class="list">
+                                <ul>
+                                    <li>
+                                        <a href="#">
+                                            <div class="time">
+                                                2026/07/12
+                                            </div>
+                                            <div class="title">
+                                                台積電有夠強！外媒盛讚「投資首選」：整個AI產業都靠它
+                                            </div>
+                                            <div class="description">
+                                                外國媒體與分析師高度讚譽台積電在先進製程的絕對壟斷地位，認為其在AI浪潮中是不可或缺的龍頭與投資首選。
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <div class="time">
+                                                2026/07/10
+                                            </div>
+                                            <div class="title">
+                                                護國神山又一大客戶？路透：Meta自研AI晶片找台積電代工
+                                            </div>
+                                            <div class="description">
+                                                根據路透社報導，科技巨頭 Meta 為了擺脫對輝達的過度依賴，積極研發新一代自研 AI 晶片，並傳出將全數交由台積電代工。
+                                            </div>
+                                        </a>
                                     </li>
                                 </ul>
                             </div>
@@ -1095,8 +1223,123 @@ import Header from '../components/Header.astro';
                 </div>
             </section>
 
+            <section>
+                <div id="partners">
+                    <div class="inBox">
+                        <div class="bigTitleBox">
+                            <div class="title">
+                                洞察<span>全球事件</span><br>
+                                佈局<span>未來</span>
+                            </div>
+                            <div class="description">
+                                同步國際媒體的即時資訊，深耕高階與深度的內容，<br>
+                                深入淺出，在變局中引領你掌握未來。
+                            </div>
+                        </div>
+                        
+                        <div class="form">
+                            <div class="list">
+                                <ul>
+                                    <li>
+                                        <div class="titleBox">
+                                            <div class="itemTitle">
+                                                <p>國際媒體夥伴</p>
+                                                <p>MEDIA PARTNERS</p>
+                                            </div>
+                                        </div>
+                                        <div class="logos">
+                                            <a href="#">
+                                                <img width="282" height="48" src="/logo_Arizona CommerceAuthority.png" alt="partner" loading="lazy" />
+                                            </a>
+                                            <a href="#">
+                                                <img width="282" height="48" src="/logo_AXIOSPhoenix.png" alt="partner" loading="lazy" />
+                                            </a>
+                                            <a href="#">
+                                                <img width="282" height="48" src="/logo_PhoenixNewTimes.png" alt="partner" loading="lazy" />
+                                            </a>
+                                            <a href="#">
+                                                <img width="282" height="48" src="/logo_ArizonaDailyStar.png" alt="partner" loading="lazy" />
+                                            </a>
+                                            <a href="#">
+                                                <img width="282" height="48" src="/logo_TheArizonaRepublic.png" alt="partner" loading="lazy" />
+                                            </a>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="titleBox">
+                                            <div class="itemTitle">
+                                                <p>與我們合作</p>
+                                                <p>COLLABORATION</p>
+                                            </div>
+                                        </div>
+                                        <div class="data">
+                                            <form class="collabForm">
+                                                <div class="row">
+                                                    <div class="field">
+                                                        <label for="collabName">聯絡人</label>
+                                                        <input type="text" id="collabName" name="collabName" placeholder="聯絡人姓名" />
+                                                    </div>
+                                                    <div class="field">
+                                                        <label for="collabTitle">職稱</label>
+                                                        <input type="text" id="collabTitle" name="collabTitle" placeholder="職稱或稱謂" />
+                                                    </div>
+                                                </div>
+                                                <div class="field">
+                                                    <label for="collabEmail">Email</label>
+                                                    <input type="email" id="collabEmail" name="collabEmail" placeholder="xxx@company.com" />
+                                                </div>
+                                                <div class="field">
+                                                    <label for="collabContent">合作內容</label>
+                                                    <input type="text" id="collabContent" name="collabContent" placeholder="請簡述合作內容" />
+                                                </div>
+                                                <button type="submit" class="submitBtn">
+                                                    <span>送出</span>
+                                                    <div class="arraw">
+                                                        <img width="28" height="28" src="/arraw-right-02.svg" alt="arraw" />
+                                                    </div>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="titleBox">
+                                            <div class="itemTitle">
+                                                <p>追蹤我們</p>
+                                                <p>FOLLOW US</p>
+                                            </div>
+                                        </div>
+                                        <div class="follow">
+                                            <a href="#" class="followItem">
+                                                <img width="24" height="24" src="/ic-linkedin.svg" alt="LinkedIn" />
+                                                <span>追蹤 LinkedIn</span>
+                                                <div class="arraw">
+                                                    <img width="28" height="28" src="/arraw-right-02.svg" alt="arraw" />
+                                                </div>
+                                            </a>
+                                            <a href="#" class="followItem">
+                                                <img width="24" height="24" src="/ic-youtube.svg" alt="YouTube" />
+                                                <span>訂閱 YouTube</span>
+                                                <div class="arraw">
+                                                    <img width="28" height="28" src="/arraw-right-02.svg" alt="arraw" />
+                                                </div>
+                                            </a>
+                                            <a href="#" class="followItem">
+                                                <img width="24" height="24" src="/ic-podcast.svg" alt="Podcast" />
+                                                <span>追蹤 Podcast</span>
+                                                <div class="arraw">
+                                                    <img width="28" height="28" src="/arraw-right-02.svg" alt="arraw" />
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
-        <footer></footer>
+        <Footer />
         <script>
             // ===== 精選出版品（#publications）書本清單：無限循環自動捲動、拖曳、左右按鈕 =====
             const books = document.querySelector<HTMLElement>('#publications .books');
@@ -1204,66 +1447,24 @@ import Header from '../components/Header.astro';
                 nextBtn?.addEventListener('click', () => animateScrollBy(step));
             }
 
-            // ===== 編輯選讀（#editorPick）影響 AI 的十件事清單：拖曳捲動、左右按鈕 =====
-            const moreList = document.querySelector<HTMLElement>('#editorPick .moreArea .list');
-            if (moreList) {
-                let isDown = false;
-                let startX = 0;
-                let scrollStart = 0;
+            // ===== 編輯選讀（#editorPick）影響 AI 的十件事清單：改用 Swiper 輪播套件 =====
+            import { register } from 'swiper/element/bundle';
+            register();
 
-                // 圖片預設可以被瀏覽器原生拖曳，會打斷我們自己的拖曳捲動，這裡直接擋掉
-                moreList.addEventListener('dragstart', (e) => e.preventDefault());
-
-                moreList.addEventListener('pointerdown', (e) => {
-                    isDown = true;
-                    moreList.classList.add('dragging');
-                    startX = e.clientX;
-                    scrollStart = moreList.scrollLeft;
-                    moreList.setPointerCapture(e.pointerId);
+            const moreSwiperEl = document.querySelector<HTMLElement & { initialize: () => void }>('.moreSwiper');
+            if (moreSwiperEl) {
+                Object.assign(moreSwiperEl, {
+                    slidesPerView: 'auto',
+                    spaceBetween: 20,
+                    loop: true,
+                    navigation: {
+                        nextEl: '#editorPick .moreArea .btn .nextBtn',
+                        prevEl: '#editorPick .moreArea .btn .prevBtn',
+                    },
                 });
-
-                moreList.addEventListener('pointermove', (e) => {
-                    if (!isDown) return;
-                    moreList.scrollLeft = scrollStart - (e.clientX - startX);
-                });
-
-                const endDrag = () => {
-                    isDown = false;
-                    moreList.classList.remove('dragging');
-                };
-
-                moreList.addEventListener('pointerup', endDrag);
-                moreList.addEventListener('pointercancel', endDrag);
-                moreList.addEventListener('pointerleave', endDrag);
-
-                // 左右按鍵：平滑捲動到目標位置
-                const morePrevBtn = document.querySelector<HTMLButtonElement>('#editorPick .moreArea .btn .prevBtn');
-                const moreNextBtn = document.querySelector<HTMLButtonElement>('#editorPick .moreArea .btn .nextBtn');
-                const moreStep = 300;
-                let moreScrollAnimFrame: number | null = null;
-                function animateMoreListScrollBy(delta: number, duration = 400) {
-                    if (moreScrollAnimFrame !== null) {
-                        cancelAnimationFrame(moreScrollAnimFrame);
-                        moreScrollAnimFrame = null;
-                    }
-                    const start = moreList.scrollLeft;
-                    const target = start + delta;
-                    const startTime = performance.now();
-
-                    function tick(now: number) {
-                        const t = Math.min((now - startTime) / duration, 1);
-                        const eased = 1 - Math.pow(1 - t, 3);
-                        moreList.scrollLeft = start + (target - start) * eased;
-                        if (t < 1) {
-                            moreScrollAnimFrame = requestAnimationFrame(tick);
-                        } else {
-                            moreScrollAnimFrame = null;
-                        }
-                    }
-                    moreScrollAnimFrame = requestAnimationFrame(tick);
-                }
-                morePrevBtn?.addEventListener('click', () => animateMoreListScrollBy(-moreStep));
-                moreNextBtn?.addEventListener('click', () => animateMoreListScrollBy(moreStep));
+                moreSwiperEl.initialize();
+                // 初始化完成後才淡入，避免重新整理時先閃一下未套用輪播樣式的原始版面
+                moreSwiperEl.classList.add('is-ready');
             }
         </script>
     </body>
