@@ -212,6 +212,18 @@ img {
     display: flex;
     align-items: center;
 }
+.newslist ul li .titleBox .tag{
+    display: none;
+    width: fit-content;
+    background-color: #242EF7;
+    padding: 4px 8px;
+    color: #fff;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0%;
+    margin-bottom: 8px;
+}
 .newslist ul li .date{
     width: 120px;
     font-weight: 400;
@@ -253,4 +265,61 @@ img {
 .newslist ul li .arraw img{
     width: 50%;
 }
+
+/* 議題樣式 */
+
+.newslist.type2 ul{
+    display: flex;
+    flex-wrap: wrap;
+}
+.newslist.type2 ul li{
+    width: calc((100% - 2px) / 2);
+    overflow: hidden;
+    align-items: flex-start;
+    column-gap: 20px;
+    margin-bottom: 0;
+    padding: 20px 0;
+}
+.newslist.type2 ul li a{
+    display: flex;
+    align-items: flex-start;
+    padding:0 20px;
+}
+.newslist.type2 ul li:nth-child(odd) a{
+    padding-left: 0;
+}
+.newslist.type2 ul li .news{
+    align-items: flex-start;
+}
+.newslist.type2 ul li .titleBox .tag{
+    display: block;
+}
+.newslist.type2 ul li .date{
+    display: none;
+}
+.newslist.type2 ul li .news .titleBox .title{
+    height: 120px;
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 30px;
+    letter-spacing: 0%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    white-space: normal;
+}
+.newslist.type2 ul li .news .img{
+    width: 30%;
+    height: auto;
+    aspect-ratio:unset;
+}
+.newslist.type2 ul li .news .titleBox{
+    width: 70%;
+    align-items: flex-start;
+}
+
+/* 議題樣式 ed*/
+
 /* 列表文章 ed*/

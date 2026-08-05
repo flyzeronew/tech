@@ -19,6 +19,21 @@
 #hero .kv .txtBox .inBox .newsBox{
     width: 60%;
 }
+#hero .kv .txtBox .inBox .newsBox .tag{
+    display: none;
+    width: fit-content;
+    background-color: #242EF7;
+    padding: 4px 10px;
+    color: #fff;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 22px;
+    letter-spacing: 0%;
+    margin-bottom: 16px;
+}
+#hero .kv .txtBox .inBox .newsBox.type2 .tag{
+    display: block;
+}
 #hero .kv .txtBox .inBox .newsBox .title{
     font-weight: 900;
     font-size: 48px;
@@ -34,12 +49,21 @@
     margin-bottom: 30px;
 }
 #hero .newslist ul li{
-    border-bottom:#50514F 1px solid;
+    border-bottom:#50514F 1px solid;    
+}
+#hero .newslist.type2 ul li{
+    border-right:#CECECE 1px solid;
+    border-bottom:#CECECE 1px solid;
 }
 #hero .newslist ul li .date{
     color: #50514F;
 }
-
+#hero .newslist ul li .titleBox .title{
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 40px;
+    letter-spacing: 0%;
+}
 /* 標題進場動畫（所有 itemTitle 共用）*/
 .animLabel{
     position: relative;
