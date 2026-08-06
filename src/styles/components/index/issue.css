@@ -42,11 +42,18 @@
 #issue.is-visible .bg .wipeStage .wipeRow:nth-child(4){ transition-delay: 0.36s; }
 
 /* 階段 3：黑色收合完後，格線一條一條依序畫出來（水平線對齊階梯色塊邊界，垂直線用跟 .bgImage 同樣的 1:1 格子間距） */
+/* 全部畫完後，整組格線再淡出隱藏，接著才輪到圖片放大 */
 #issue .bg .gridLines{
     position: absolute;
     inset: 0;
     z-index: 2;
     pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.6s ease;
+}
+#issue.is-visible .bg .gridLines{
+    opacity: 0;
+    transition-delay: 2.6s;
 }
 #issue .bg .gridLines .gridLine{
     position: absolute;
