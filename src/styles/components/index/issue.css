@@ -4,26 +4,127 @@
 }
 #issue .bg{
     position: relative;
+    aspect-ratio: 16/9;
+    color: #fff;
+    overflow: hidden;
+    /* 階段 1：一開始整塊是全白、看不到任何內容 */
+    background-color: #fff;
+}
+
+/* 階段 2：白畫面上疊 4 條階梯狀色塊，觸發時各自延遲一點時間、從右往左收合蓋成黑色 */
+/* z-index 放最底層：收合完成後它會變成純黑背景，後面的隔線、圖片、文字都要疊在它上面才看得到 */
+#issue .bg .wipeStage{
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+#issue .bg .wipeStage .wipeRow{
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 25%;
+    background-color: #1A1A1A;
+    transform: scaleX(0);
+    transform-origin: right center;
+    transition: transform 0.75s ease-out;
+}
+#issue .bg .wipeStage .wipeRow:nth-child(1){ top: 0%; }
+#issue .bg .wipeStage .wipeRow:nth-child(2){ top: 25%; }
+#issue .bg .wipeStage .wipeRow:nth-child(3){ top: 50%; }
+#issue .bg .wipeStage .wipeRow:nth-child(4){ top: 75%; }
+#issue.is-visible .bg .wipeStage .wipeRow{
+    transform: scaleX(1);
+}
+#issue.is-visible .bg .wipeStage .wipeRow:nth-child(1){ transition-delay: 0s; }
+#issue.is-visible .bg .wipeStage .wipeRow:nth-child(2){ transition-delay: 0.12s; }
+#issue.is-visible .bg .wipeStage .wipeRow:nth-child(3){ transition-delay: 0.24s; }
+#issue.is-visible .bg .wipeStage .wipeRow:nth-child(4){ transition-delay: 0.36s; }
+
+/* 階段 3：黑色收合完後，格線一條一條依序畫出來（水平線對齊階梯色塊邊界，垂直線用跟 .bgImage 同樣的 1:1 格子間距） */
+#issue .bg .gridLines{
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+}
+#issue .bg .gridLines .gridLine{
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.3);
+    opacity: 0;
+    transition: transform 0.55s ease-out, opacity 0.55s ease-out;
+}
+#issue .bg .gridLines .gridLine--h{
+    left: 0;
+    width: 100%;
+    height: 1px;
+    transform: scaleX(0);
+    transform-origin: left center;
+}
+#issue .bg .gridLines .gridLine--v{
+    top: 0;
+    width: 1px;
+    height: 100%;
+    transform: scaleY(0);
+    transform-origin: top center;
+}
+#issue.is-visible .bg .gridLines .gridLine--h{
+    opacity: 1;
+    transform: scaleX(1);
+}
+#issue.is-visible .bg .gridLines .gridLine--v{
+    opacity: 1;
+    transform: scaleY(1);
+}
+
+/* 背景圖獨立成一層：階段 3 先以「一個格線的大小」淡入在正中間，階段 4 才放大到滿版 */
+/* 用 width/height（而不是 transform: scale）搭配 left/top + translate(-50%,-50%) 置中定位 */
+/* top 用 37.5% 而不是 50%：橫向格線固定在 0/25/50/75/100%，50% 剛好是格線交界，會卡在兩格中間；
+   往上移到 25~50% 那一格的正中央（37.5%），圖片才會完整落在一格裡面 */
+#issue .bg .bgImage{
+    position: absolute;
+    left: 50%;
+    top: 37.5%;
+    width: 14.0625%;
+    height: 25%;
+    z-index: 3;
     background-image: url('/news-bg-02.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    aspect-ratio: 16/9;
-    color: #fff;
-    overflow: hidden;
+    opacity: 0;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.9s ease, width 2s cubic-bezier(0.16, 1, 0.3, 1), height 2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+#issue.is-visible .bg .bgImage{
+    opacity: 1;
+    width: 100%;
+    height: 100%;
+    transition-delay: 2.5s, 3.1s, 3.1s;
 }
 #issue .inBox{
+    position: relative;
+    z-index: 4;
     height: 100%;
 }
+/* 階段 4：文字接在圖片放大動作後面淡入上移 */
 #issue .txtBox{
     height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 1.2s ease, transform 1.2s ease;
+}
+#issue.is-visible .txtBox{
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 5.2s;
 }
 #issue .txtBox .itemTitle{
     width: 100%;
-    padding-top: 120px;
+    padding-top: 140px;
     font-weight: 700;
     font-size: 20px;
     line-height: 28px;
@@ -31,7 +132,7 @@
 }
 #issue .txtBox .title{
     width: 100%;
-    padding-bottom: 60px;
+    padding-bottom: 200px;
 }
 #issue .txtBox .title p{
     font-weight: 700;

@@ -1,9 +1,41 @@
 ---
 import '../../styles/components/index/issue.css';
+
+// 格子大小依 .bg 16:9 的比例換算成正方形（9/64 = 14.0625%），跟 issue.css 的 wipeRow／bgImage 對齊
+// 垂直線用「半格」偏移（k+0.5），這樣正中間會是一整格、而不是一條線，才能跟 .bgImage 置中對齊
+const gridCellPercent = (100 * 9) / 64;
+const horizontalLines = [0, 25, 50, 75, 100];
+const verticalLines = [];
+for (let k = -4; k <= 3; k++) {
+    const pos = 50 + (k + 0.5) * gridCellPercent;
+    if (pos >= -0.01 && pos <= 100.01) verticalLines.push(Math.min(100, Math.max(0, pos)));
+}
+const gridLineStagger = 0.09;
 ---
 <section>
     <div id="issue">
         <div class="bg">
+            <div class="wipeStage">
+                <span class="wipeRow"></span>
+                <span class="wipeRow"></span>
+                <span class="wipeRow"></span>
+                <span class="wipeRow"></span>
+            </div>
+            <div class="gridLines">
+                {horizontalLines.map((pos, i) => (
+                    <span
+                        class="gridLine gridLine--h"
+                        style={`top:${pos}%; transition-delay:${(0.9 + i * gridLineStagger).toFixed(2)}s`}
+                    ></span>
+                ))}
+                {verticalLines.map((pos, i) => (
+                    <span
+                        class="gridLine gridLine--v"
+                        style={`left:${pos}%; transition-delay:${(0.9 + (horizontalLines.length + i) * gridLineStagger).toFixed(2)}s`}
+                    ></span>
+                ))}
+            </div>
+            <div class="bgImage"></div>
             <div class="inBox">
                 <div class="txtBox">
                     <div class="itemTitle">
@@ -104,3 +136,23 @@ import '../../styles/components/index/issue.css';
         </div>
     </div>
 </section>
+
+<script>
+    // ===== 獨家專題（#issue）進場動畫 =====
+    // 白畫面 → 階梯狀色塊由右往左收合成黑 → 格線背景 + 縮小的圖出現在正中間 → 圖放大到滿版、文字淡入
+    // rootMargin 下緣收到 -100%，讓判定範圍只剩「viewport 最頂端那一條線」，
+    // 區塊頂部要真正捲到頁面最上緣（置頂）才會觸發，而不是提早在還沒到頂時就播放。
+    // 觸發後就 unobserve，動畫只播放一次，之後不管怎麼捲動都不會再重播。
+    const issueEl = document.getElementById('issue');
+    if (issueEl) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    issueEl.classList.add('is-visible');
+                    observer.unobserve(issueEl);
+                }
+            });
+        }, { threshold: 0, rootMargin: '0px 0px -100% 0px' });
+        observer.observe(issueEl);
+    }
+</script>
