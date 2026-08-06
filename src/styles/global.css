@@ -382,3 +382,24 @@ img {
     80.01%, 100%{ opacity: 0; clip-path: inset(0 0 0 100%); }
 }
 /* 標題進場動畫 ed */
+
+/* 狀態圖示（放在 .img 裡共用的方形圖示元件，圖片由 modifier class 指定，位置/動畫由使用的地方各自決定）*/
+.statusIcon{
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    pointer-events: none;
+}
+.statusIcon.linkIcon{
+    background-image: url('/link-icon.svg');
+}
+.statusIcon.playIcon{
+    background-image: url('/play-icon.svg');
+}
+.statusIcon.scrollIcon{
+    background-image: url('/scroll-icon.svg');
+}
+/* 狀態圖示 ed */
