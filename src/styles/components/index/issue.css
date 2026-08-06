@@ -87,7 +87,11 @@
 /* 背景圖獨立成一層：階段 3 先以「一個格線的大小」淡入在正中間，階段 4 才放大到滿版 */
 /* inset:0 讓這個元素永遠跟 .bg 同樣大小，用 transform: scale() 縮放（而不是改 width/height），
    這樣 scale(1) 時一定精準貼齊 .bg 的邊界，不會因為 translate(-50%) 的百分比是相對「當下大小」算的而跑位、超出範圍。
-   transform-origin 固定在 (50%, 37.5%)（25~50% 那一格的正中央，跟橫向格線邊界對齊，避免卡在交界線上），
+   transform-origin 的 Y 值不是「目標格子的正中央」（那是常見誤解）：一個從 0~100% 縮放到某個
+   子區間 [a, a+cellSize] 的 transform，origin 要設在 a / (1 - scale) 才會讓縮小後的範圍精準對齊 [a, a+cellSize]，
+   而不是套用目標區間的中點。這裡 a=25%、scale=0.25，所以 origin-y = 25 / (1-0.25) = 33.333%
+   （之前誤用 37.5%，也就是 25~50% 那一格的中點，算出來的縮小狀態會偏移 +3.125 個百分點，跟格線對不齊）。
+   X 軸的目標區間剛好對稱於 50%，所以 origin-x 用 50% 是正確的，不需要另外套公式。
    縮放時這個點不會動，達到「從那一格長大到滿版」的效果 */
 #issue .bg .bgImage{
     position: absolute;
@@ -99,7 +103,7 @@
     background-repeat: no-repeat;
     opacity: 0;
     transform: scale(0.140625, 0.25);
-    transform-origin: 50% 37.5%;
+    transform-origin: 50% 33.333%;
     transition: opacity 0.9s ease, transform 2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 #issue.is-visible .bg .bgImage{

@@ -146,12 +146,10 @@ import '../../styles/components/index/crossover.css';
         let triggered = false;
         const trigger = () => {
             triggered = true;
+            crossoverEl.classList.add('is-visible');
             window.setTimeout(() => {
-                crossoverEl.classList.add('is-visible');
-                window.setTimeout(() => {
-                    crossoverEl.classList.add('content-visible');
-                }, 550);
-            }, 50);
+                crossoverEl.classList.add('content-visible');
+            }, 550);
         };
         if (Math.abs(crossoverEl.getBoundingClientRect().top) <= NEAR) {
             trigger();
