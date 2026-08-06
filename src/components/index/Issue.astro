@@ -146,19 +146,47 @@ const gridLineStagger = 0.09;
 <script>
     // ===== 獨家專題（#issue）進場動畫 =====
     // 白畫面 → 階梯狀色塊由右往左收合成黑 → 格線背景 + 縮小的圖出現在正中間 → 圖放大到滿版、文字淡入
-    // rootMargin 下緣收到 -100%，讓判定範圍只剩「viewport 最頂端那一條線」，
-    // 區塊頂部要真正捲到頁面最上緣（置頂）才會觸發，而不是提早在還沒到頂時就播放。
-    // 觸發後就 unobserve，動畫只播放一次，之後不管怎麼捲動都不會再重播。
+    // 用 requestAnimationFrame 每幀輪詢「區塊頂部與 viewport 頂端切齊」這一刻，而不是監聽 scroll 事件：
+    // 導覽列點擊是用 JS rAF 迴圈自訂緩動捲動（見 Header.astro），搭配全域 scroll-behavior: smooth，
+    // 純程式觸發的捲動在部分瀏覽器下 scroll 事件不一定會每幀都確實觸發，改成每幀主動量測最準確。
+    // 單純判斷 top <= 0 在由下往上捲（從區塊下方進場）時會太早觸發——區塊只要露出一點點、
+    // top 就已經是負值了，並非真正到頂那一刻。
+    // 也不能單純判斷「top 跨越 0」（正變負或負變正）：導覽列點擊的自訂緩動捲動是精準地「趨近」
+    // top = 0 這個目標並停在那裡，不會真的越過 0 到另一側，這種情況永遠不會發生正負交叉。
+    // 改成偵測 top 第一次進入「接近 0（±2px 內）」這個小範圍，兩種情況都能正確涵蓋；
+    // 同時保留正負交叉判斷，避免捲動幅度較大、一次就跳過這個小範圍的極端情況漏判。
+    // 置頂後停留 0.1 秒再開始播放動畫，讓使用者先看到區塊到位，而不是一到頂就馬上動。
+    // 觸發後就停止輪詢，動畫只播放一次，之後不管怎麼捲動都不會再重播。
+    // 頁面載入/重新整理當下如果就已經停留在區塊頂部（例如瀏覽器還原了捲動位置），直接觸發一次，
+    // 不用等使用者先捲遠、再捲回來才播放。
     const issueEl = document.getElementById('issue');
     if (issueEl) {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    issueEl.classList.add('is-visible');
-                    observer.unobserve(issueEl);
+        const NEAR = 2;
+        let triggered = false;
+        const trigger = () => {
+            triggered = true;
+            window.setTimeout(() => {
+                issueEl.classList.add('is-visible');
+            }, 100);
+        };
+        if (Math.abs(issueEl.getBoundingClientRect().top) <= NEAR) {
+            trigger();
+        } else {
+            let prevTop = issueEl.getBoundingClientRect().top;
+            const poll = () => {
+                if (triggered) return;
+                const top = issueEl.getBoundingClientRect().top;
+                const wasFar = Math.abs(prevTop) > NEAR;
+                const nowNear = Math.abs(top) <= NEAR;
+                const signFlipped = (prevTop > NEAR && top < -NEAR) || (prevTop < -NEAR && top > NEAR);
+                if (wasFar && (nowNear || signFlipped)) {
+                    trigger();
+                    return;
                 }
-            });
-        }, { threshold: 0, rootMargin: '0px 0px -100% 0px' });
-        observer.observe(issueEl);
+                prevTop = top;
+                requestAnimationFrame(poll);
+            };
+            requestAnimationFrame(poll);
+        }
     }
 </script>

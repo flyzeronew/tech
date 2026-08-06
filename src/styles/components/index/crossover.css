@@ -2,6 +2,8 @@
 #crossover{
     background-color: #242EF7;
     color: #fff;
+    position: relative;
+    overflow: hidden;
 }
 #crossover .inBox{
     padding: 120px 0;
@@ -41,4 +43,50 @@
 #crossover .newslist ul li .title{
     color: #fff ;
 }
+
+/* 進場動態 */
+/* 階段 1：白色遮罩蓋住整個區塊，觸發後往上收合、露出底下的藍色內容 */
+#crossover .wipeOverlay{
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background-color: #fff;
+    transform: translateY(0);
+    transition: transform 0.65s ease-out;
+    pointer-events: none;
+}
+#crossover.is-visible .wipeOverlay{
+    transform: translateY(-100%);
+}
+
+/* 階段 2：標題套用跟頁首第一卡相同的 .animLabel 掃描動畫，遮罩收合到差不多時才開始播放 */
+/* .animLabel 的掃描色塊預設是品牌藍，在這裡背景本身就是品牌藍會被吃掉，改成白色才看得出掃過的效果 */
+#crossover .animLabel p::before{
+    background-color: #fff;
+}
+#crossover .animLabel p,
+#crossover .animLabel p::before{
+    animation-play-state: paused;
+}
+#crossover.content-visible .animLabel p,
+#crossover.content-visible .animLabel p::before{
+    animation-play-state: running;
+}
+
+/* 階段 3：新聞清單由上而下逐項淡入上移 */
+#crossover .newslist ul li{
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+}
+#crossover.content-visible .newslist ul li{
+    opacity: 1;
+    transform: translateY(0);
+}
+#crossover .newslist ul li:nth-child(1){ transition-delay: 0.05s; }
+#crossover .newslist ul li:nth-child(2){ transition-delay: 0.14s; }
+#crossover .newslist ul li:nth-child(3){ transition-delay: 0.23s; }
+#crossover .newslist ul li:nth-child(4){ transition-delay: 0.32s; }
+#crossover .newslist ul li:nth-child(5){ transition-delay: 0.41s; }
+#crossover .newslist ul li:nth-child(6){ transition-delay: 0.50s; }
 /* 科技與財經 ed*/

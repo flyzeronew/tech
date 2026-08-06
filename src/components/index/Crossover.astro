@@ -3,9 +3,10 @@ import '../../styles/components/index/crossover.css';
 ---
 <section>
     <div id="crossover">
+        <div class="wipeOverlay"></div>
         <div class="inBox">
             <div class="titleBox">
-                <div class="itemTitle">
+                <div class="itemTitle animLabel">
                     <p>科技×財經觀點</p>
                     <p>THE CROSSOVER</p>
                 </div>
@@ -124,3 +125,52 @@ import '../../styles/components/index/crossover.css';
         </div>
     </div>
 </section>
+
+<script>
+    // ===== 科技×財經觀點（#crossover）進場動畫 =====
+    // 1. 白色遮罩往上收合，露出底下已經完成排版的藍色區塊
+    // 2. 遮罩收合得差不多後，標題套用跟頁首第一卡相同的 .animLabel 掃描動畫
+    // 3. 新聞清單由上而下逐項淡入上移
+    // 跟 #issue 用同一套規則：用 requestAnimationFrame 每幀輪詢，而不是監聽 scroll 事件
+    // （導覽列用 JS 自訂緩動捲動，純程式觸發的捲動 scroll 事件不一定每幀都確實觸發，每幀主動量測才準確）。
+    // 不能單純判斷「top 跨越 0」：導覽列點擊的自訂緩動捲動是精準地「趨近」top = 0 這個目標並停在那裡，
+    // 不會真的越過 0 到另一側，這種情況永遠不會發生正負交叉。改成偵測 top 第一次進入「接近 0（±2px 內）」
+    // 這個小範圍，同時保留正負交叉判斷避免大幅捲動一次跳過這個小範圍的極端情況漏判。
+    // 不管是由上往下捲、由下往上捲，還是點導覽列用程式捲動過來，都只在區塊頂部真正切齊 viewport 頂端時觸發。
+    // 置頂後停留 0.1 秒再開始播放動畫，讓使用者先看到區塊到位，而不是一到頂就馬上動。
+    // 頁面載入/重新整理當下如果就已經停留在區塊頂部（例如瀏覽器還原了捲動位置），直接觸發一次，
+    // 不用等使用者先捲遠、再捲回來才播放。
+    const crossoverEl = document.getElementById('crossover');
+    if (crossoverEl) {
+        const NEAR = 2;
+        let triggered = false;
+        const trigger = () => {
+            triggered = true;
+            window.setTimeout(() => {
+                crossoverEl.classList.add('is-visible');
+                window.setTimeout(() => {
+                    crossoverEl.classList.add('content-visible');
+                }, 550);
+            }, 100);
+        };
+        if (Math.abs(crossoverEl.getBoundingClientRect().top) <= NEAR) {
+            trigger();
+        } else {
+            let prevTop = crossoverEl.getBoundingClientRect().top;
+            const poll = () => {
+                if (triggered) return;
+                const top = crossoverEl.getBoundingClientRect().top;
+                const wasFar = Math.abs(prevTop) > NEAR;
+                const nowNear = Math.abs(top) <= NEAR;
+                const signFlipped = (prevTop > NEAR && top < -NEAR) || (prevTop < -NEAR && top > NEAR);
+                if (wasFar && (nowNear || signFlipped)) {
+                    trigger();
+                    return;
+                }
+                prevTop = top;
+                requestAnimationFrame(poll);
+            };
+            requestAnimationFrame(poll);
+        }
+    }
+</script>

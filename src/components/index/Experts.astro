@@ -3,7 +3,9 @@ import '../../styles/components/index/experts.css';
 ---
 <section>
     <div id="experts">
+        <div class="fadeOverlay"></div>
         <div class="bg">
+            <div class="mask"></div>
             <div class="inBox">
                 <div class="flex justify-between">
                     <div class="titleBox">
@@ -159,3 +161,33 @@ import '../../styles/components/index/experts.css';
         </div>
     </div>
 </section>
+
+<script>
+    // ===== 專家觀點（#experts）離場漸變 =====
+    // 精選出版品區塊頂部一碰到視窗底部（也就是 #experts 底部一進入視窗），#experts 就開始漸漸
+    // 變成精選出版品的底色（白色），捲到 #experts 完全離開視窗時全白，有消失接續下去的感覺。
+    // 這是跟捲動位置直接掛鉤的連續效果（不是捲過一次就播放完的動畫），所以用 rAF 迴圈每幀
+    // 直接算淡色進度，捲動時即時同步、往回捲也會跟著變淡。
+    (() => {
+        const expertsEl = document.getElementById('experts');
+        const overlay = expertsEl?.querySelector<HTMLElement>('.fadeOverlay');
+        if (!expertsEl || !overlay) return;
+
+        const SPEED = 6; // 數字越大，變白的速度越快（達到全白所需的捲動距離越短）
+
+        function update() {
+            const bottom = expertsEl!.getBoundingClientRect().bottom;
+            // 起點不變：#experts 底部（＝ #publications 頂部）一進入視窗（bottom <= innerHeight）就開始算進度，
+            // 但只要再捲過 innerHeight / SPEED 的距離就會到全白，不用等 #experts 完全離開視窗。
+            const fadeZone = window.innerHeight;
+            const fadeDistance = fadeZone / SPEED;
+            const progress = Math.min(Math.max((fadeZone - bottom) / fadeDistance, 0), 1);
+            // 開根號讓白色在捲動剛開始的階段就拉高不透明度（不是線性等比例增加），
+            // 起點/終點不變（0 還是 0、1 還是 1），中間段的白會比原本更快、更濃。
+            const opacity = Math.pow(progress, 0.6);
+            overlay!.style.opacity = String(opacity);
+            requestAnimationFrame(update);
+        }
+        requestAnimationFrame(update);
+    })();
+</script>
