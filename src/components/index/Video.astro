@@ -12,44 +12,53 @@ import '../../styles/components/index/video.css';
                 <div class="list">
                     <div class="item">
                         <div class="img">
+                            <div class="statusIcon playIcon"></div>
                             <img width="650" height="354" src="/video01.jpg" alt="img" loading="lazy" />
                         </div>
                     </div>
                     <div class="item">
                         <div class="img">
+                            <div class="statusIcon playIcon"></div>
                             <img width="650" height="354" src="/video02.jpg" alt="img" loading="lazy" />
                         </div>
                     </div>
                     <div class="item">
                         <div class="img">
+                            <div class="statusIcon playIcon"></div>
                             <img width="650" height="354" src="/video03.jpg" alt="img" loading="lazy" />
                         </div>
                     </div>
                     <div class="item">
                         <div class="img">
+                            <div class="statusIcon playIcon"></div>
                             <img width="650" height="354" src="/video04.jpg" alt="img" loading="lazy" />
                         </div>
                     </div>
                     <div class="item">
                         <div class="img">
+                            <div class="statusIcon playIcon"></div>
                             <img width="650" height="354" src="/video03.jpg" alt="img" loading="lazy" />
                         </div>
                     </div>
                     <div class="item">
                         <div class="img">
+                            <div class="statusIcon playIcon"></div>
                             <img width="650" height="354" src="/video05.jpg" alt="img" loading="lazy" />
                         </div>
                     </div>
                     <div class="item">
                         <div class="img">
+                            <div class="statusIcon playIcon"></div>
                             <img width="650" height="354" src="/video01.jpg" alt="img" loading="lazy" />
                         </div>
                     </div>
                     <div class="item">
                         <div class="img">
+                            <div class="statusIcon playIcon"></div>
                             <img width="650" height="354" src="/video02.jpg" alt="img" loading="lazy" />
                         </div>
                     </div>
+                    <div class="videoBlob"></div>
                 </div>
 
                 <div class="linkList">
@@ -77,3 +86,101 @@ import '../../styles/components/index/video.css';
 
     </div>
 </section>
+
+<script>
+    // ===== 精選影音（#video）背景藍色光暈 =====
+    // 1. 捲動到區塊頂端（跟 #issue／#crossover／#publications 同一套「頂部切齊」判斷）時，
+    //    光暈從畫面外右上方滑進來，先到畫面正中間，停一下再移到第一張圖片，才開放 hover。
+    // 2. hover 到任一張圖片時，光暈平滑移動到那張圖片底下置中。
+    const videoEl = document.getElementById('video');
+    const list = videoEl?.querySelector<HTMLElement>('.list');
+    const blob = list?.querySelector<HTMLElement>('.videoBlob');
+    const items = list ? Array.from(list.querySelectorAll<HTMLElement>('.item')) : [];
+
+    if (videoEl && list && blob && items.length) {
+        // 把光暈置中在某個「目標矩形」正中間所需的 left/top（用 % 表示，相對 .list）
+        function centerOn(targetLeft: number, targetTop: number, targetWidth: number, targetHeight: number) {
+            const listRect = list!.getBoundingClientRect();
+            const blobRect = blob!.getBoundingClientRect();
+            const centerX = targetLeft + targetWidth / 2;
+            const centerY = targetTop + targetHeight / 2;
+            const left = ((centerX - blobRect.width / 2) / listRect.width) * 100;
+            const top = ((centerY - blobRect.height / 2) / listRect.height) * 100;
+            blob!.style.left = `${left}%`;
+            blob!.style.top = `${top}%`;
+        }
+
+        function moveBlobTo(item: HTMLElement) {
+            const listRect = list!.getBoundingClientRect();
+            const itemRect = item.getBoundingClientRect();
+            centerOn(itemRect.left - listRect.left, itemRect.top - listRect.top, itemRect.width, itemRect.height);
+        }
+
+        function moveBlobToCenter() {
+            const listRect = list!.getBoundingClientRect();
+            centerOn(0, 0, listRect.width, listRect.height);
+        }
+
+        let hoverEnabled = false;
+        items.forEach((item) => {
+            item.addEventListener('mouseenter', () => {
+                if (hoverEnabled) moveBlobTo(item);
+            });
+        });
+        list.addEventListener('mouseleave', () => {
+            if (hoverEnabled && items[0]) moveBlobTo(items[0]);
+        });
+
+        function playEnter() {
+            // 先瞬間（關掉 transition）把光暈擺到「畫面外右上方」的起始位置，
+            // 強制 reflow 讓這個瞬間定位先生效，接著恢復 transition，會是從右上往下滑入的效果。
+            blob!.style.transition = 'none';
+            blob!.style.left = '70%';
+            blob!.style.top = '-50%';
+            blob!.style.opacity = '0';
+            void blob!.offsetWidth; // 強制 reflow
+            blob!.style.transition = '';
+
+            // 第一段：滑到畫面正中間、同時淡入
+            requestAnimationFrame(() => {
+                moveBlobToCenter();
+                blob!.style.opacity = '1';
+            });
+
+            // 第二段：停留一下之後，才接著移到第一張圖片
+            window.setTimeout(() => {
+                moveBlobTo(items[0]);
+            }, 700);
+
+            // 兩段動畫都播完（跟 CSS transition 時間 0.5s 對齊，留一點餘裕）才開放 hover
+            window.setTimeout(() => { hoverEnabled = true; }, 1300);
+        }
+
+        // 捲動到區塊頂端才觸發：用 requestAnimationFrame 每幀輪詢區塊頂部是否進入
+        // 「接近 0（±2px 內）」的範圍，同時保留正負交叉判斷避免大幅捲動時漏判；
+        // 頁面載入/重新整理當下如果就已經停留在區塊頂部，直接觸發一次。
+        const NEAR = 2;
+        let triggered = false;
+        if (Math.abs(videoEl.getBoundingClientRect().top) <= NEAR) {
+            playEnter();
+            triggered = true;
+        } else {
+            let prevTop = videoEl.getBoundingClientRect().top;
+            const poll = () => {
+                if (triggered) return;
+                const top = videoEl!.getBoundingClientRect().top;
+                const wasFar = Math.abs(prevTop) > NEAR;
+                const nowNear = Math.abs(top) <= NEAR;
+                const signFlipped = (prevTop > NEAR && top < -NEAR) || (prevTop < -NEAR && top > NEAR);
+                if (wasFar && (nowNear || signFlipped)) {
+                    triggered = true;
+                    playEnter();
+                    return;
+                }
+                prevTop = top;
+                requestAnimationFrame(poll);
+            };
+            requestAnimationFrame(poll);
+        }
+    }
+</script>

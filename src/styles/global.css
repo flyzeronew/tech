@@ -393,7 +393,18 @@ img {
     background-position: center;
     pointer-events: none;
 }
-.statusIcon.linkIcon{
+.statusIcon{
+    right: -50px;
+    bottom: -50px;
+    z-index: 2;
+    transition: right 0.5s ease, bottom 0.5s ease;
+    background-color: #fff;
+}
+.img:hover .statusIcon{
+    right: 0; 
+    bottom: 0;
+}
+.statusIcon.linkIcon{    
     background-image: url('/link-icon.svg');
 }
 .statusIcon.playIcon{

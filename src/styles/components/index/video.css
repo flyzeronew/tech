@@ -22,18 +22,41 @@
     width: 100%;
     aspect-ratio: 1140 / 1605;
 }
+/* 背景藍色光暈：正圓形（用 aspect-ratio 讓實際像素寬高相等，而不是跟著 .list 非正方形的
+   長寬比硬套百分比，那樣寬高百分比相等也不會是正圓）。大小固定，跟著 hover 的圖片平滑移動到
+   它底下置中，不隨圖片大小縮放。寬度比清單裡最寬的圖片（48.41%）再大一點，確保蓋到任何一張
+   圖片時邊緣都會露出來（换算成實際像素後，寬度比高度的需求更吃緊，所以用寬度當基準）。
+   中間提高不透明度，讓區塊本身更明顯 */
+#video .list .videoBlob{
+    position: absolute;
+    width: 56%;
+    aspect-ratio: 1 / 1;
+    z-index: 0;
+    background: radial-gradient(circle, rgba(36, 46, 247, 0.8) 0%, rgba(36, 46, 247, 0.5) 45%, rgba(36, 46, 247, 0) 75%);
+    filter: blur(30px);
+    opacity: 0;
+    pointer-events: none;
+    transition: left 0.5s ease, top 0.5s ease, opacity 0.5s ease;
+}
 #video .list .item{
     cursor: pointer;
     position: absolute;
+    z-index: 1;
 }
 #video .list .item .img{
+    position: relative;
     width: 100%;
-    height: 100%;
+    height: auto;
+    overflow: hidden;
 }
 #video .list .item .img img{
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.3s ease;
+}
+#video .list .item:hover .img{
+    transform: scale(1.05);
 }
 #video .list .item:nth-child(1){
     left: 0%;

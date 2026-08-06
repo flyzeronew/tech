@@ -209,7 +209,6 @@
     height: 100%;
     object-fit: cover;
 }
-/* hover 時圖片蓋一層黑色半透明遮罩、右下角浮出 .statusIcon（共用元件，定義在 global.css） */
 #issue .issueList .list .item .img::before{
     content: "";
     position: absolute;
@@ -220,18 +219,8 @@
     transition: opacity 0.3s ease;
     pointer-events: none;
 }
-#issue .issueList .list .item .img .statusIcon{
-    right: -100px; /* 1. 起始位置：往右藏出畫面外的距離 */
-    bottom: -100px; /* 2. 起始位置：往下藏出畫面外的距離 */
-    z-index: 2;
-    transition: right 0.3s ease, bottom 0.3s ease;
-}
 #issue .issueList .list .item:hover .img::before{
     opacity: 1;
-}
-#issue .issueList .list .item:hover .img .statusIcon{
-    right: 0; /* 1. hover 後貼齊右邊 */
-    bottom: 0; /* 2. hover 後貼齊底部 */
 }
 #issue .issueList .list .col:first-child .item:first-child .img{
     aspect-ratio: 1/1;
