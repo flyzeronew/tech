@@ -130,6 +130,9 @@
     margin: 0 auto;
     background-color: #242EF7;
 }
+#video .linkList .btn:hover{
+    background-color: #2029e0;
+}
 #video .linkList .btn span{
     font-weight: 700;
     font-size: 16px;

@@ -97,6 +97,11 @@
     background: none;
     cursor: pointer;
     font-family: var(--font-sans);
+    transition: background-color 0.3s ease;
+}
+#partners .submitBtn:hover{
+    background-color: rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
 }
 #partners .submitBtn span{
     flex: 1;

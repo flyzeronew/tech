@@ -6,7 +6,7 @@ import '../styles/components/header.css';
         <div class="box">
             <div class="navBox">
                 <div class="logo">
-                    <img width="164" height="24" src="/tvbs-logo.svg" alt="logo" />
+                    <img width="165" height="24" src="/tvbs-logo.svg" alt="logo" />
                 </div>
                 <div class="menu">
                     <ul>
@@ -100,4 +100,70 @@ import '../styles/components/header.css';
             requestAnimationFrame(tick);
         });
     });
+</script>
+
+<script>
+    // ===== 導覽列樣式隨滾動切換 =====
+    // 置頂：維持原狀（白色 logo/箭頭，無 type class）
+    // 捲動後，依「導覽列所在位置」底下的區塊是深色／淺色背景，切換 type1（深色背景，白字白圖）
+    // 或 type2（淺色背景，黑字黑圖），並同步替換 logo／箭頭圖檔
+    const nav = document.querySelector<HTMLElement>('header nav');
+    const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-nav]'));
+    const logoImg = nav?.querySelector<HTMLImageElement>('.logo img');
+    const arrawImg = nav?.querySelector<HTMLImageElement>('.menu a.dropdown .arraw img');
+
+    if (nav && logoImg && arrawImg && sections.length) {
+        const LOGO_WHITE = '/tvbs-logo.svg';
+        const LOGO_BLACK = '/tvbs-logo-b.svg';
+        const ARRAW_WHITE = '/direction-down.svg';
+        const ARRAW_BLACK = '/direction-down-b.svg';
+        const NEAR = 2; // 跟 Video.astro 的置頂判斷一致，避免抖動誤判
+
+        let currentState: 'top' | 'dark' | 'light' | null = null;
+
+        function applyState(state: 'top' | 'dark' | 'light') {
+            if (state === currentState) return;
+            currentState = state;
+            nav!.classList.remove('type1', 'type2');
+            if (state === 'top') {
+                logoImg!.src = LOGO_WHITE;
+                arrawImg!.src = ARRAW_WHITE;
+            } else if (state === 'dark') {
+                nav!.classList.add('type1');
+                logoImg!.src = LOGO_WHITE;
+                arrawImg!.src = ARRAW_WHITE;
+            } else {
+                nav!.classList.add('type2');
+                logoImg!.src = LOGO_BLACK;
+                arrawImg!.src = ARRAW_BLACK;
+            }
+        }
+
+        function update() {
+            if (Math.abs(window.scrollY) <= NEAR) {
+                applyState('top');
+                return;
+            }
+            const probeY = nav!.getBoundingClientRect().height / 2;
+            const current = sections.find((sec) => {
+                const rect = sec.getBoundingClientRect();
+                return rect.top <= probeY && rect.bottom > probeY;
+            });
+            applyState(current?.dataset.nav === 'dark' ? 'dark' : 'light');
+        }
+
+        let ticking = false;
+        function onScroll() {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(() => {
+                update();
+                ticking = false;
+            });
+        }
+
+        update();
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onScroll);
+    }
 </script>

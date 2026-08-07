@@ -22,6 +22,9 @@
 #crossover .titleBox .more a{
     border: 1px solid #fff;
 }
+#crossover .titleBox .more a:hover{
+    background-color: rgba(255, 255, 255, 0.1);
+}
 #crossover .titleBox .more a span{
     color: #fff;
     padding: 0 60px;

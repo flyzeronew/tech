@@ -13,8 +13,7 @@ header nav .navBox{
     width: max-content;
     display: flex;
     align-items: stretch;
-    overflow: visible;
-    background-color: #fff;
+    overflow: visible;    
     min-height: max-content;
     margin: 0 auto;
 }
@@ -44,6 +43,7 @@ header nav .menu a{
     font-size: 20px;
     letter-spacing: 0%;
     text-align: center;
+    background-color: #fff;
     color: #000;
 }
 header nav .menu a.act{
@@ -79,8 +79,7 @@ header nav .menu .subMenu{
     left: 0;
     width: 100%;
     min-width: max-content;
-    background-color: #fff;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    background-color: rgba(255, 255, 255, 1);     
 }
 header nav .menu li.hasSub:hover .subMenu,
 header nav .menu li.hasSub:focus-within .subMenu{
@@ -95,7 +94,7 @@ header nav .menu .subMenu a{
     text-align: center;
 }
 header nav .menu .subMenu a:hover{
-    background-color: rgba(0, 0, 0, 0.1)
+    background-color: rgba(0, 0, 0, 0.2)
 }
 header nav .switch{
     display: flex;
@@ -104,6 +103,7 @@ header nav .switch{
     gap: 10px;
     padding: 16px 24px;
     margin-left: auto;
+    background-color: #fff;
 }
 header nav .switch span{
     font-weight: 400;
@@ -148,3 +148,37 @@ header nav .switch .btn input:checked + .slider{
 header nav .switch .btn input:checked + .slider::before{
     transform: translateX(24px);
 }
+
+/* 導覽列變色 */
+header nav.type1 .menu a,
+header nav.type1 .menu a.act,
+header nav.type1 .menu a:hover.act,
+header nav.type1 .switch,
+header nav.type1 .logo{
+    background-color: transparent;
+    color: #fff;
+}
+header nav.type2 .menu a,
+header nav.type2 .menu a.act,
+header nav.type2 .menu a:hover.act,
+header nav.type2 .switch,
+header nav.type2 .logo{
+    background-color: transparent;
+    color: #000;
+}
+header nav.type1 .menu .subMenu{
+    background-color: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    color: #fff;
+    isolation: isolate;
+}
+header nav.type2 .menu .subMenu{
+    background-color: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    color: #000;
+    isolation: isolate;
+}
+
+/* 導覽列變色 END */
+
+
