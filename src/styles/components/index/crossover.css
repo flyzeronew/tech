@@ -6,7 +6,7 @@
     overflow: hidden;
 }
 #crossover .inBox{
-    padding: 120px 0;
+    padding: 150px 0 60px;
 }
 #crossover .itemTitle{
     font-weight: 700;
@@ -93,3 +93,7 @@
 #crossover .newslist ul li:nth-child(5){ transition-delay: 0.41s; }
 #crossover .newslist ul li:nth-child(6){ transition-delay: 0.50s; }
 /* 科技與財經 ed*/
+
+@media (max-width:1279px) {
+
+}

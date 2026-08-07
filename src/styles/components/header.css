@@ -149,36 +149,171 @@ header nav .switch .btn input:checked + .slider::before{
     transform: translateX(24px);
 }
 
-/* 導覽列變色 */
-header nav.type1 .menu a,
-header nav.type1 .menu a.act,
-header nav.type1 .menu a:hover.act,
-header nav.type1 .switch,
-header nav.type1 .logo{
+/* pc導覽列變色 */
+header nav .pc.type1 .menu a,
+header nav .pc.type1 .menu a.act,
+header nav .pc.type1 .menu a:hover.act,
+header nav .pc.type1 .switch,
+header nav .pc.type1 .logo{
     background-color: transparent;
     color: #fff;
 }
-header nav.type2 .menu a,
-header nav.type2 .menu a.act,
-header nav.type2 .menu a:hover.act,
-header nav.type2 .switch,
-header nav.type2 .logo{
+header nav .pc.type2 .menu a,
+header nav .pc.type2 .menu a.act,
+header nav .pc.type2 .menu a:hover.act,
+header nav .pc.type2 .switch,
+header nav .pc.type2 .logo{
     background-color: transparent;
     color: #000;
 }
-header nav.type1 .menu .subMenu{
+header nav .pc.type1 .menu .subMenu{
     background-color: rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
     color: #fff;
     isolation: isolate;
 }
-header nav.type2 .menu .subMenu{
+header nav .pc.type2 .menu .subMenu{
     background-color: rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(10px);
     color: #000;
     isolation: isolate;
 }
 
-/* 導覽列變色 END */
+/* pc導覽列變色 END */
 
+/* 手機板導覽列樣式 */
+header nav .mobile .bar{
+    width: 100%;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+    backdrop-filter: none;
+    box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.1);
+}
+header nav .mobile .logo{
+    width: 137px;
+    aspect-ratio: 137 / 20;
+    display: flex;
+    align-items: center;
+    background-color: #242EF7;
+    padding: 18px 16px;
+    border-left: 16px #000 solid;
+}
+header nav .mobile .burger {
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    padding: 12px 16px;
+}
+header nav .mobile .burger .open {
+    display: block;
+}
+header nav .mobile .burger .close {
+    display: none;
+}
+header nav .mobile.is-open .burger .open {
+    display: none;
+}
+header nav .mobile.is-open .burger .close {
+    display: block;
+}
+header nav .mobile .menuBox{
+    display: none;
+    z-index: 10;
+    width: 100vw;
+    height: 100vh;
+    background-color: #fff;
+    padding:40px 32px;
+    overflow-y: auto;
+}
+header nav .mobile.is-open .menuBox{
+    display: block;
+}
+header nav .mobile .menuBox li{
+    padding: 16px 0;
+}
+header nav .mobile .menuBox a{
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 30px;
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+}
+header nav .mobile .menuBox li.act a{
+    color: #242EF7;
+}
+header nav .mobile .menuBox li.act .arraw{
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s;
+    background-image: url('/direction-down-blue.svg');
+}
+header nav .mobile .menuBox .subMenu{
+    display: none;
+    flex-direction: column;
+}
+header nav .mobile .menuBox li.hasSub.is-open .subMenu{
+    display: flex;
+}
+header nav .mobile .menuBox li.hasSub.is-open .arraw{
+    transform: rotate(180deg);
+}
+header nav .mobile .menuBox .subMenu a{
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24px;
+    padding: 12px 0;
+}
+/* 手機板導覽列樣式 END */
+
+header .menuHeight{
+    height: 0;
+}
+@media (max-width: 1279px) {
+    header nav .logo,
+    header nav .menu a,
+    header nav .switch,
+    header nav .menu .subMenu a
+    {
+        padding: 10px 18px;
+    }
+    header nav .menu .subMenu a {
+        font-size: 16px;
+        font-weight: 700;
+    }
+    header nav .logo {
+        width: 100px;
+    }
+    header nav .menu a {
+        font-size: 16px;
+    }
+    header nav .switch span {
+        font-size: 12px;
+    }
+    header nav .switch .btn .slider::before {
+        top: 2px;
+        left: 2px;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+    }
+    header nav .switch .btn input:checked + .slider::before{
+        transform: translateX(15px);
+    }
+    header nav .switch .btn {
+        width: 35px;
+        height: 20px;
+    }
+}
+@media (max-width: 1023px) {
+    header .menuHeight{
+        height: 56px;
+    }
+}
 

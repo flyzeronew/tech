@@ -112,19 +112,26 @@ img {
     height: auto;
 }
 
-
+.pc{
+    display: block;
+}
+.mobile{
+    display: none;
+}
+@media (max-width:1023px) {
+    .pc{
+        display: none;
+    }
+    .mobile{
+        display: block;
+    }
+}
 /*外框*/
 .frameBox {
     width: 1440px;
     margin: 0 auto;
     box-sizing: border-box;
     overflow: hidden;
-}
-.inBox {
-    width: 1280px;
-    margin: 0 auto;
-    box-sizing: border-box;
-    position: relative;
 }
 @media (max-width:1599px) {
     .frameBox {
@@ -148,6 +155,25 @@ img {
     }
 }
 /*外框*/
+
+/* 內框 */
+.inBox {
+    width: 1280px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    position: relative;
+}
+@media (max-width:1279px) {
+    .inBox {
+        width:960px;
+    }
+}
+@media (max-width:1023px) {
+    .inBox {
+        width:100%;
+    }
+}
+/* 內框 ed*/
 
 /* 看更多 */
 .more a{
@@ -264,7 +290,6 @@ img {
 }
 .newslist ul li .img{
     width: 96px;
-    aspect-ratio: 16/9;
 }
 .newslist ul li .arraw img{
     width: 50%;
@@ -302,7 +327,6 @@ img {
     display: none;
 }
 .newslist.type2 ul li .news .titleBox .title{
-    height: 120px;
     font-weight: 700;
     font-size: 22px;
     line-height: 30px;
@@ -322,6 +346,37 @@ img {
 .newslist.type2 ul li .news .titleBox{
     width: 70%;
     align-items: flex-start;
+}
+@media (max-width:1279px) {
+    .newslist ul li .date{
+        width: 100px;
+    }
+    .newslist.type2 ul li a {
+        padding: 0 15px;
+    }
+    .newslist.type2 ul li {
+        column-gap: 15px;
+        padding: 15px 0;
+    }
+}
+
+@media (max-width:1023px) {
+    .newslist.type2 ul li{
+        width: 100%;
+    }
+    .newslist.type2 ul li a{
+        padding:0;
+    }
+    .newslist{
+        padding: 0 40px;
+    }
+    .newslist ul li .arraw{
+        display: none;
+    }
+    .newslist.type2 ul li .news .titleBox .title{
+        height: auto;
+    }
+
 }
 
 /* 議題樣式 ed*/

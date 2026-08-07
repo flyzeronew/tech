@@ -13,9 +13,6 @@
 #hero .kv .txtBox .inBox .itemTitle{
     width: 40%;
 }
-#hero .kv .txtBox .inBox .itemTitle{
-    width: 40%;
-}
 #hero .kv .txtBox .inBox .newsBox{
     width: 60%;
 }
@@ -46,7 +43,7 @@
     font-size: 22px;
     line-height: 30px;
     letter-spacing: 0%;
-    margin-bottom: 30px;
+    margin-bottom: 32px;
 }
 #hero .newslist ul li{
     border-bottom:#50514F 1px solid;
@@ -63,5 +60,38 @@
     font-size: 28px;
     line-height: 40px;
     letter-spacing: 0%;
+}
+@media (max-width:1279px) {
+    #hero .kv .txtBox .inBox .newsBox .title {
+        font-size: 32px;
+        line-height: 40px;
+    }
+    #hero .kv .txtBox .inBox .newsBox .description {
+        font-size: 18px;
+        line-height: 24px;
+        margin-bottom: 32px;
+    }
+    #hero .newslist ul li .titleBox .title {
+        font-size: 18px;
+        line-height:normal;
+    }
+    #hero .kv .txtBox .inBox {
+        margin-bottom: 60px;
+    }
+}
+@media (max-width:1023px) {
+    #hero .kv .txtBox .inBox{
+        display: block;
+        padding: 0 40px;
+        margin-bottom: 60px;
+    }
+    #hero .kv .txtBox .inBox .itemTitle,
+    #hero .kv .txtBox .inBox .newsBox{
+        width: 100%;
+    }
+    #hero .kv .txtBox .inBox .itemTitle{
+        margin-bottom: 20px;
+    }
+
 }
 /* 頭條 ed */

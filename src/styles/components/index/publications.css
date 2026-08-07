@@ -4,7 +4,7 @@
     color: #000;
 }
 #publications .inBox{
-    padding: 120px 0;
+    padding: 150px 0;
 }
 #publications .titleBox{
     display: flex;
@@ -66,6 +66,7 @@
     cursor: grab;
     user-select: none;
     padding-bottom: 30px;
+    touch-action: pan-y;
 }
 #publications .books.dragging{
     cursor: grabbing;
@@ -131,5 +132,10 @@
 }
 #publications .books .book.real .txtBox .more a .arraw img{
     transform: rotate(0deg);
+}
+@media (max-width:1279px) {
+    #publications .books {
+        zoom: 0.85;
+    }
 }
 /* 精選出版品 ed*/

@@ -200,6 +200,7 @@ import '../../styles/components/index/publications.css';
         books.addEventListener('dragstart', (e) => e.preventDefault());
 
         books.addEventListener('pointerdown', (e) => {
+            if (e.pointerType === 'touch') return; // 手機／觸控裝置禁止手指滑動捲動，只保留自動捲動與左右按鈕
             isDown = true;
             books.classList.add('dragging');
             startX = e.clientX;

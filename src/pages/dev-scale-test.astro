@@ -1,0 +1,28 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Publications from '../components/index/Publications.astro';
+---
+<Layout title="Scale Test">
+    <Publications />
+</Layout>
+<script>
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            const books = document.querySelector<HTMLElement>('#publications .books');
+            const debug = document.createElement('pre');
+            debug.style.cssText = 'position:fixed;top:10px;left:10px;background:#0f0;z-index:999;font-size:14px;padding:8px;';
+            document.body.appendChild(debug);
+            if (!books) { debug.textContent = 'missing'; return; }
+            const before = books.scrollLeft;
+            books.scrollLeft = 300; // 直接同步設定，繞過 rAF 動畫，單純驗證縮放後容器可正常捲動
+            const after = books.scrollLeft;
+            debug.textContent = JSON.stringify({
+                zoom: getComputedStyle(books).zoom,
+                scrollWidth: books.scrollWidth,
+                clientWidth: books.clientWidth,
+                before,
+                afterSetScrollLeft300: after,
+            }, null, 2);
+        }, 500);
+    });
+</script>
