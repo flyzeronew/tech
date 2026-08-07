@@ -112,4 +112,20 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
 }
+
+@media (max-width:1279px) {
+    #techLeaders .titleBox .name {
+        font-size: 36px;
+        line-height: 48px;
+    }
+    #techLeaders .titleBox .job {
+        font-size: 20px;
+        line-height: 28px;
+    }
+    #techLeaders .people .peoTitle {
+        font-size: 28px;
+        line-height: 36px;
+        margin-bottom: 40px;
+    }
+}
 /* 科技大人物 ed*/

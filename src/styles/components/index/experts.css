@@ -111,7 +111,6 @@
     width: 100%;
     display: flex;
     justify-content: space-between;
-    column-gap: 10px;
     border: 1px solid #fff;
 }
 #experts .list .item .txtBox .more a:hover{
@@ -121,7 +120,8 @@
     border-left: 1px solid #fff;
 }
 #experts .list .item .txtBox .more a span{
-    width: 90%;
+    width: 100%;
+    padding: 0 ;
     color: #fff;
     text-align: center;
 }
@@ -131,4 +131,17 @@
     line-height: 24px;
     letter-spacing: 0%;
 }
+@media (max-width:1279px) {
+    #experts .list .item .txtBox .name {
+        font-weight: 700;
+        font-size: 28px; 
+        line-height: 36px;
+    }
+    #experts .list .item .txtBox .intro a {
+        font-size: 20px;
+        line-height: 30px;
+        padding: 10px 0;
+    }
+}
+
 /* 專欄 ed*/

@@ -87,44 +87,30 @@
 #partners .collabForm input::placeholder{
     color: rgba(0, 0, 0, 0.35);
 }
-#partners .submitBtn{
-    display: flex;
-    align-items: center;
-    justify-content: center;
+#partners .more button{
     width: 100%;
     margin-top: 8px;
+    padding: 0;
     border: 1px solid #000;
     background: none;
     cursor: pointer;
-    font-family: var(--font-sans);
-    transition: background-color 0.3s ease;
+    display: flex;
+    justify-content: space-between;
 }
-#partners .submitBtn:hover{
-    background-color: rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease;
-}
-#partners .submitBtn span{
-    flex: 1;
-    padding: 20px;
-    border-right: 1px solid #000;
-    font-weight: 700;
-    font-size: 22px;
-    line-height: 30px;
-    letter-spacing: 0%;
+#partners .more button span{
     color: #000;
-    text-align: center;
+    flex: 1;
 }
-#partners .submitBtn .arraw{
+#partners .more button .arraw{
     width: 60px;
     height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+    transform: rotate(0deg);
+    border-left: 1px solid #000;
 }
-#partners .submitBtn .arraw img{
+#partners .more button .arraw img{
     width: 28px;
     height: 28px;
+    transform: rotate(0deg);
 }
 #partners .form .list ul li .follow{
     width: 60%;
@@ -163,5 +149,22 @@
     width: 28px;
     height: 28px;
 }
-
+@media (max-width:1279px) {
+    #partners .bigTitleBox .title {
+        font-size: 56px;
+        line-height: 72px;
+        margin-bottom: 16px;
+    }
+    #partners .bigTitleBox .description {
+        font-size: 20px;
+        line-height: 30px;
+    }
+    #partners .form .list ul li .logos {
+        width: 60%;
+        display: flex;
+        flex-wrap: wrap;
+        column-gap: 80px;
+        row-gap: 20px;
+    }
+}
 /* 國際媒體夥伴 ed*/

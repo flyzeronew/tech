@@ -4,9 +4,20 @@ header nav{
     top:0;
     z-index: 10;
 }
-header nav .box{
-    padding: 16px 16px 0;
+header nav .pc{
+    position: relative;
+}
+/* 導覽列毛玻璃：必須是 .subMenu 的「兄弟」而非祖先，兩者的 backdrop-filter 才能同時生效 */
+header nav .pc .navBlur{
+    position: absolute;
+    inset: 0;
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    pointer-events: none;
+}
+header nav .box{
+    position: relative;
+    padding: 16px 16px 0;
     overflow: visible;
 }
 header nav .navBox{
@@ -79,7 +90,8 @@ header nav .menu .subMenu{
     left: 0;
     width: 100%;
     min-width: max-content;
-    background-color: rgba(255, 255, 255, 1);     
+    background-color: rgba(255, 255, 255, 1);
+    box-shadow: 0 2px 5px 0 rgba(33, 33, 33, 0.1);  
 }
 header nav .menu li.hasSub:hover .subMenu,
 header nav .menu li.hasSub:focus-within .subMenu{
@@ -94,7 +106,7 @@ header nav .menu .subMenu a{
     text-align: center;
 }
 header nav .menu .subMenu a:hover{
-    background-color: rgba(0, 0, 0, 0.2)
+    background-color: rgba(0, 0, 0, 0.2);
 }
 header nav .switch{
     display: flex;
@@ -168,15 +180,21 @@ header nav .pc.type2 .logo{
 }
 header nav .pc.type1 .menu .subMenu{
     background-color: rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
     color: #fff;
-    isolation: isolate;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+header nav .pc.type1 .menu .subMenu a{
+    color: #fff;
 }
 header nav .pc.type2 .menu .subMenu{
-    background-color: rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.1);
     color: #000;
-    isolation: isolate;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+header nav .pc.type2 .menu .subMenu a{
+    color: #000;
 }
 
 /* pc導覽列變色 END */

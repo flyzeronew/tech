@@ -4,6 +4,8 @@ import '../styles/components/header.css';
 <header>
     <nav>
         <div class="pc">
+            <!-- 與 .box 同層的模糊層：避免 backdrop-filter 建在祖先上導致 .subMenu 模糊失效 -->
+            <div class="navBlur" aria-hidden="true"></div>
             <div class="box">
                 <div class="navBox">
                     <div class="logo">

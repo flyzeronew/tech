@@ -176,13 +176,13 @@ img {
 /* 內框 ed*/
 
 /* 看更多 */
-.more a{
+.more a,.more button{
     width: max-content;
     display: flex;
     align-items: center;
     border: 1px solid #242EF7;
 }
-.more a span{
+.more a span,.more button span{
     font-weight: 700;
     font-size: 16px;
     line-height: 22px;
@@ -190,7 +190,7 @@ img {
     color: #242EF7;
     padding: 0 30px;
 }
-.more a .arraw{
+.more a .arraw,.more button .arraw{
     width: 60px;
     height: 60px;
     display: flex;
@@ -198,7 +198,7 @@ img {
     justify-content: center;
     border-left: 1px solid #242EF7;    
 }
-.more a .arraw img{
+.more a .arraw img,.more button .arraw img{
     width: 28px;
     height: 28px;
     transform: rotate(-45deg);
@@ -357,6 +357,10 @@ img {
     .newslist.type2 ul li {
         column-gap: 15px;
         padding: 15px 0;
+    }
+    .newslist ul li .title {
+        font-size: 18px;
+        line-height: 26px;
     }
 }
 
