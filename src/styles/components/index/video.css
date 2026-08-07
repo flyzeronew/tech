@@ -49,6 +49,27 @@
     height: auto;
     overflow: hidden;
 }
+#video .list .item .imgBox .title{
+    position: relative;
+    height: 80px;
+    overflow: hidden;
+}
+#video .list .item .imgBox .title p{
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 30px;
+    letter-spacing: 0%;
+    position: absolute;
+    top: -85px;
+}
+#video .list .item .imgBox:hover .title p{
+    top: 10px;
+}
 #video .list .item .img img{
     width: 100%;
     height: 100%;
