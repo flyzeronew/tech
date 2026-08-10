@@ -99,6 +99,10 @@
     }
 }
 @media (max-width:767px) {
+    #hero .kv .txtBox .inBox .newsBox .title {
+        font-size: 36px;
+        line-height: 48px;
+    }
     #hero .newslist ul li .news{
         align-items: flex-start;
     }
