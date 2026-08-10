@@ -54,10 +54,6 @@
     color: #000;
     margin-bottom: 60px;
     overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
 }
 #techLeaders .people .list ul{
     display: flex;
@@ -145,6 +141,30 @@
     }
     #techLeaders .people {
         padding: 40px 40px 60px;
+    }
+}
+@media (max-width:767px) {
+    #techLeaders .inBox {
+        padding: 132px 20px 100px;
+    }
+    #techLeaders .people {
+        padding: 40px 20px 60px;
+    }
+    #techLeaders .people .list ul {
+        display: block;
+    }
+    #techLeaders .people .list ul li {
+        width: 100%;
+        border-right: none;
+        padding-right: 0;
+        border-bottom: 1px solid #CECECE;
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+    }
+    #techLeaders .people .list ul li:last-child {
+        margin-bottom: 0px;
+        border-bottom: none;
+        padding-bottom: 0;
     }
 }
 /* 科技大人物 ed*/

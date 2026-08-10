@@ -280,10 +280,10 @@
         margin-bottom: 40px;
     }
     #editorPick .moreArea {
-        padding: 40px 40px 80px;
+        padding: 40px 0px 80px 40px;
     }
     #editorPick .moreArea .areaTitleBox {
-        padding: 0 0px 40px;
+        padding: 0 40px 40px 0;
     }
     #editorPick .moreArea .list {
         padding-left: 0px;
@@ -296,6 +296,59 @@
         font-size: 28px;
         line-height: 36px;
     }
-
+}
+@media (max-width:767px) {
+    #editorPick .inBox {
+        padding: 132px 20px 100px 20px;
+    }
+    #editorPick .editor .img {
+        width: 20%;
+    }
+    #editorPick .editor .txtBox {
+        width: 80%;
+    }
+    #editorPick .motto {
+        padding: 32px;
+        font-size: 28px;
+        line-height: 40px;
+    }
+    #editorPick .moreArea {
+        padding: 40px 0px 80px 20px;
+    }
+    #editorPick .moreArea .areaTitleBox {
+        padding: 0 20px 40px 0;
+    }
+    #editorPick .moreArea .description {
+        width: 100%;
+        display: block;
+        font-size: 18px;
+        line-height: 26px;
+        margin-bottom: 0px;
+    }
+    #editorPick .moreArea .description p {
+        width: 100%;
+        margin-bottom: 40px;
+    }
+    #editorPick .moreArea .btn{
+        justify-content: flex-end;
+    }
+    #editorPick .moreArea .project .title {
+        font-size: 28px;
+        line-height: 40px;
+    }
+    #editorPick .moreArea .project .description {
+        font-size: 16px;
+        line-height: 24px;
+        margin-bottom: 20px;
+    }
+    #editorPick .moreArea .moreSwiper swiper-slide .box {
+        padding:12px 12px 24px;
+    }
+    #editorPick .moreArea .moreSwiper swiper-slide .box .txtBox {
+        padding:38px 20px 0px;
+    }
+    #editorPick .moreArea .moreSwiper swiper-slide{
+        width: 300px;
+    }
 }
 /* 編輯選讀 ed*/
