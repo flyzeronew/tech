@@ -204,12 +204,7 @@ import '../../styles/components/index/publications.css';
         books.addEventListener('dragstart', (e) => e.preventDefault());
 
         books.addEventListener('pointerdown', (e) => {
-            if (e.pointerType === 'touch') {
-                // 手機／觸控裝置改用瀏覽器原生的觸控捲動（見 publications.css 的 touch-action），
-                // 不套用下面這套給滑鼠用的拖曳邏輯；只記錄「正在觸控」讓自動捲動先暫停，避免互搶 scrollLeft
-                isTouching = true;
-                return;
-            }
+            if (e.pointerType === 'touch') return; // 手機／觸控裝置改用瀏覽器原生的觸控捲動（見下方 touchstart／touchend）
             isDown = true;
             books.classList.add('dragging');
             startX = e.clientX;
@@ -226,7 +221,6 @@ import '../../styles/components/index/publications.css';
 
         const endDrag = () => {
             isDown = false;
-            isTouching = false;
             books.classList.remove('dragging');
             scrollPos = books.scrollLeft;
         };
@@ -237,6 +231,18 @@ import '../../styles/components/index/publications.css';
 
         books.addEventListener('pointerenter', () => { isHover = true; });
         books.addEventListener('pointerleave', () => { isHover = false; });
+
+        // 原生觸控捲動一旦開始，瀏覽器很快就會對 touch 的 pointer 發出 pointercancel（把控制權交給原生捲動），
+        // 如果用 pointer 事件判斷「是否還在觸控」，會在手指其實還在滑動時就被提早重設，
+        // 自動捲動因此提早恢復、跟使用者的手勢互搶 scrollLeft，感覺像是「拉不動」。
+        // touchstart／touchend／touchcancel 會貫穿整個手勢、不會被提前取消，才拿來判斷是否要暫停自動捲動。
+        const endTouch = () => {
+            isTouching = false;
+            scrollPos = books.scrollLeft;
+        };
+        books.addEventListener('touchstart', () => { isTouching = true; }, { passive: true });
+        books.addEventListener('touchend', endTouch, { passive: true });
+        books.addEventListener('touchcancel', endTouch, { passive: true });
 
         let isManual = false;
 
