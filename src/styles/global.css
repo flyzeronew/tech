@@ -162,6 +162,7 @@ img {
     margin: 0 auto;
     box-sizing: border-box;
     position: relative;
+    overflow: hidden;
 }
 @media (max-width:1279px) {
     .inBox {
