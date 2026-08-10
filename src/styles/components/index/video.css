@@ -136,38 +136,33 @@
     color: #242EF7;
     margin-bottom: 15px;
 }
-#video .linkList .btn{
+#video .linkList .linkItem .more{
     display: flex;
     align-items: center;
-    width: max-content;
-    margin: 0 auto;
+    justify-content: center;
+}
+#video .linkList .linkItem .more a{
+    display: flex;
+    align-items: center;
     background-color: #242EF7;
 }
-#video .linkList .btn:hover{
+#video .linkList .linkItem .more a:hover{
     background-color: #2029e0;
 }
-#video .linkList .btn span{
+#video .linkList .linkItem .more a span{
+    width: 90%;
     font-weight: 700;
     font-size: 16px;
     line-height: 22px;
     letter-spacing: 0%;
     color: #fff;
-    padding: 0 30px;
 }
-#video .linkList .btn .arraw{
+.more a .arraw, .more button .arraw {
     width: 60px;
     height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-left: 1px solid rgba(255, 255, 255, 0.4);
+    border-left: 1px solid #fff;
+    margin-left: auto;
 }
-#video .linkList .btn .arraw img{
-    width: 28px;
-    height: 28px;
-    transform: rotate(-45deg);
-}
-
 @media (max-width:1279px) {
     #video .list .item .imgBox .title p {
         font-size: 22px;
@@ -255,6 +250,62 @@
        手機版把圖片放大效果拿掉 */
     #video .list .item:hover .img {
         transform: none;
+    }
+}
+@media (max-width:767px){
+    #video .inBox {
+        padding: 76px 20px;
+    }
+    #video .list .item .imgBox .title p {
+        font-size: 20px;
+        line-height: 28px;
+    }
+    #video .list .item:nth-child(1){
+        width: 80%;
+    }
+    #video .list .item:nth-child(2){
+        width: 80%;
+    }
+    #video .list .item:nth-child(3){
+        width: 60%;
+    }
+    #video .list .item:nth-child(4){
+        width: 80%;
+    }
+    #video .list .item:nth-child(5){
+        width: 60%;
+    }
+    #video .list .item:nth-child(6){
+        width: 80%;
+    }
+    #video .list .item:nth-child(7){
+        width: 80%;
+    }
+    #video .list .item:nth-child(8){
+        width: 80%;
+    }
+    #video .linkList {
+        display: block;
+        column-gap: 40px;
+    }
+    #video .linkList .linkItem p {
+        font-size: 20px;
+        line-height: 28px;
+        margin-bottom: 16px;
+    }
+    #video .linkList .linkItem{
+        margin-bottom: 20px;
+    }
+    #video .linkList .linkItem .more a{
+        width: 100%;
+    }
+    #video .linkList .linkItem .more a span {
+        font-size: 14px;
+        line-height: 20px;
+    }
+    .more a .arraw, .more button .arraw{
+        width: 45px;
+        height: 45px;
     }
 }
 /* 精選影音 ed*/

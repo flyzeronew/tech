@@ -204,6 +204,17 @@ img {
     height: 28px;
     transform: rotate(-45deg);
 }
+@media (max-width:767px) {
+    .more a span,.more button span{
+        font-size: 14px;
+        line-height: 22px;
+        padding: 0 20px;
+    }
+    .more a .arraw img,.more button .arraw img{
+        width: 24px;
+        height: 24px;
+    }
+}
 
 /* 看更多 ed*/
 
@@ -212,6 +223,12 @@ img {
     font-size: 20px;
     line-height: 28px;
     letter-spacing: 0%;    
+}
+@media (max-width:767px) {
+    .itemTitle p{
+        font-size: 18px;
+        line-height: 24px;
+    }
 }
 
 .flex{
@@ -232,7 +249,7 @@ img {
 
 .newslist ul li{
     width: 100%;
-    border-bottom:#50514F 1px solid;
+    border-bottom:#CECECE 1px solid;
     padding-bottom: 15px;
     margin-bottom: 15px;
 }
@@ -261,6 +278,14 @@ img {
     font-size: 13px;
     line-height: 18px;
     letter-spacing: 3%;
+    color: #50514F;
+}
+.newslist ul li .news .titleBox  .time{
+    display: none;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.36px;
     color: #50514F;
 }
 .newslist ul li .news{
@@ -357,7 +382,7 @@ img {
         width: 100px;
     }
     .newslist.type2 ul li a {
-        padding: 0 15px;
+        padding: 0 20px;
     }
     .newslist.type2 ul li {
         column-gap: 20px;
@@ -388,11 +413,10 @@ img {
         overflow: hidden;
         text-overflow: ellipsis;
         display: -webkit-box;
-        -webkit-line-clamp: 2;
+        -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
         white-space: normal;
     }
-
     .newslist.type2 ul li{
         width: 100%;
     }
@@ -413,7 +437,23 @@ img {
         border-right: none;
         border-bottom: #CECECE 1px solid;
     }
-
+}
+@media (max-width:767px) {
+    .newslist ul li .news .img {
+        width: 30%;
+    }
+    .newslist ul li .news .titleBox {
+        width: 70%;
+    }
+    .newslist ul li .news .titleBox  .time{
+        display: block;
+    }
+    .newslist {
+        padding: 0 20px;
+    }
+    .newslist ul li .date{
+        display: none;
+    }
 }
 
 /* 議題樣式 ed*/

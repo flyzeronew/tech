@@ -4,7 +4,13 @@
     padding-bottom: 100px;
 }
 #hero .kv .img{
+    aspect-ratio: 1440/400;
     margin-bottom: 40px;
+}
+#hero .kv .img img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 #hero .kv .txtBox .inBox{
     display: flex;
@@ -73,6 +79,9 @@
     }
 }
 @media (max-width:1023px) {
+    #hero .kv .img{
+        aspect-ratio: 768/400;
+    }
     #hero .kv .txtBox .inBox{
         display: block;
         padding: 0 40px;
@@ -87,6 +96,20 @@
     }
     .newslist ul li .arraw{
         display: none;
+    }
+}
+@media (max-width:767px) {
+    #hero .newslist ul li .news{
+        align-items: flex-start;
+    }
+    #hero .kv .txtBox .inBox {
+        display: block;
+        padding: 0 20px;
+        margin-bottom: 60px;
+    }
+    #hero .kv .txtBox .inBox .newsBox .description {
+        font-size: 18px;
+        line-height: 26px;
     }
 }
 /* 頭條 ed */
