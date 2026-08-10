@@ -49,10 +49,18 @@
     column-gap: 30px;
     margin-bottom: 80px;
 }
-#experts .list .item .img{
+#experts .list .item .imgBox{
     width: 50%;
+}
+#experts .list .item .imgBox .img{
     aspect-ratio: 1/1;
     object-fit: cover;
+}
+#experts .nameBox.pc{
+    display: block;
+}
+#experts .nameBox.mobile{
+    display: none;
 }
 #experts .list .item .txtBox{
     width: 50%;
@@ -161,7 +169,7 @@
         display: block;
         margin-bottom: 40px;
     }
-    #experts .list .item .img {
+    #experts .list .item .imgBox {
         margin-bottom: 40px;
     }
     #experts .list .item .txtBox {
@@ -169,12 +177,59 @@
     }
     #experts .list .item .txtBox .intro a .arraw {
         display: none;
-    }
-    
+    }    
 }
 @media (max-width:767px) {
+    #experts .list .item .imgBox {
+        width: 100%;
+        display: flex;
+        column-gap: 20px;
+    }
+    #experts .list .item .img {
+        width: 30%;
+    }
+    #experts .list .item .imgBox .nameBox{
+        width: 70%;
+    }
+    #experts .list .item .imgBox .nameBox .name{
+        font-weight: 700;
+        font-size: 32px;
+        line-height: 40px;
+        color: #fff;
+        margin-bottom: 8px;
+    }
+    #experts .list .item .imgBox .nameBox .tag{
+        display: flex;
+        flex-wrap: wrap;
+        column-gap: 10px;
+        row-gap: 8px;
+        margin-bottom: 15px;
+    }
+    #experts .list .item .imgBox .tag a{
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 16px;
+        letter-spacing: 0%;
+        background-color: #242EF7;
+        color: #fff;
+        padding: 2px 10px;
+    }
+    #experts .nameBox.pc{
+        display: none;
+    }
+    #experts .nameBox.mobile{
+        display: block;
+    }
     #experts .inBox {
         padding: 132px 20px 100px;
+    }
+    #experts .list .item .txtBox .description {
+        font-size: 16px;
+        line-height: 22px;
+    }
+    #experts .list .item .txtBox .more a .arraw{
+        width: 45px;
+        height: 45px;
     }
 }
 
