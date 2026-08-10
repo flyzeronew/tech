@@ -29,7 +29,7 @@
    中間提高不透明度，讓區塊本身更明顯 */
 #video .list .videoBlob{
     position: absolute;
-    width: 56%;
+    width: 46%;
     aspect-ratio: 1 / 1;
     z-index: 0;
     background: radial-gradient(circle, rgba(36, 46, 247, 0.8) 0%, rgba(36, 46, 247, 0.5) 45%, rgba(36, 46, 247, 0) 75%);

@@ -147,9 +147,16 @@ import '../styles/components/header.css';
                 ? target.getBoundingClientRect().top + startY
                 : 0;
 
-            // 手機版不做捲動動畫，直接跳到錨點位置
+            // 手機版不做捲動動畫，直接跳到錨點位置。
+            // 部分行動瀏覽器對 scrollTo() 傳入 behavior:'auto' 不會確實覆蓋掉 global.css 的
+            // html{scroll-behavior:smooth}，還是會生成平滑捲動；改成先暫時把 <html> 的
+            // scroll-behavior 用 inline style 蓋成 auto，跳轉後再還原，才能保證真的是瞬間跳轉。
             if (window.matchMedia('(max-width: 1023px)').matches) {
+                const html = document.documentElement;
+                const prevScrollBehavior = html.style.scrollBehavior;
+                html.style.scrollBehavior = 'auto';
                 window.scrollTo({ top: targetY, behavior: 'auto' });
+                html.style.scrollBehavior = prevScrollBehavior;
                 return;
             }
 
