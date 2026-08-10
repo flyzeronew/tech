@@ -118,6 +118,10 @@ import '../styles/components/header.css';
     const DURATION = 1200; // 捲動時間（毫秒），數字越大滑動越慢
     // 導覽列是浮在內容上方的透明懸浮列，捲動時直接讓區塊頂到「視窗最頂端」即可，不用再扣除導覽列高度
 
+    function easeInOutCubic(t: number) {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+
     document.querySelectorAll<HTMLAnchorElement>('header nav a[href^="#"]').forEach((link) => {
         link.addEventListener('click', (e) => {
             const href = link.getAttribute('href');
@@ -153,7 +157,7 @@ import '../styles/components/header.css';
             function tick(now: number) {
                 const t = Math.min((now - startTime) / DURATION, 1);
                 // 明確指定 behavior: 'auto'，避免與 CSS 的 scroll-behavior: smooth 疊加造成頓挫
-                window.scrollTo({ top: startY + (targetY - startY) * t, behavior: 'auto' });
+                window.scrollTo({ top: startY + (targetY - startY) * easeInOutCubic(t), behavior: 'auto' });
                 if (t < 1) requestAnimationFrame(tick);
             }
             requestAnimationFrame(tick);
