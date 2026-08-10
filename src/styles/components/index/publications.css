@@ -184,7 +184,7 @@
 @media (max-width:767px) {
     #publications .titleBox {
         padding: 0 20px;
-        margin-bottom: 20px;
+        margin-bottom: 40px;
     }
     #publications .titleBox .more a .arraw{
         width: 45px;
