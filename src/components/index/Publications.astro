@@ -246,13 +246,17 @@ import '../../styles/components/index/publications.css';
 
         let isManual = false;
 
-        const speed = 0.3; // 每禎捲動的像素數
+        // 手機版畫面較窄，同樣的像素速度感覺比桌機慢很多，這裡加快一點
+        const mobileSpeedQuery = window.matchMedia('(max-width: 1023px)');
+        function getSpeed() {
+            return mobileSpeedQuery.matches ? 0.4 : 0.3; // 每禎捲動的像素數
+        }
         function autoScroll() {
             const loopWidth = booksList.scrollWidth / 2;
             if (!isDown && !isHover && !isManual && !isTouching) {
                 // scrollLeft 在某些瀏覽器會被四捨五入成整數，直接用它累加小數會卡住，
                 // 所以改用獨立變數保留完整精度，只在寫入時才套用到 scrollLeft
-                scrollPos += speed;
+                scrollPos += getSpeed();
                 if (scrollPos >= loopWidth) {
                     scrollPos -= loopWidth;
                 }
