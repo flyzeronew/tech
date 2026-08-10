@@ -66,7 +66,9 @@
     cursor: grab;
     user-select: none;
     padding-bottom: 30px;
-    touch-action: pan-y;
+    /* 原本只允許 pan-y（垂直），手指橫向滑動會被吃掉，書櫃在觸控裝置上滑不動；
+       改成兩個方向都放行，讓瀏覽器原生的觸控捲動可以在這個水平捲動容器上作用 */
+    touch-action: pan-x pan-y;
 }
 #publications .books.dragging{
     cursor: grabbing;
@@ -134,6 +136,9 @@
     transform: rotate(0deg);
 }
 @media (max-width:1279px) {
+    #publications .inBox{
+        padding: 132px 0 40px;
+    }
     #publications .booksNav button {
         width: 40px;
         height: 40px;
@@ -174,6 +179,60 @@
         width: 250px;
         height: 220px;
         transition: .8s;
+    }
+}
+@media (max-width:767px) {
+    #publications .titleBox {
+        padding: 0 20px;
+    }
+    #publications .titleBox .more a .arraw{
+        width: 45px;
+        height: 45px;
+    }
+    #publications .titleBox .more a span {
+        padding: 0 20px;
+    }
+    #publications .books {
+        zoom: 0.75;
+        padding-bottom: 30px;
+    }
+    /* 768px 以下不用書封面原地彈出的資訊框，改成點選後置換到書架下方的共用面板 */
+    #publications .books .book.real .txtBox {
+        display: none;
+    }
+    #publications .booksInfoPanel {
+        min-height: 150px;
+        overflow: hidden;
+        padding: 0 25px;
+        opacity: 1;
+        transition: opacity 0.25s ease;
+    }
+    #publications .booksInfoPanel .title {
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 24px;
+        margin-bottom: 12px;
+    }
+    #publications .booksInfoPanel .description {
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 22px;
+        margin-bottom: 12px;
+    }
+    #publications .booksInfoPanel .more a{
+        width: 100%;
+    }
+    #publications .booksInfoPanel .more a span{
+        width: 90%;
+        text-align: center;
+    }
+    #publications .booksInfoPanel .more a .arraw {
+        width: 45px;
+        height: 45px;
+        margin-left: auto;
+    }
+    #publications .booksInfoPanel .more a .arraw img {
+        transform: rotate(0deg);
     }
 }
 /* 精選出版品 ed*/

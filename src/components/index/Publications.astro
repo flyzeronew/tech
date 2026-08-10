@@ -10,8 +10,9 @@ import '../../styles/components/index/publications.css';
                     <p>PUBLICATIONS</p>
                 </div>
                 <div class="more">
-                    <a href="#">
-                        <span>全部出版品</span>
+                    <a href="#">                        
+                        <span class="pc">全部出版品</span> 
+                        <span class="mobile">更多</span> 
                         <div class="arraw">
                             <img width="28" height="28" src="/arraw-right-02.svg" alt="arraw" />
                         </div>
@@ -72,10 +73,10 @@ import '../../styles/components/index/publications.css';
                             </div>
                             <div class="txtBox">
                                 <div class="title">
-                                    晶三角：矽時代地緣政治下，美台中全球半導體安全
+                                    華府政治解碼
                                 </div>
                                 <div class="description">
-                                    晶片時代，面對半導體地緣政治的必修課，解讀台美中半導體三角賽局的關鍵之作！
+                                    華府政治解碼華府政治解碼華府政治解碼華府政治解碼華府政治解碼華府政治解碼
                                 </div>
                                 <div class="more">
                                     <a href="#">
@@ -111,10 +112,10 @@ import '../../styles/components/index/publications.css';
                             </div>
                             <div class="txtBox">
                                 <div class="title">
-                                    晶三角：矽時代地緣政治下，美台中全球半導體安全
+                                    一觸即發:一位非常時期美國國防部長的回憶錄
                                 </div>
                                 <div class="description">
-                                    晶片時代，面對半導體地緣政治的必修課，解讀台美中半導體三角賽局的關鍵之作！
+                                    有實力才有和平
                                 </div>
                                 <div class="more">
                                     <a href="#">
@@ -147,10 +148,10 @@ import '../../styles/components/index/publications.css';
                             </div>
                             <div class="txtBox">
                                 <div class="title">
-                                    晶三角：矽時代地緣政治下，美台中全球半導體安全
+                                    地下帝國
                                 </div>
                                 <div class="description">
-                                    晶片時代，面對半導體地緣政治的必修課，解讀台美中半導體三角賽局的關鍵之作！
+                                    地下帝國地下帝國地下帝國地下帝國地下帝國地下帝國
                                 </div>
                                 <div class="more">
                                     <a href="#">
@@ -165,6 +166,8 @@ import '../../styles/components/index/publications.css';
                     </li>
                 </ul>
             </div>
+            <!-- 768px 以下：書架下方共用的資訊面板，點選書本時把該本書的 txtBox 內容置換進來 -->
+            <div class="booksInfoPanel"></div>
             <div class="booksNav">
                 <button type="button" class="booksPrev" aria-label="上一個">
                     <img width="20" height="20" src="/arraw-right-02.svg" alt="prev" />
@@ -193,6 +196,7 @@ import '../../styles/components/index/publications.css';
 
         let isDown = false;
         let isHover = false;
+        let isTouching = false;
         let startX = 0;
         let scrollStart = 0;
 
@@ -200,7 +204,12 @@ import '../../styles/components/index/publications.css';
         books.addEventListener('dragstart', (e) => e.preventDefault());
 
         books.addEventListener('pointerdown', (e) => {
-            if (e.pointerType === 'touch') return; // 手機／觸控裝置禁止手指滑動捲動，只保留自動捲動與左右按鈕
+            if (e.pointerType === 'touch') {
+                // 手機／觸控裝置改用瀏覽器原生的觸控捲動（見 publications.css 的 touch-action），
+                // 不套用下面這套給滑鼠用的拖曳邏輯；只記錄「正在觸控」讓自動捲動先暫停，避免互搶 scrollLeft
+                isTouching = true;
+                return;
+            }
             isDown = true;
             books.classList.add('dragging');
             startX = e.clientX;
@@ -217,6 +226,7 @@ import '../../styles/components/index/publications.css';
 
         const endDrag = () => {
             isDown = false;
+            isTouching = false;
             books.classList.remove('dragging');
             scrollPos = books.scrollLeft;
         };
@@ -233,7 +243,7 @@ import '../../styles/components/index/publications.css';
         const speed = 0.3; // 每禎捲動的像素數
         function autoScroll() {
             const loopWidth = booksList.scrollWidth / 2;
-            if (!isDown && !isHover && !isManual) {
+            if (!isDown && !isHover && !isManual && !isTouching) {
                 // scrollLeft 在某些瀏覽器會被四捨五入成整數，直接用它累加小數會卡住，
                 // 所以改用獨立變數保留完整精度，只在寫入時才套用到 scrollLeft
                 scrollPos += speed;
@@ -283,5 +293,32 @@ import '../../styles/components/index/publications.css';
         const nextBtn = document.querySelector<HTMLButtonElement>('#publications .booksNext');
         prevBtn?.addEventListener('click', () => animateScrollBy(-step));
         nextBtn?.addEventListener('click', () => animateScrollBy(step));
+    }
+
+    // ===== 768px 以下：點選書本，資訊置換到書架下方的共用面板 =====
+    // 桌機／1024px 以下用 hover 在書本原地彈出 txtBox；768px 以下改成點選後
+    // 把該本書 txtBox 裡的內容（標題／簡介／連結）複製一份塞進書架下方固定的面板，
+    // 面板本身只有一個，每次點選就整個換掉內容，而不是每本書各自彈出。
+    const booksInfoPanel = document.querySelector<HTMLElement>('#publications .booksInfoPanel');
+    const bookReals = document.querySelectorAll<HTMLElement>('#publications .books .book.real');
+    if (booksInfoPanel && bookReals.length) {
+        // 換內容前先淡出，等淡出動畫播完才真正替換內容、再淡入，避免內容瞬間跳掉
+        let fadeTimer: number | undefined;
+        function showInPanel(html: string) {
+            window.clearTimeout(fadeTimer);
+            booksInfoPanel!.style.opacity = '0';
+            fadeTimer = window.setTimeout(() => {
+                booksInfoPanel!.innerHTML = html;
+                booksInfoPanel!.style.opacity = '1';
+            }, 250);
+        }
+        bookReals.forEach((book) => {
+            const trigger = book.querySelector<HTMLElement>('.img');
+            const txtBox = book.querySelector<HTMLElement>('.txtBox');
+            trigger?.addEventListener('click', () => {
+                if (!txtBox) return;
+                showInPanel(txtBox.innerHTML);
+            });
+        });
     }
 </script>
