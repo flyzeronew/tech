@@ -348,13 +348,18 @@
         padding:38px 20px 0px;
     }
     #editorPick .moreArea .moreSwiper swiper-slide{
-        width: 300px;
+        width: 400px;
     }
     #editorPick .titleBox {
         margin-bottom: 40px;
     }
     #editorPick .moreArea {
         margin-top: 40px;
+    }
+}
+@media (max-width:767px) {
+    #editorPick .moreArea .moreSwiper swiper-slide{
+        width: 300px;
     }
 }
 /* 編輯選讀 ed*/
