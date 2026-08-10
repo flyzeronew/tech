@@ -216,7 +216,7 @@
     }
     #partners .form .list ul li .logos a {
         width: auto;
-        height: auto;
+        height: 30px;
         margin-bottom: 40px;
     }
     #partners .followItem span {
