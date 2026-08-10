@@ -1,15 +1,12 @@
 ---
 import '../../styles/components/index/issue.css';
 
-// 格子大小依 .bg 16:9 的比例換算成正方形（9/64 = 14.0625%），跟 issue.css 的 wipeRow／bgImage 對齊
-// 垂直線用「半格」偏移（k+0.5），這樣正中間會是一整格、而不是一條線，才能跟 .bgImage 置中對齊
-const gridCellPercent = (100 * 9) / 64;
+// 垂直格線位置改用 CSS 變數 --issue-cell（正方形格子寬度佔 .bg 寬度的比例）算，不再是寫死的固定百分比：
+// --issue-cell 會依 .bg 當下的 16:9／9:16 比例在 issue.css 切換，格線與 .bgImage 縮放起點就能自動對齊新比例，不用另外重算。
+// 垂直線用「半格」偏移（k+0.5），這樣正中間會是一整格、而不是一條線，才能跟 .bgImage 置中對齊；
+// 超出 0~100% 範圍的格線交給 .bg 的 overflow:hidden 裁掉即可，兩種比例都用同一組 8 條線就好。
 const horizontalLines = [0, 25, 50, 75, 100];
-const verticalLines = [];
-for (let k = -4; k <= 3; k++) {
-    const pos = 50 + (k + 0.5) * gridCellPercent;
-    if (pos >= -0.01 && pos <= 100.01) verticalLines.push(Math.min(100, Math.max(0, pos)));
-}
+const verticalLineOffsets = [-4, -3, -2, -1, 0, 1, 2, 3].map((k) => k + 0.5);
 const gridLineStagger = 0.09;
 ---
 <section>
@@ -28,10 +25,10 @@ const gridLineStagger = 0.09;
                         style={`top:${pos}%; transition-delay:${(0.9 + i * gridLineStagger).toFixed(2)}s`}
                     ></span>
                 ))}
-                {verticalLines.map((pos, i) => (
+                {verticalLineOffsets.map((offset, i) => (
                     <span
                         class="gridLine gridLine--v"
-                        style={`left:${pos}%; transition-delay:${(0.9 + (horizontalLines.length + i) * gridLineStagger).toFixed(2)}s`}
+                        style={`left: calc(50% + ${offset} * var(--issue-cell) * 100%); transition-delay:${(0.9 + (horizontalLines.length + i) * gridLineStagger).toFixed(2)}s`}
                     ></span>
                 ))}
             </div>
@@ -67,7 +64,7 @@ const gridLineStagger = 0.09;
                             <div class="title">
                                 【2100TVBS看世界】台積電加碼3.3兆投資美國 還在亞利桑那蓋研發中心 川普暫停對烏克蘭所有軍援
                             </div>
-                            <div class="img">
+                            <div class="img img--square">
                                 <div class="statusIcon linkIcon"></div>
                                 <img width="300" height="300" src="/issue-image-01.jpg" alt="img" loading="lazy" />
                             </div>
@@ -188,5 +185,81 @@ const gridLineStagger = 0.09;
             };
             requestAnimationFrame(poll);
         }
+    }
+</script>
+
+<script>
+    // ===== 獨家專題（#issue）768～1023px：JS 真．瀑布流兩欄；768px 以下改回單欄，不需要分欄 =====
+    // 純 CSS Grid／多欄排版在「兩欄各放一半項目」時無法避免高度不一致造成的空隙（Grid 同列會被較高的那項卡住，
+    // 多欄排版順序又會變成「左欄先填滿」而非交錯）。這裡改用貪婪演算法：依原始順序依序把每張卡片
+    // 塞進「目前比較矮」的那一欄，卡片間就不會再多出空白，同時仍盡量保留接近原始的閱讀順序。
+    // 量測高度需要在卡片還是正常版面（未搬移）時進行，所以先量測、算好分欄結果，才真正搬移 DOM。
+    // 切回 1024px 以上時要能還原成原本三欄的 DOM 結構，所以先記住每張卡片原本的位置。
+    const issueList = document.querySelector<HTMLElement>('#issue .issueList .list');
+    if (issueList) {
+        const items = Array.from(issueList.querySelectorAll<HTMLElement>('.item'));
+        const originalSlots = items.map((item) => ({
+            item,
+            parent: item.parentElement as HTMLElement,
+            nextSibling: item.nextElementSibling,
+        }));
+
+        const masonryQuery = window.matchMedia('(max-width: 1023px) and (min-width: 768px)');
+        let masonryCols: HTMLElement[] | null = null;
+
+        function restoreDesktop() {
+            if (!masonryCols) return;
+            originalSlots.forEach(({ item, parent, nextSibling }) => {
+                parent.insertBefore(item, nextSibling);
+            });
+            masonryCols.forEach((col) => col.remove());
+            masonryCols = null;
+            issueList!.classList.remove('is-masonry');
+        }
+
+        function buildMasonry() {
+            if (masonryCols) return;
+            const heights = items.map((item) => item.getBoundingClientRect().height);
+            const colA = document.createElement('div');
+            const colB = document.createElement('div');
+            colA.className = 'masonryCol';
+            colB.className = 'masonryCol';
+            let heightA = 0;
+            let heightB = 0;
+            items.forEach((item, i) => {
+                const h = heights[i];
+                if (heightA <= heightB) {
+                    colA.appendChild(item);
+                    heightA += h;
+                } else {
+                    colB.appendChild(item);
+                    heightB += h;
+                }
+            });
+            issueList!.appendChild(colA);
+            issueList!.appendChild(colB);
+            masonryCols = [colA, colB];
+            issueList!.classList.add('is-masonry');
+        }
+
+        // resize 事件在手機瀏覽器很容易因為網址列顯示/隱藏而觸發（寬度沒變、只有高度變），
+        // 這裡只在「寬度真的變了」或「還沒建立過」時才重新分欄，避免每次都重搬 DOM 造成閃爍
+        let lastWidth = window.innerWidth;
+        function sync() {
+            const widthChanged = window.innerWidth !== lastWidth;
+            lastWidth = window.innerWidth;
+            if (masonryQuery.matches) {
+                if (!masonryCols || widthChanged) {
+                    restoreDesktop();
+                    buildMasonry();
+                }
+            } else if (masonryCols) {
+                restoreDesktop();
+            }
+        }
+
+        sync();
+        masonryQuery.addEventListener('change', sync);
+        window.addEventListener('resize', sync);
     }
 </script>

@@ -145,7 +145,6 @@
         padding: 15px 20px 0;
     }
     #new .list .item .title {
-        font-weight: 700;
         font-size: 24px;
         line-height: 32px;
         margin-bottom: 15px;
@@ -157,5 +156,44 @@
         width: 100%;
         height: 480px;
         transform: translateY(-50%);
+    }
+}
+@media (max-width:1023px) {
+    #new .pinInner {
+        height: auto;
+        overflow: visible;
+    }
+    #new .inBox {
+        width: 100%;
+        padding: 0 40px;
+        box-sizing: border-box;
+    }
+    #new .flex {
+        padding-top: 100px;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: center;
+        height: 100%;
+    }
+    #new .titleBox {
+        width: 100%;
+    }
+    #new .titleBox .itemTitle {
+        margin-bottom: 12px;
+    }
+    #new .list .item .title {
+        font-size: 28px;
+        line-height: 40px;
+    }
+    #new .list .item {
+        padding: 24px;
+    }
+    #new .list {
+        width: 100%;
+        height: 120vh;
+    }
+    #new .list .itemTrack {
+        top: 25%;
+        height: 580px;
     }
 }

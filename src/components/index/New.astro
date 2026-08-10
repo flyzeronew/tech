@@ -73,11 +73,25 @@ const newsItems = [
     // 區塊釘在畫面上，使用者往下捲動時依序切到下一則新聞卡；捲完最後一則後自然放行接續到下一區塊。
     // 因為是純粹依據捲動位置計算（而非攔截 wheel 事件），滾輪、觸控板、鍵盤、觸控捲動都能正確運作，往上捲動也會自動反向切換。
     const stickyWrap = document.querySelector<HTMLElement>('#new .stickyWrap');
+    const pinInner = document.querySelector<HTMLElement>('#new .pinInner');
     const items = document.querySelectorAll<HTMLElement>('#new .list .item');
 
-    if (stickyWrap && items.length) {
+    if (stickyWrap && pinInner && items.length) {
+        // 1024px 以下：pinInner 高度是隨內容撐開（非固定 100vh），實際放行時機以量到的高度為準，
+        // 不能假設它跟螢幕一樣高，否則捲動距離的計算會跟瀏覽器實際放行的時機對不上，出現多滾一大段的空白
+        const mobileQuery = window.matchMedia('(max-width: 1023px)');
+        const MOBILE_STEP_VH = 100;
+        const MOBILE_TAIL_VH = 20;
+
         function setHeight() {
-            stickyWrap!.style.height = `${items.length * 100}vh`;
+            if (mobileQuery.matches) {
+                const stepPx = (MOBILE_STEP_VH / 100) * window.innerHeight;
+                const tailPx = (MOBILE_TAIL_VH / 100) * window.innerHeight;
+                const scrollDistance = (items.length - 1) * stepPx + tailPx;
+                stickyWrap!.style.height = `${pinInner!.offsetHeight + scrollDistance}px`;
+            } else {
+                stickyWrap!.style.height = `${items.length * 100}vh`;
+            }
         }
 
         let activeIndex = 0;
@@ -96,15 +110,27 @@ const newsItems = [
 
         function update() {
             const rect = stickyWrap!.getBoundingClientRect();
-            const scrollable = stickyWrap!.offsetHeight - window.innerHeight;
-            if (scrollable <= 0) {
-                setActive(0);
-                return;
+            if (mobileQuery.matches) {
+                const scrollable = stickyWrap!.offsetHeight - pinInner!.offsetHeight;
+                if (scrollable <= 0) {
+                    setActive(0);
+                    return;
+                }
+                const scrolled = Math.min(Math.max(-rect.top, 0), scrollable);
+                const stepPx = (MOBILE_STEP_VH / 100) * window.innerHeight;
+                const index = Math.min(items.length - 1, Math.floor(scrolled / stepPx));
+                setActive(index);
+            } else {
+                const scrollable = stickyWrap!.offsetHeight - window.innerHeight;
+                if (scrollable <= 0) {
+                    setActive(0);
+                    return;
+                }
+                const scrolled = Math.min(Math.max(-rect.top, 0), scrollable);
+                const progress = scrolled / scrollable;
+                const index = Math.min(items.length - 1, Math.floor(progress * items.length));
+                setActive(index);
             }
-            const scrolled = Math.min(Math.max(-rect.top, 0), scrollable);
-            const progress = scrolled / scrollable;
-            const index = Math.min(items.length - 1, Math.floor(progress * items.length));
-            setActive(index);
         }
 
         setHeight();

@@ -5,6 +5,9 @@
 #issue .bg{
     position: relative;
     aspect-ratio: 16/9;
+    /* 正方形格子寬度佔 .bg 寬度的比例＝0.25（列高比例）× 高寬比，16:9 時＝0.25×(9/16)。
+       格線位置與 .bgImage 的縮放起點都吃這個變數，比例一換算式就自動對齊，不用個別重算每條線 */
+    --issue-cell: 0.140625;
     color: #fff;
     overflow: hidden;
     /* 階段 1：一開始整塊是全白、看不到任何內容 */
@@ -102,7 +105,7 @@
     background-position: center;
     background-repeat: no-repeat;
     opacity: 0;
-    transform: scale(0.140625, 0.25);
+    transform: scale(var(--issue-cell), 0.25);
     transform-origin: 50% 33.333%;
     transition: opacity 0.9s ease, transform 2s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -229,6 +232,13 @@
 #issue .issueList .list .col:first-child .item:first-child .img{
     aspect-ratio: 1/1;
 }
+/* 1024px 以下 JS 會把卡片搬進 .masonryCol，不再位於 .col 底下，上面那條結構選取器就抓不到了，
+   改用這個 class 直接標記，不管卡片被搬到哪一欄都能保持正方形。
+   選擇器要疊 .img.img--square（多一層 class）而不是只用 .img--square，
+   優先權才會贏過預設的 .item .img{aspect-ratio:16/9}，不然手機版分欄後圖片比例會被蓋掉 */
+#issue .issueList .list .item .img.img--square{
+    aspect-ratio: 1/1;
+}
 /* 議題 ed*/
 
 @media (max-width: 1279px) {
@@ -252,7 +262,7 @@
         width: 60%;
         color: #fff;
         font-weight: 400;
-        font-size: 20px;
+        font-size: 22px;
         line-height: 30px;
         margin-bottom: 60px;
     }
@@ -262,4 +272,78 @@
         line-height: 30px;
     }
     
+}
+@media (max-width:1023px) {
+    #issue .inBox {
+        padding: 40px;
+    }
+    #issue .bg {
+        /* 不用固定比例猜測，直接讓容器撐滿目前裝置實際可視區域的寬高，形狀就會等於手機當下的長寬比 */
+        aspect-ratio: auto;
+        width: 100%;
+        height: 100vh;
+        --issue-cell: 0.444444;
+    }
+    #issue .issueList .description {
+        width: 100%;
+        font-size: 20px;
+        margin-bottom: 60px;
+    }
+    #issue .issueList .list {
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        row-gap: 40px;
+        column-gap: 0;
+        border-left: 1px solid #505050;
+        border-right: 1px solid #505050;
+    }
+    #issue .issueList .list::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        width: 1px;
+        background-color: #505050;
+    }
+    #issue .issueList .list .col {
+        display: contents;
+    }
+    #issue .issueList .list .item {
+        padding: 0 20px;
+    }
+    /* JS（Issue.astro）量完各卡片高度後，會把卡片搬進這兩個 .masonryCol、取代上面用 Grid 排的版面；
+       沒有 JS 時就維持上面 Grid 的版本當退回方案 */
+    #issue .issueList .list.is-masonry {
+        display: flex;
+        column-gap: 0;
+    }
+    #issue .issueList .list .masonryCol {
+        width: 50%;
+        display: flex;
+        flex-direction: column;
+        row-gap: 40px;
+    }
+}
+@media (max-width:767px) {
+    #issue .inBox {
+        padding: 20px;
+    }
+    /* 768px 以下改單欄呈現，不需要分欄，JS 也不會建立 .masonryCol，
+       這裡把兩欄版面（含 .masonryCol 的 flex 設定）覆蓋回單欄，並取消欄與欄之間的格線 */
+    #issue .issueList .list,
+    #issue .issueList .list.is-masonry {
+        display: flex;
+        flex-direction: column;
+        row-gap: 40px;
+        border-left: 0;
+        border-right: 0;
+    }
+    #issue .issueList .list::after {
+        content: none;
+    }
+    #issue .issueList .list .item {
+        padding: 0 24px;
+    }
 }

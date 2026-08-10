@@ -45,13 +45,6 @@
     letter-spacing: 0%;
     margin-bottom: 32px;
 }
-#hero .newslist ul li{
-    border-bottom:#50514F 1px solid;
-}
-#hero .newslist.type2 ul li{
-    border-right:#CECECE 1px solid;
-    border-bottom:#CECECE 1px solid;
-}
 #hero .newslist ul li .date{
     color: #50514F;
 }
@@ -63,16 +56,16 @@
 }
 @media (max-width:1279px) {
     #hero .kv .txtBox .inBox .newsBox .title {
-        font-size: 32px;
-        line-height: 40px;
+        font-size: 48px;
+        line-height: 64px;
     }
     #hero .kv .txtBox .inBox .newsBox .description {
-        font-size: 18px;
-        line-height: 24px;
+        font-size: 22px;
+        line-height: 30px;
         margin-bottom: 32px;
     }
     #hero .newslist ul li .titleBox .title {
-        font-size: 18px;
+        font-size: 22px;
         line-height:normal;
     }
     #hero .kv .txtBox .inBox {
@@ -92,6 +85,8 @@
     #hero .kv .txtBox .inBox .itemTitle{
         margin-bottom: 20px;
     }
-
+    .newslist ul li .arraw{
+        display: none;
+    }
 }
 /* 頭條 ed */

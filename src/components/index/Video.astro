@@ -14,6 +14,20 @@ import '../../styles/components/index/video.css';
                         <div class="imgBox">
                             <div class="img">
                                 <div class="statusIcon playIcon"></div>
+                                <img width="650" height="354" src="/video02.jpg" alt="img" loading="lazy" />
+                            </div>
+                            <div class="title">
+                                <p>
+                                    1科技最前線看懂產業趨勢科技最前線看懂產業趨勢科技最前線看懂
+                                    產業趨勢科技最前線看懂產業趨勢科技最前線看懂產業趨勢
+                                </p>
+                            </div>
+                        </div>                        
+                    </div>
+                    <div class="item">
+                        <div class="imgBox">
+                            <div class="img">
+                                <div class="statusIcon playIcon"></div>
                                 <img width="650" height="354" src="/video01.jpg" alt="img" loading="lazy" />
                             </div>
                             <div class="title">
@@ -23,21 +37,7 @@ import '../../styles/components/index/video.css';
                                 </p>
                             </div>
                         </div>
-                    </div>
-                    <div class="item">
-                        <div class="imgBox">
-                            <div class="img">
-                                <div class="statusIcon playIcon"></div>
-                                <img width="650" height="354" src="/video02.jpg" alt="img" loading="lazy" />
-                            </div>
-                            <div class="title">
-                                <p>
-                                    科技最前線看懂產業趨勢科技最前線看懂產業趨勢科技最前線看懂
-                                    產業趨勢科技最前線看懂產業趨勢科技最前線看懂產業趨勢
-                                </p>
-                            </div>
-                        </div>                        
-                    </div>
+                    </div>                    
                     <div class="item">
                         <div class="imgBox">
                             <div class="img">
@@ -154,8 +154,8 @@ import '../../styles/components/index/video.css';
 
 <script>
     // ===== 精選影音（#video）背景藍色光暈 =====
-    // 1. 捲動到區塊頂端（跟 #issue／#crossover／#publications 同一套「頂部切齊」判斷）時，
-    //    光暈從畫面外右上方滑進來，先到畫面正中間，停一下再移到第一張圖片，才開放 hover。
+    // 1. 頁面一載入就播放：光暈從畫面外右上方滑進來，先到畫面正中間，停一下再移到第一張圖片，才開放 hover。
+    //    不需要像 #issue／#crossover／#publications 那樣等區塊捲到頂端才觸發。
     // 2. hover 到任一張圖片時，光暈平滑移動到那張圖片底下置中。
     const videoEl = document.getElementById('video');
     const list = videoEl?.querySelector<HTMLElement>('.list');
@@ -186,6 +186,13 @@ import '../../styles/components/index/video.css';
             centerOn(0, 0, listRect.width, listRect.height);
         }
 
+        // 手機版目前有些卡片是 display:none（見 video.css 1024px 以下的規則），
+        // items[0] 在 DOM 順序上不一定是「第一個看得到的」卡片——offsetParent 在 display:none 時會是 null，
+        // 用這個判斷可以動態找到當下斷點實際顯示的第一張卡片，桌機/手機都適用
+        function getFirstVisibleItem(): HTMLElement | undefined {
+            return items.find((item) => item.offsetParent !== null);
+        }
+
         let hoverEnabled = false;
         items.forEach((item) => {
             item.addEventListener('mouseenter', () => {
@@ -193,7 +200,8 @@ import '../../styles/components/index/video.css';
             });
         });
         list.addEventListener('mouseleave', () => {
-            if (hoverEnabled && items[0]) moveBlobTo(items[0]);
+            const firstVisible = getFirstVisibleItem();
+            if (hoverEnabled && firstVisible) moveBlobTo(firstVisible);
         });
 
         function playEnter() {
@@ -212,40 +220,17 @@ import '../../styles/components/index/video.css';
                 blob!.style.opacity = '1';
             });
 
-            // 第二段：停留一下之後，才接著移到第一張圖片
+            // 第二段：停留一下之後，才接著移到第一張看得到的圖片
             window.setTimeout(() => {
-                moveBlobTo(items[0]);
+                const firstVisible = getFirstVisibleItem();
+                if (firstVisible) moveBlobTo(firstVisible);
             }, 700);
 
             // 兩段動畫都播完（跟 CSS transition 時間 0.5s 對齊，留一點餘裕）才開放 hover
             window.setTimeout(() => { hoverEnabled = true; }, 1300);
         }
 
-        // 捲動到區塊頂端才觸發：用 requestAnimationFrame 每幀輪詢區塊頂部是否進入
-        // 「接近 0（±2px 內）」的範圍，同時保留正負交叉判斷避免大幅捲動時漏判；
-        // 頁面載入/重新整理當下如果就已經停留在區塊頂部，直接觸發一次。
-        const NEAR = 2;
-        let triggered = false;
-        if (Math.abs(videoEl.getBoundingClientRect().top) <= NEAR) {
-            playEnter();
-            triggered = true;
-        } else {
-            let prevTop = videoEl.getBoundingClientRect().top;
-            const poll = () => {
-                if (triggered) return;
-                const top = videoEl!.getBoundingClientRect().top;
-                const wasFar = Math.abs(prevTop) > NEAR;
-                const nowNear = Math.abs(top) <= NEAR;
-                const signFlipped = (prevTop > NEAR && top < -NEAR) || (prevTop < -NEAR && top > NEAR);
-                if (wasFar && (nowNear || signFlipped)) {
-                    triggered = true;
-                    playEnter();
-                    return;
-                }
-                prevTop = top;
-                requestAnimationFrame(poll);
-            };
-            requestAnimationFrame(poll);
-        }
+        // 不用等區塊捲到頂端，頁面一載入就直接播放光暈進場動畫
+        playEnter();
     }
 </script>

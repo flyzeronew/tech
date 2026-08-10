@@ -142,4 +142,38 @@
         zoom: 0.85;
     }
 }
+@media (max-width:1023px) {
+    #publications .titleBox{
+        padding: 0 40px;
+    }
+    /* 所有書本仍要維持 li 的 align-items:flex-end（底部切齊，像立在書架上）。
+       但如果 txtBox 還是用一般排版（flex column）往下長高，.book.real 整個箱子變高後，
+       在「底部切齊」的規則下，變高的量會往「上」跑，等於把書封面往上推。
+       改成把 txtBox 用 position:absolute 疊在封面正下方——絕對定位的元素不會被計入
+       flex 版面的排版與對齊計算，txtBox 長多高都不會影響 .book.real 本身的排版高度，
+       封面位置、書本底部切齊都完全不受影響，txtBox 只會單純往下覆蓋展開。 */
+    /* txtBox 改絕對定位後不會撐開 .books 的排版高度，
+       這裡另外用 padding-bottom 預留跟展開後同樣高的空間，
+       避免 txtBox 展開時往下蓋到書架下面的內容（例如 booksNav 按鈕） */
+    #publications .books {
+        padding-bottom: 250px;
+    }
+    #publications .books .book.real {
+        position: relative;
+    }
+    #publications .books .book.real .txtBox {
+        position: absolute;
+        left: 0;
+        top: calc(100% + 10px);
+        width: 230px;
+        height: 0;
+        overflow: hidden;
+        transition: .8s;
+    }
+    #publications .books .book.real .img:hover ~ .txtBox {
+        width: 250px;
+        height: 220px;
+        transition: .8s;
+    }
+}
 /* 精選出版品 ed*/

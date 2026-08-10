@@ -134,14 +134,42 @@
 @media (max-width:1279px) {
     #experts .list .item .txtBox .name {
         font-weight: 700;
-        font-size: 28px; 
-        line-height: 36px;
+        font-size: 36px; 
+        line-height: 48px;
     }
     #experts .list .item .txtBox .intro a {
         font-size: 20px;
         line-height: 30px;
         padding: 10px 0;
     }
+}
+@media (max-width:1023px) {
+    #experts .titleBox{
+        margin-bottom: 40px;
+    }
+    #experts .inBox{
+        padding: 132px 40px 132px;
+    }
+    #experts .flex{
+        display: block;
+    }
+    #experts .titleBox,#experts .list{
+        width: 100%;
+    }
+    #experts .list .item {
+        display: block;
+        margin-bottom: 40px;
+    }
+    #experts .list .item .img {
+        margin-bottom: 40px;
+    }
+    #experts .list .item .txtBox {
+        width: 100%;
+    }
+    #experts .list .item .txtBox .intro a .arraw {
+        display: none;
+    }
+    
 }
 
 /* 專欄 ed*/

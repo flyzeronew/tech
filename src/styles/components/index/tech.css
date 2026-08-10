@@ -42,4 +42,31 @@
 #tech .newslist ul li .title{
     color: #000 ;
 }
+
+#tech .newslist ul li .titleBox {
+    width: 85%;
+    display: block;
+    margin-bottom: 0px;
+}
+#tech .newslist ul li a {
+    display: flex;
+    align-items: flex-start;
+}
+#tech .newslist ul li .news{
+    display: flex;
+    align-items: flex-start;
+}
+#tech .newslist ul li .titleBox .description {
+    display: block;  
+    font-size: 14px;
+    line-height: 22px;
+}
+@media (max-width:1023px) {
+    #tech .newslist {
+        padding: 0 ;
+    }
+    #tech .inBox {
+        padding: 150px 40px;
+    }
+}
 /* 消費性電子 ed*/

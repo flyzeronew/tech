@@ -80,52 +80,44 @@
     transform: scale(1.05);
 }
 #video .list .item:nth-child(1){
-    left: 0%;
-    top: 11.94%;
-    width: 41.16%;
-    height: 15.76%;
-}
-#video .list .item:nth-child(2){
     left: 51.6%;
     top: 0%;
     width: 48.41%;
-    height: 18.68%;
+}
+#video .list .item:nth-child(2){
+    left: 0%;
+    top: 11.94%;
+    width: 41.16%;
 }
 #video .list .item:nth-child(3){
     left: 72.75%;
     top: 26.3%;
     width: 13.77%;
-    height: 10.55%;
 }
 #video .list .item:nth-child(4){
     left: 31.6%;
     top: 37.1%;
     width: 33.62%;
-    height: 14.61%;
 }
 #video .list .item:nth-child(5){
     left: 6.96%;
     top: 52.46%;
     width: 18.84%;
-    height: 13.09%;
 }
 #video .list .item:nth-child(6){
     left: 58.84%;
     top: 59.21%;
     width: 41.16%;
-    height: 15.88%;
 }
 #video .list .item:nth-child(7){
     left: 0.29%;
     top: 74.2%;
     width: 47.4%;
-    height: 19.57%;
 }
 #video .list .item:nth-child(8){
     left: 62.17%;
     top: 85.39%;
     width: 32.75%;
-    height: 14.61%;
 }
 #video .linkList{
     display: flex;
@@ -138,8 +130,8 @@
 }
 #video .linkList .linkItem p{
     font-weight: 700;
-    font-size: 18px;
-    line-height: 26px;
+    font-size: 22px;
+    line-height: 32px;
     letter-spacing: 0%;
     color: #242EF7;
     margin-bottom: 15px;
@@ -178,8 +170,91 @@
 
 @media (max-width:1279px) {
     #video .list .item .imgBox .title p {
-        font-size: 20px;
-        line-height: 30px;
+        font-size: 22px;
+        line-height: 32px;
+    }
+}
+
+@media (max-width:1023px) {
+    #video .itemTitle{
+        margin-bottom: 30px;
+    }
+    #video .bg{
+        position: relative;
+        background-image: url('/news-bg-03-2.png');
+        background-size: 100%;
+        background-position: left top;
+        background-repeat:repeat;
+    }
+    #video .inBox {
+        padding: 120px 40px;
+    }
+
+    #video .list .videoBlob {
+        display: none;
+    }
+    #video .list {
+        position: relative;
+        aspect-ratio: auto;
+        width: 100%;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        row-gap: 20px;
+    }
+    #video .list .item .img{
+        margin-bottom: 5px;
+    }
+    #video .list .item:nth-child(1){
+        position: static;
+        width: 70%;
+        align-self: flex-end;
+    }
+    #video .list .item:nth-child(2){
+        position: static;
+        width: 60%;
+        align-self: flex-start;
+    }
+    #video .list .item:nth-child(3){
+        position: static;
+        width: 40%;
+        align-self: flex-end;
+    }
+    #video .list .item:nth-child(4){
+        position: static;
+        width: 70%;
+        align-self: flex-start;
+    }
+    #video .list .item:nth-child(5){
+        position: static;
+        width: 40%;
+        align-self: flex-end;
+    }
+    #video .list .item:nth-child(6){
+        position: static;
+        width: 80%;
+        align-self: flex-start;
+    }
+    #video .list .item:nth-child(7){
+        position: static;
+        width: 80%;
+        align-self: flex-end;
+    }
+    #video .list .item:nth-child(8){
+        position: static;
+        width: 60%;
+        align-self: flex-start;
+    }
+    /* 桌機版標題預設藏在圖片上緣外面，hover 才滑下來；觸控裝置沒有 hover，
+       手機版改成標題直接顯示在圖片下方 */
+    #video .list .item .imgBox .title p {
+        position: static;
+        top: auto;
+    }
+    /* 觸控裝置沒有真正的 hover，點一下後 :hover 樣式可能會卡住不放，
+       手機版把圖片放大效果拿掉 */
+    #video .list .item:hover .img {
+        transform: none;
     }
 }
 /* 精選影音 ed*/
