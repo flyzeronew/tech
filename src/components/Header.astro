@@ -135,19 +135,24 @@ import '../styles/components/header.css';
             if (id && !target) return;
 
             e.preventDefault();
+            console.log('[nav-debug] click received', performance.now());
 
-            // 手機版選單（.menuBox）是 100vh 的一般區塊，不是覆蓋層，展開時會把整個頁面往下推。
-            // 收合選單的另一支腳本註冊順序在後面，如果照原本順序先量測目標位置、選單才收合，
-            // 量到的會是選單還沒收合時的錯誤位置。這裡先自己收合選單，確保量測到的是收合後的正確位置。
             document.querySelector('header nav .mobile')?.classList.remove('is-open');
+            console.log('[nav-debug] menu closed', performance.now());
 
             const startY = window.scrollY;
             const targetY = target
                 ? target.getBoundingClientRect().top + startY
                 : 0;
             const startTime = performance.now();
+            console.log('[nav-debug] positions measured, scheduling first tick', performance.now(), { startY, targetY });
 
+            let firstTickLogged = false;
             function tick(now: number) {
+                if (!firstTickLogged) {
+                    firstTickLogged = true;
+                    console.log('[nav-debug] first tick ran', now, 'delay since click:', now - startTime);
+                }
                 const t = Math.min((now - startTime) / DURATION, 1);
                 // 明確指定 behavior: 'auto'，避免與 CSS 的 scroll-behavior: smooth 疊加造成頓挫
                 window.scrollTo({ top: startY + (targetY - startY) * t, behavior: 'auto' });
