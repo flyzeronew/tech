@@ -254,6 +254,13 @@
     }
 }
 @media (max-width:767px){
+    #video .bg{
+        position: relative;
+        background-image: url('/news-bg-03-3.png');
+        background-size: 100%;
+        background-position: left top;
+        background-repeat:repeat;
+    }
     #video .inBox {
         padding: 76px 20px;
     }
