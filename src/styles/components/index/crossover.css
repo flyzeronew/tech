@@ -47,8 +47,15 @@
 }
 #crossover .newslist ul li .title{
     color: #fff ;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
-
+#crossover .newslist ul li .time{
+    display: none;
+    color: #fff ;
+}
 #crossover .newslist ul li .titleBox {
     display: block;
     margin-bottom: 0px;
@@ -66,6 +73,10 @@
     color: #fff ;
     font-size: 14px;
     line-height: 22px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 /* 進場動態 */
@@ -115,8 +126,11 @@
 #crossover .newslist ul li:nth-child(6){ transition-delay: 0.50s; }
 /* 科技與財經 ed*/
 @media (max-width:1023px) {
+    #crossover .newslist ul li .time{
+        display: block;
+    }
     #crossover .inBox {
-        padding: 150px 40px;
+        padding: 132px 40px 100px;
     }
     #crossover .newslist ul li .titleBox {
         display: block;
@@ -128,6 +142,21 @@
     }
     #crossover .newslist {
         padding: 0 ;
+    }    
+}
+@media (max-width:767px) {
+    #crossover .newslist ul li .title {
+        font-size: 20px;
+        line-height: 28px;
     }
-    
+    #crossover .inBox {
+        padding: 76px 20px 100px;
+    }
+    #crossover .titleBox .more a .arraw{
+        width: 45px;
+        height: 45px;
+    }
+    #crossover .titleBox .more a span {        color: #fff;
+        padding: 0 20px;
+    }
 }

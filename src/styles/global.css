@@ -356,6 +356,9 @@ img {
 .newslist.type2 ul li .date{
     display: none;
 }
+.newslist.type2 ul li .time{
+    display: none;
+}
 .newslist.type2 ul li .news .titleBox .title{
     font-weight: 700;
     font-size: 22px;
@@ -445,8 +448,11 @@ img {
     .newslist ul li .news .titleBox {
         width: 70%;
     }
-    .newslist ul li .news .titleBox  .time{
+    .newslist ul li .news .titleBox .time{
         display: block;
+    }
+    .newslist.type2 ul li .news .titleBox .time{
+        display: none;
     }
     .newslist {
         padding: 0 20px;
