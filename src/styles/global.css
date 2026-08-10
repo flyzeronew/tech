@@ -375,10 +375,10 @@ img {
         width: 85%;
     }
     .newslist ul li .news .img{
-        width:15%;
+        width:20%;
     }
     .newslist ul li .news .titleBox{
-        width: 85%;
+        width: 80%;
     }
     .newslist ul li .title {
         flex: unset;

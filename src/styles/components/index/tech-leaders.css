@@ -128,4 +128,23 @@
         margin-bottom: 40px;
     }
 }
+@media (max-width:1023px) {
+    #techLeaders .inBox {
+        padding: 132px 40px 100px;
+    }
+    #techLeaders .titleBox {
+        display: block;
+        margin-bottom: 60px;
+    }
+    #techLeaders .titleBox .itemTitle {
+        margin-bottom: 20px;
+    }
+    #techLeaders .titleBox .nameBox{
+        grid-column: unset;
+        justify-self: unset;
+    }
+    #techLeaders .people {
+        padding: 40px 40px 60px;
+    }
+}
 /* 科技大人物 ed*/
