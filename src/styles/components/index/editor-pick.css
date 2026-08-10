@@ -350,5 +350,11 @@
     #editorPick .moreArea .moreSwiper swiper-slide{
         width: 300px;
     }
+    #editorPick .titleBox {
+        margin-bottom: 40px;
+    }
+    #editorPick .moreArea {
+        margin-top: 40px;
+    }
 }
 /* 編輯選讀 ed*/
