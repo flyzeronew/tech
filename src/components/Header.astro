@@ -135,24 +135,22 @@ import '../styles/components/header.css';
             if (id && !target) return;
 
             e.preventDefault();
-            console.log('[nav-debug] click received', performance.now());
 
             document.querySelector('header nav .mobile')?.classList.remove('is-open');
-            console.log('[nav-debug] menu closed', performance.now());
 
             const startY = window.scrollY;
             const targetY = target
                 ? target.getBoundingClientRect().top + startY
                 : 0;
-            const startTime = performance.now();
-            console.log('[nav-debug] positions measured, scheduling first tick', performance.now(), { startY, targetY });
 
-            let firstTickLogged = false;
+            // 手機版不做捲動動畫，直接跳到錨點位置
+            if (window.matchMedia('(max-width: 1023px)').matches) {
+                window.scrollTo({ top: targetY, behavior: 'auto' });
+                return;
+            }
+
+            const startTime = performance.now();
             function tick(now: number) {
-                if (!firstTickLogged) {
-                    firstTickLogged = true;
-                    console.log('[nav-debug] first tick ran', now, 'delay since click:', now - startTime);
-                }
                 const t = Math.min((now - startTime) / DURATION, 1);
                 // 明確指定 behavior: 'auto'，避免與 CSS 的 scroll-behavior: smooth 疊加造成頓挫
                 window.scrollTo({ top: startY + (targetY - startY) * t, behavior: 'auto' });
