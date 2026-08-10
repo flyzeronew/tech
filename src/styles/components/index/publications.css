@@ -184,6 +184,7 @@
 @media (max-width:767px) {
     #publications .titleBox {
         padding: 0 20px;
+        margin-bottom: 20px;
     }
     #publications .titleBox .more a .arraw{
         width: 45px;
@@ -193,7 +194,7 @@
         padding: 0 20px;
     }
     #publications .books {
-        zoom: 0.75;
+        zoom: 0.65;
         padding-bottom: 30px;
     }
     /* 768px 以下不用書封面原地彈出的資訊框，改成點選後置換到書架下方的共用面板 */

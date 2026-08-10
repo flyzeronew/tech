@@ -108,10 +108,11 @@
     border-top: 1px solid #fff;
 }
 #experts .list .item .txtBox .more a{
-    width: 100%;
+    width: 99%;
     display: flex;
     justify-content: space-between;
     border: 1px solid #fff;
+    margin: 0 auto;
 }
 #experts .list .item .txtBox .more a:hover{
     background-color: rgba(255, 255, 255, 0.1);

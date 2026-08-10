@@ -140,6 +140,11 @@ import '../styles/components/header.css';
 
             e.preventDefault();
 
+            // 手機版選單（.menuBox）是 100vh 的一般區塊，不是覆蓋層，展開時會把整個頁面往下推。
+            // 收合選單的另一支腳本註冊順序在後面，如果照原本順序先量測目標位置、選單才收合，
+            // 量到的會是選單還沒收合時的錯誤位置。這裡先自己收合選單，確保量測到的是收合後的正確位置。
+            document.querySelector('header nav .mobile')?.classList.remove('is-open');
+
             const startY = window.scrollY;
             const targetY = target
                 ? target.getBoundingClientRect().top + startY
