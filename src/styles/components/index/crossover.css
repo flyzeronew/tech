@@ -60,7 +60,7 @@
     display: block;
     margin-bottom: 0px;
 }
-#crossover .newslist ul li a {
+#crossover .newslist ul li a{
     display: flex;
     align-items: flex-start;
 }
