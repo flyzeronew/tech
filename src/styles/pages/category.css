@@ -37,24 +37,6 @@
     font-weight: 700;
     line-height: 30px;
 }
-#category .breadcrumbs{
-    display: flex;
-    margin-bottom: 60px;
-}
-#category .breadcrumbs a{
-    font-size: 13px;
-    font-weight: 400;
-    line-height: 18px;
-    color: #505050;
-    letter-spacing: 0.39px;
-}
-#category .breadcrumbs a::after{
-    content: '|';
-    padding: 0 10px;
-}
-#category .breadcrumbs a:last-child::after{
-    content: '';
-}
 #category .list{
     margin-bottom: 40px;
 }

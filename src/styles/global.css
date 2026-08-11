@@ -176,7 +176,7 @@ img {
 }
 /* 內框 ed*/
 main{
-    min-height: 600px;
+    min-height: 800px;
 }
 /* 看更多 */
 .more a,.more button{
@@ -220,18 +220,27 @@ main{
 
 /* 看更多 ed*/
 
-.itemTitle p{
-    font-weight: 700;
-    font-size: 20px;
-    line-height: 28px;
-    letter-spacing: 0%;    
+
+/* 麵包屑 */
+.breadcrumbs{
+    display: flex;
+    margin-bottom: 60px;
 }
-@media (max-width:767px) {
-    .itemTitle p{
-        font-size: 18px;
-        line-height: 24px;
-    }
+.breadcrumbs a{
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 18px;
+    color: #505050;
+    letter-spacing: 0.39px;
 }
+.breadcrumbs a::after{
+    content: '|';
+    padding: 0 10px;
+}
+.breadcrumbs a:last-child::after{
+    content: '';
+}
+/* 麵包屑 ed*/
 
 .flex{
     display: flex;

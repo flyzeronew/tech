@@ -1,0 +1,216 @@
+#article {
+    padding: 152px 0 0;
+}
+#article .inBox{
+    width: 768px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    padding:0 40px;
+}
+@media (max-width:767px) {
+    #article .inBox{
+        width: 100%;
+        padding:0 20px;
+    }
+}
+#article .breadcrumbs{
+    margin-bottom: 40px;
+}
+#article .newsArticle .mainTitle{
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 48px;
+    color: #000;
+    letter-spacing: 0%;
+    margin-bottom: 20px;
+}
+#article .newsArticle .authorBox{
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16px;
+    color: #000;
+    letter-spacing: 0%;
+    margin-bottom: 20px;
+}
+#article .newsArticle .authorBox .author, 
+#article .newsArticle .authorBox .publishTime, 
+#article .newsArticle .authorBox .updateTime{
+    margin-bottom: 8px;
+}
+#article .contains{
+    padding: 20px 0;
+}
+#article .contains .title{
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 22px;
+    color: #242EF7;
+    letter-spacing: 0%;
+    margin-bottom: 12px;
+}
+#article .contains ul{
+    padding-left: 16px;
+    margin-left: 8px;
+    border-left: 1px solid #242EF7;
+}
+#article .contains ul li{
+    margin-bottom: 12px;
+}
+#article .contains ul li a{
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    color: #000;
+    letter-spacing: 0%;
+}
+#article .mainImg{
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    margin-bottom: 28px;
+    line-height: 0;
+}
+#article .mainImg img{
+    margin-bottom: 8px;
+}
+#article small{
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: 0%;
+    color: #505050;
+}
+#article .mainVideo{
+    width: 100%;
+    overflow: hidden;
+    margin-bottom: 28px;
+    aspect-ratio: 16/9;
+}
+#article .mainVideo iframe{
+    width: 100%;
+    height: 100%;
+}
+#article .content h2,
+#article .content h3,
+#article .content p,
+#article .content ul,
+#article .content ol,
+#article .content li,
+#article .content blockquote,
+#article .content code,
+#article .content pre,
+#article .content hr,
+#article .content iframe,
+#article .content video,
+#article .content cite
+{
+    display: block;
+    margin-bottom: 20px;
+}
+#article .content table{
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+#article .content table td,
+#article .content table th,
+#article .content table tr{
+    border: 1px solid #cecece;
+    padding: 8px;
+    text-align: center;
+}
+#article .content table th{
+    background-color: #242EF7;
+    color: #fff;
+}
+#article .content a{
+    color: #242EF7;
+    text-decoration: underline;
+}
+#article .content a:hover{
+    opacity: 0.6;
+}
+#article .content blockquote{
+    margin-bottom: 20px;
+}
+#article .content blockquote.style-modern {
+    display: block;
+    width: 70%;
+    margin: 40px auto ;
+    position: relative;
+    padding: 50px;
+    border-radius: 8px;
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 48px;
+    color: #000;
+}
+#article .content blockquote.style-modern::before {
+    content: "“";
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    font-size: 6rem;
+    color: #242EF7;
+    font-family: Georgia, serif;
+    line-height: 1;
+}
+#article .content blockquote.style-modern::before {
+    content: "“";
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    font-size: 6rem;
+    color: #242EF7;
+    font-family: Georgia, serif;
+    line-height: 1;
+}
+#article .content .style-modern::after {
+    content: "”";
+    position: absolute;
+    bottom: -40px;
+    right: 10px;
+    font-size: 5rem;
+    color: #242EF7;
+    font-family: Georgia, serif;
+    line-height: 1;
+}
+
+#article .content blockquote.style-modern p {
+    margin: 0;
+    line-height: 1.6;
+}
+#article .content blockquote.style-modern cite {
+    display: block;
+    margin-top: 15px;
+    color: #64748b;
+    font-weight: bold;
+}
+
+#article .articleEndbox{
+    margin-top: 40px;
+}
+#article .articleEndbox p{
+    font-size: 20px;
+    line-height: 36px;
+    color: #000;
+    margin-bottom: 20px;
+    display: block;
+    margin-bottom: 20px;
+}
+
+#article .tags{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+#article .tags a{
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    color: #fff;
+    background-color: #242EF7;
+    letter-spacing: 0%;
+    padding: 4px 10px;
+}
