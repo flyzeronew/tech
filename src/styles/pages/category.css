@@ -139,9 +139,6 @@
     #category .list ul li .arraw{
         display: none;
     }
-    #category .inBox{
-        padding: 40px 40px 100px;
-    }
     #category .kv .img{
         aspect-ratio: 768/320;
     }
@@ -153,6 +150,21 @@
     }
 }
 @media (max-width:767px) {
+    #category .cateTitle .title{
+        font-size: 56px;
+        line-height: 72px;
+    }
+    #category .cateTitle .en{
+        font-size: 28px;
+        line-height: 44px;
+    }
+    #category .cateTitle .description{
+        font-size: 18px;
+        line-height: 26px;
+    }
+    #category .inBox{
+        padding: 40px 20px 100px;
+    }
     #category .kv .img{
         aspect-ratio: 428/240;
     }
