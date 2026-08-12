@@ -478,6 +478,12 @@ main{
 /* 列表文章 ed*/
 
 /* 標題進場動畫（所有 itemTitle 共用）*/
+.itemTitle p{
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 28px;
+    color: #000;
+}
 .animLabel{
     position: relative;
 }

@@ -162,6 +162,13 @@ header nav .switch .btn input:checked + .slider::before{
 }
 
 /* pc導覽列變色 */
+header nav .pc.type0 .logo{
+    display: flex;
+    align-items: center;
+    background-color: #242EF7;
+    padding: 16px 36px;
+    border-left: 28px #000 solid;
+}
 header nav .pc.type1 .menu a,
 header nav .pc.type1 .menu a.act,
 header nav .pc.type1 .menu a:hover.act,
