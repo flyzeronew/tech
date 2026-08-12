@@ -100,6 +100,10 @@
     cursor: pointer;
     display: flex;
     justify-content: space-between;
+    transition: background-color 0.3s;
+}
+#partners .more button:hover{
+    background-color: rgba(0, 0, 0, 0.1);
 }
 #partners .more button span{
     color: #000;

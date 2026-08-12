@@ -42,20 +42,25 @@ const newsItems = [
                             <div class="itemTrack">
                                 {newsItems.map((item, i) => (
                                     <div class="item" class:list={{ 'is-active': i === 0 }} data-index={i} data-rel={Math.min(2, i)}>
-                                        <div class="img">
-                                            <img width="600" height="342" src={item.image} alt="img" />
-                                        </div>
-                                        <div class="txtBox">
-                                            <div class="title">
-                                                {item.title}
+                                        <a href="#" class="cardLink">
+                                            <div class="img">
+                                                <img width="600" height="342" src={item.image} alt="img" />
+                                                <div class="cardArraw">
+                                                    <img width="28" height="28" src="/arraw-right-01.svg" alt="arraw" />
+                                                </div>
                                             </div>
-                                            <div class="description">
-                                                {item.description}
+                                            <div class="txtBox">
+                                                <div class="title">
+                                                    {item.title}
+                                                </div>
+                                                <div class="description">
+                                                    {item.description}
+                                                </div>
+                                                <div class="tag">
+                                                    {item.tags.map((tag) => <span>{tag}</span>)}
+                                                </div>
                                             </div>
-                                            <div class="tag">
-                                                {item.tags.map((tag) => <a href="#">{tag}</a>)}
-                                            </div>
-                                        </div>
+                                        </a>
                                     </div>
                                 ))}
                             </div>

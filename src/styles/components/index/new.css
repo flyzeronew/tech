@@ -93,6 +93,43 @@
     transform: translateY(0) scale(0.94);
     z-index: 4;
 }
+#new .list .item .cardLink{
+    display: contents;
+}
+#new .list .item .img::after{
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+#new .list .item .img .cardArraw{
+    position: absolute;
+    right: -60px;
+    bottom: -60px;
+    z-index: 2;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    border: 1px solid #242EF7;
+    transition: right 0.3s ease, bottom 0.3s ease;
+}
+#new .list .item .img .cardArraw img{
+    width: 28px;
+    height: 28px;
+    transform: rotate(-45deg);
+}
+#new .list .item .cardLink:hover .img::after{
+    opacity: 1;
+}
+#new .list .item .cardLink:hover .img .cardArraw{
+    right: 0;
+    bottom: 0;
+}
 #new .list .item .txtBox{
     padding: 30px 20px 0;
 }
@@ -124,7 +161,7 @@
     display: flex;
     column-gap: 10px;
 }
-#new .list .item .tag a{
+#new .list .item .tag span{
     font-weight: 400;
     font-size: 12px;
     line-height: 16px;

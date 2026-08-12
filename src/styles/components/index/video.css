@@ -50,6 +50,18 @@
     height: auto;
     overflow: hidden;
 }
+#video .list .item .img::after{
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+#video .list .item:hover .img::after{
+    opacity: 1;
+}
 #video .list .item .imgBox .title{
     position: relative;
     height: 80px;

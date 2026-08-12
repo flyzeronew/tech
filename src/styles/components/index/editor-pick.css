@@ -130,6 +130,10 @@
     background-color: transparent;
     border: 1px solid #000;
     cursor: pointer;
+    transition: background-color 0.3s;
+}
+#editorPick .moreArea .btn button:hover{
+    background-color: rgba(0, 0, 0, 0.1);
 }
 #editorPick .moreArea .btn button img{
     width: 20px;
@@ -181,6 +185,40 @@
     width: 100%;
     height: auto;
     margin-bottom: 36px;
+}
+#editorPick .moreArea .moreSwiper swiper-slide .box .img::after{
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+#editorPick .moreArea .moreSwiper swiper-slide .box .img .cardArraw{
+    position: absolute;
+    right: -60px;
+    bottom: -60px;
+    z-index: 2;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    border: 1px solid #242EF7;
+    transition: right 0.3s ease, bottom 0.3s ease;
+}
+#editorPick .moreArea .moreSwiper swiper-slide .box .img .cardArraw img{
+    width: 28px;
+    height: 28px;
+    transform: rotate(-45deg);
+}
+#editorPick .moreArea .moreSwiper swiper-slide .box:hover .img::after{
+    opacity: 1;
+}
+#editorPick .moreArea .moreSwiper swiper-slide .box:hover .img .cardArraw{
+    right: 0;
+    bottom: 0;
 }
 #editorPick .moreArea .moreSwiper swiper-slide .box .txtBox{
     padding: 20px;

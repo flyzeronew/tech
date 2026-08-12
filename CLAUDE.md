@@ -27,6 +27,15 @@ There is no test suite, linter, or formatter configured.
 - `astro.config.mjs` — Astro config, currently empty (`defineConfig({})`).
 - `tsconfig.json` — extends `astro/tsconfigs/strict`.
 
+## Hover conventions
+
+Hover treatments follow the Figma handoff's component specs (`newsRow` and `card/latestNews` etc. in the "Handoff: TVBS TECH Website Design" file) rather than ad-hoc per-section choices. Two shared patterns are established — reuse them instead of inventing new hover language:
+
+- **List rows** (date/time + thumbnail `.img` + `.titleBox` + arrow, e.g. `.newslist` in `global.css` used by Hero/Crossover/Tech, and `#category .list`): on hover, the thumbnail gets a `rgba(0,0,0,0.2)` overlay via `.img::after`, and `.titleBox` fades to `opacity: 0.6`. Date and arrow are untouched.
+- **Image cards with a corner reveal button** (e.g. EditorPick's "影響 AI 的十件事" cards, New.astro's scrollytelling cards): on hover, the image gets the same `rgba(0,0,0,0.2)` `::after` overlay, and a 60×60 white/blue-bordered arrow button (`.cardArraw`, reusing `/arraw-right-01.svg`) slides in from just outside the corner (`right/bottom: -60px` → `0`) — the same off-canvas-slide-in mechanic as the pre-existing shared `.statusIcon` component in `global.css`, just sized/bordered differently per that Figma component.
+- If a card's clickable root isn't already an `<a>` (e.g. New.astro's `.item` was a plain `<div>`), wrap the content in `<a class="cardLink">` with `display: contents` so the anchor becomes clickable/hoverable without needing to rewrite the existing child layout CSS. Any nested `<a>` tags (e.g. tag chips) must be converted to non-anchor elements first — `<a>` cannot nest inside `<a>`.
+- Don't assume a hover effect belongs somewhere just because a visually similar block elsewhere has one — confirm against the actual Figma node for that component before adding it (e.g. `#video`'s scattered mosaic list intentionally keeps its own bespoke hover — image scale + title reveal — instead of the list-row pattern above, and its play-icon button was deliberately left as the pre-existing unbordered `.statusIcon`, not resized to match the card pattern).
+
 ## Fonts
 
 Fonts are loaded via `@fontsource` packages (`@fontsource/noto-sans-tc`, `@fontsource/roboto`, `@fontsource/roboto-flex`) and imported per-weight in `global.css`, e.g. `@import '@fontsource/noto-sans-tc/400.css';`. When adding new font weights/styles, import the specific weight file rather than the whole package.

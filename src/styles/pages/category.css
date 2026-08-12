@@ -57,6 +57,21 @@
 }
 #category .list ul li .news .titleBox{
     width: 80%;
+    transition: opacity 0.3s;
+}
+#category .list ul li .news .img::after{
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+#category .list ul li a:hover .news .titleBox{
+    opacity: 0.6;
+}
+#category .list ul li a:hover .news .img::after{
+    opacity: 1;
 }
 #category .list ul li .news .time{
     font-size: 13px;

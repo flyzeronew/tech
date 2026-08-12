@@ -184,6 +184,10 @@ main{
     display: flex;
     align-items: center;
     border: 1px solid #242EF7;
+    transition: background-color 0.3s;
+}
+.more a:hover,.more button:hover{
+    background-color: rgba(36, 46, 247, 0.1);
 }
 .more a span,.more button span{
     font-weight: 700;
@@ -196,10 +200,11 @@ main{
 .more a .arraw,.more button .arraw{
     width: 60px;
     height: 60px;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-left: 1px solid #242EF7;    
+    border-left: 1px solid #242EF7;
 }
 .more a .arraw img,.more button .arraw img{
     width: 28px;
@@ -330,6 +335,23 @@ main{
 }
 .newslist ul li .arraw img{
     width: 50%;
+}
+.newslist ul li .titleBox{
+    transition: opacity 0.3s;
+}
+.newslist ul li .img::after{
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.newslist ul li a:hover .titleBox{
+    opacity: 0.6;
+}
+.newslist ul li a:hover .img::after{
+    opacity: 1;
 }
 
 /* 議題樣式 */
