@@ -1,0 +1,201 @@
+/* 專家觀點頁 */
+#expertsPage{
+    background-color: #1A1A1A;
+    color: #fff;
+}
+#expertsPage .inBox{
+    padding: 152px 0 100px;
+}
+
+/* 頁首：麵包屑 + 標題 + 說明 */
+#expertsPage .headline{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    column-gap: 40px;
+    margin-bottom: 60px;
+}
+#expertsPage .breadcrumbs{
+    margin-bottom: 24px;
+}
+#expertsPage .breadcrumbs a{
+    color: #fff;
+}
+#expertsPage .cateTitle .title{
+    font-weight: 400;
+    font-size: 80px;
+    line-height: 100px;
+}
+#expertsPage .cateTitle .en{
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 50px;
+}
+#expertsPage .description{
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 30px;
+}
+
+/* 專家卡片列表 */
+#expertsPage .list{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 40px;
+    row-gap: 80px;
+}
+#expertsPage .author .avatar{
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 1/1;
+    margin-bottom: 40px;
+}
+#expertsPage .author .avatar .img{
+    width: 100%;
+    height: 100%;
+}
+#expertsPage .author .avatar .img img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+#expertsPage .author .profile{
+    margin-bottom: 40px;
+}
+#expertsPage .author .name{
+    margin-bottom: 20px;
+}
+#expertsPage .author .nameText{
+    font-weight: 700;
+    font-size: 36px;
+    line-height: 48px;
+    margin-bottom: 4px;
+}
+#expertsPage .author .labelGroup{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+#expertsPage .author .label{
+    background-color: #242EF7;
+    color: #fff;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    padding: 4px 8px;
+}
+#expertsPage .author .desc{
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 26px;
+    min-height: 105px;
+}
+
+/* 專家旗下文章列 */
+#expertsPage .author .newsGroup .newsRow{
+    border-top: 1px solid #CECECE;
+}
+#expertsPage .author .newsGroup .newsRow a{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 20px;
+    padding: 20px 0;
+    color: #fff;
+}
+#expertsPage .author .newsGroup .newsRow .rowTitle{
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 30px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+#expertsPage .author .newsGroup .newsRow .arraw{
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#expertsPage .author .newsGroup .newsRow .arraw img{
+    width: 24px;
+    height: 24px;
+}
+
+/* 完整介紹與觀點 按鈕（沿用 .more 元件，改白色外框搭配深色底） */
+#expertsPage .author .more a{
+    width: 99%;
+    border: 1px solid #fff;
+}
+#expertsPage .author .more a:hover{
+    background-color: rgba(255, 255, 255, 0.1);
+}
+#expertsPage .author .more a span{
+    flex: 1;
+    text-align: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 22px;
+    padding: 13px 20px;
+}
+#expertsPage .author .more a .arraw{
+    width: 48px;
+    height: 48px;
+    border-left: 1px solid #fff;
+}
+#expertsPage .author .more a .arraw img{
+    width: 24px;
+    height: 24px;
+    transform: rotate(-45deg);
+}
+
+@media (max-width:1279px) {
+    #expertsPage .inBox{
+        padding: 132px 40px 100px;
+    }
+}
+@media (max-width:1023px) {
+    #expertsPage .headline{
+        display: block;
+    }
+    #expertsPage .description{
+        margin-top: 12px;
+    }
+    #expertsPage .list{
+        grid-template-columns: repeat(2, 1fr);
+        column-gap: 20px;
+        row-gap: 60px;
+    }
+    #expertsPage .author .newsGroup .newsRow .arraw{
+        display: none;
+    }
+}
+@media (max-width:767px) {
+    #expertsPage .author .desc{
+        min-height: auto;
+    }
+    #expertsPage .inBox{
+        padding: 132px 20px 100px;
+    }
+    #expertsPage .cateTitle .title{
+        font-size: 56px;
+        line-height: 72px;
+    }
+    #expertsPage .cateTitle .en{
+        font-size: 28px;
+        line-height: 44px;
+    }
+    #expertsPage .description{
+        font-size: 18px;
+        line-height: 26px;
+    }
+    #expertsPage .list{
+        grid-template-columns: repeat(1, 1fr);
+        row-gap: 60px;
+    }
+}

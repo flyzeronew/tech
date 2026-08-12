@@ -1,0 +1,57 @@
+/* 404 找不到頁面 */
+#notFound{
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+}
+#notFound .inBox{
+    padding: 152px 0 100px;
+    text-align: center;
+}
+#notFound .code{
+    font-weight: 700;
+    font-size: 100px;
+    line-height: 1;
+    color: #242EF7;
+    margin-bottom: 20px;
+}
+#notFound .title{
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 44px;
+    margin-bottom: 12px;
+}
+#notFound .desc{
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 26px;
+    color: #505050;
+    margin-bottom: 40px;
+}
+#notFound .back{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #242EF7;
+    color: #242EF7;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 22px;
+    padding: 16px 40px;
+    transition: background-color 0.3s;
+}
+#notFound .back:hover{
+    background-color: rgba(36, 46, 247, 0.1);
+}
+@media (max-width:767px) {
+    #notFound .inBox{
+        padding: 132px 20px 100px;
+    }
+    #notFound .code{
+        font-size: 72px;
+    }
+    #notFound .title{
+        font-size: 26px;
+        line-height: 36px;
+    }
+}

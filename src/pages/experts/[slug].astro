@@ -1,0 +1,86 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import '../../styles/pages/expert-detail.css';
+import { experts } from '../../data/experts';
+
+export function getStaticPaths() {
+    return experts.map((expert) => ({
+        params: { slug: expert.slug },
+        props: { expert },
+    }));
+}
+
+const { expert } = Astro.props;
+if (!expert) {
+    return Astro.rewrite('/404');
+}
+// Figma 設計稿的文章列表展示 9 列，實際只有 3 篇真實文章資料，重複三輪填滿版面，跟列表頁 6 張卡片同樣的做法。
+const articles = [...expert.articles, ...expert.articles, ...expert.articles];
+---
+<Layout title={`${expert.firstName} ${expert.lastName} | 專家觀點 | TVBS TECH`}>
+    <section data-nav="light">
+        <div id="expertHero">
+            <div class="portrait">
+                <img width="576" height="720" src={expert.avatar} alt={`${expert.firstName} ${expert.lastName}`} loading="lazy" />
+            </div>
+            <div class="profileInfo">
+                <div class="name">
+                    <p class="nameText">{expert.firstName}<br />{expert.lastName}</p>
+                    <div class="labelGroup">
+                        {expert.tags.map((tag) => <span class="label">{tag}</span>)}
+                    </div>
+                </div>
+                <p class="desc">{expert.description}</p>
+            </div>
+        </div>
+    </section>
+    <section data-nav="dark">
+        <div id="expertBody">
+            <div class="inBox">
+                <div class="quote">
+                    <img class="deco deco-upper" width="37" height="31" src="/deco-upper-w.svg" alt="" />
+                    <p>{expert.quote}</p>
+                    <img class="deco deco-lower" width="37" height="31" src="/deco-lower-w.svg" alt="" />
+                </div>
+
+                <div class="newsSection">
+                    <div class="breadcrumbs">
+                        <a href="/">首頁</a>
+                        <a href="/experts">專家觀點</a>
+                        <a href={`/experts/${expert.slug}`}>{expert.firstName} {expert.lastName}</a>
+                    </div>
+                    <p class="fromTitle">From {expert.firstName} {expert.lastName}</p>
+
+                    <div class="newsGroup">
+                        {articles.map((article) => (
+                            <div class="newsRow">
+                                <a href={article.href}>
+                                    <div class="img">
+                                        <img width="200" height="113" src={article.image} alt="img" loading="lazy" />
+                                    </div>
+                                    <div class="titleBox">
+                                        <p class="date">{article.date}</p>
+                                        <p class="rowTitle">{article.title}</p>
+                                        <p class="rowDesc">{article.description}</p>
+                                    </div>
+                                    <div class="arraw">
+                                        <img width="24" height="24" src="/arraw-right-03.svg" alt="arraw" />
+                                    </div>
+                                </a>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div class="more">
+                        <a href="#">
+                            <span>Read more</span>
+                            <div class="arraw">
+                                <img width="28" height="28" src="/arraw-right-03.svg" alt="arraw" />
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</Layout>

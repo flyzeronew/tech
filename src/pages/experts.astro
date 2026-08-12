@@ -1,0 +1,76 @@
+---
+import Layout from '../layouts/Layout.astro';
+import '../styles/pages/experts.css';
+import { experts as expertsData } from '../data/experts';
+
+// Figma 設計稿的專家清單頁展示 6 張卡片（2 排 x 3 欄），實際只有 3 位專家的真實資料，
+// 重複一輪填滿版面，跟設計稿的做法一致。
+const experts = [...expertsData, ...expertsData];
+---
+<Layout title="專家觀點 | TVBS TECH">
+    <section data-nav="dark">
+        <div id="expertsPage">
+            <div class="inBox">
+                <div class="headline">
+                    <div class="left">
+                        <div class="breadcrumbs">
+                            <a href="/">首頁</a>
+                            <a href="/experts">專家觀點</a>
+                        </div>
+                        <div class="cateTitle">
+                            <p class="title">專家觀點</p>
+                            <p class="en">THE EXPERTS</p>
+                        </div>
+                    </div>
+                    <div class="description">
+                        <p>匯聚全球頂尖智識，</p>
+                        <p>解碼複雜變局背後的關鍵脈動。</p>
+                    </div>
+                </div>
+
+                <div class="list">
+                    {experts.map((expert) => (
+                        <div class="author">
+                            <div class="avatar">
+                                <div class="img">
+                                    <img width="137" height="137" src={expert.avatar} alt={`${expert.firstName} ${expert.lastName}`} loading="lazy" />
+                                </div>
+                            </div>
+                            <div class="profile">
+                                <div class="name">
+                                    <p class="nameText">{expert.firstName} {expert.lastName}</p>
+                                    <div class="labelGroup">
+                                        {expert.tags.map((tag) => <span class="label">{tag}</span>)}
+                                    </div>
+                                </div>
+                                <p class="desc">{expert.description}</p>
+                            </div>
+                            <div class="content">
+                                <div class="newsGroup">
+                                    {expert.articles.map((article) => (
+                                        <div class="newsRow">
+                                            <a href={article.href}>
+                                                <span class="rowTitle">{article.title}</span>
+                                                <span class="arraw">
+                                                    <img width="24" height="24" src="/arraw-right-03.svg" alt="arraw" />
+                                                </span>
+                                            </a>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div class="more">
+                                    <a href={`/experts/${expert.slug}`}>
+                                        <span>完整介紹與觀點</span>
+                                        <div class="arraw">
+                                            <img width="24" height="24" src="/arraw-right-03.svg" alt="arraw" />
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    </section>
+</Layout>
