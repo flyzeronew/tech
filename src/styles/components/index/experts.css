@@ -38,6 +38,9 @@
     display: flex;
     justify-content: space-between;    
 }
+#experts .titleBox p{
+    color: #fff;
+}
 #experts .titleBox{
     width: 35%;
 }

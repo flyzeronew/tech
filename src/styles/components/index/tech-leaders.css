@@ -20,6 +20,9 @@
     line-height: 50px;
     margin-bottom: 10px;
 }
+#techLeaders .titleBox .itemTitle p{
+    color: #fff;
+}
 #techLeaders .titleBox .nameBox{
     grid-column: 2;
     justify-self: center;

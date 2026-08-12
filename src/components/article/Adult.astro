@@ -1,0 +1,36 @@
+---
+import '../../styles/components/article/adult.css';
+---
+<section>
+    <div id="adult">
+        <div class="box">
+            <div class="img">
+                <img src="/18-adult.svg" alt="adult warning" width="75" height="62">
+            </div>
+            <div class="content">
+                <p>即將進入的頁面含有限制級內容，未滿 18 歲者請勿瀏覽。</p>
+            </div>
+            <div class="button">
+                <ul>
+                    <li class="white">
+                        我未滿 18 歲
+                    </li>
+                    <li class="ok">
+                        我已年滿 18 歲
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // ===== 18禁提示（#adult）=====
+    const adult = document.getElementById('adult');
+    adult?.querySelector<HTMLElement>('.ok')?.addEventListener('click', () => {
+        adult.style.display = 'none';
+    });
+    adult?.querySelector<HTMLElement>('.white')?.addEventListener('click', () => {
+        window.location.href = '/';
+    });
+</script>

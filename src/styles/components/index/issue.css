@@ -142,6 +142,9 @@
     line-height: 28px;
     letter-spacing: 0%;
 }
+#issue .txtBox .itemTitle p{
+    color: #fff;
+}
 #issue .txtBox .title{
     width: 100%;
     padding-bottom: 200px;

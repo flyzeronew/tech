@@ -14,6 +14,9 @@
     line-height: 28px;
     letter-spacing: 0%;
 }
+#crossover .itemTitle p{
+    color: #fff;
+}
 #crossover .titleBox{
     display: flex;
     justify-content: space-between;

@@ -1,0 +1,98 @@
+#articleMore .articleInBox{
+    width: 768px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    padding:0 40px 100px;
+}
+@media (max-width:767px) {
+    #articleMore .articleInBox{
+        width: 100%;
+        padding:0 20px 100px;
+    }
+}
+#articleMore{
+    padding: 60px 0 0;
+    background-color: #242EF7;
+    color: #fff;
+}
+#articleMore .mainTitle{
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 40px;
+    letter-spacing: 0%;
+    margin-bottom: 20px;
+    color: #fff;
+}
+#articleMore .list{
+    margin-bottom: 40px;
+}
+#articleMore .list ul li{
+    padding: 20px 0;
+    border-bottom: 1px solid #fff;
+}
+#articleMore .list ul li a{
+    display: flex;
+    gap: 20px;
+}
+#articleMore .list ul li .news{
+    display: flex;
+    gap: 20px;
+}
+#articleMore .list ul li .news .img{
+    width: 20%;
+}
+#articleMore .list ul li .news .titleBox{
+    width: 80%;
+}
+#articleMore .list ul li .news .time{
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 18px;
+    color: #F0F0F0;
+    letter-spacing: 0.39px;
+}
+#articleMore .list ul li .news .title{
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 30px;
+    color: #fff;
+    letter-spacing: 0.66px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#articleMore .list ul li .news .description{
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 22px;
+    color: #fff;
+    letter-spacing: 0.42px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#articleMore .list ul li .arraw{
+    width: 36px;
+    height: 36px;
+}
+#articleMore .list ul li .arraw img{
+    width: 24px;
+    height: 24px;
+}
+@media (max-width:1279px) {
+    #articleMore .list ul li .news .img{
+        width: 30%;
+    }
+    #articleMore .list ul li .news .titleBox{
+        width: 70%;
+    }
+}
+@media (max-width:1023px) {
+    #articleMore .list ul li .arraw{
+        display: none;
+    }
+}

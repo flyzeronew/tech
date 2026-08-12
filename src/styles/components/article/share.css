@@ -1,0 +1,55 @@
+#share .inBox{
+    position: relative;
+    overflow:unset;
+}
+#share .fixed{
+    top: 30%;
+    position: fixed;
+}
+#share .shareBox{
+    position: absolute;
+    width: max-content;
+    right: 10px;
+    top: 150px;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+}
+@media (max-width:1279px) {
+    #share .shareBox{
+        right: 50px;
+        top: 150px;
+    }
+}
+@media (max-width:1023px) {
+    #share .shareBox{
+        display: none;
+    }
+}
+#share .shareBox .community{
+    display: block;
+    margin-bottom: 12px;
+}
+#share .shareBox .community a{
+    width: 36px;
+    padding: 12px;
+    aspect-ratio: 1/1;
+    display: block;
+    background-color: #fff;
+}
+#share .shareBox .goTop a{
+    width: 36px;
+    padding: 10px;
+    aspect-ratio: 1/1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #000;
+    background-color: #fff;
+}
+#share .shareBox .goTop a img{
+    width: 30px;
+    transform: rotate(-90deg);
+    transition: transform 0.3s ease;
+}

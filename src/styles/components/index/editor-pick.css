@@ -11,6 +11,9 @@
     justify-content: space-between;
     margin-bottom: 60px;
 }
+#editorPick .titleBox .itemTitle p{
+    color: #fff;
+}
 #editorPick .editor{
     width: 60%;
     display: flex;

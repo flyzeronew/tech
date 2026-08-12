@@ -1,0 +1,54 @@
+---
+import '../../styles/components/article/share.css';
+---
+<section>
+    <div id="share">
+        <div class="inBox">
+            <div class="shareBox">
+                <div class="fixed">
+                    <div class="community">
+                        <a href="#">
+                            <img width="24" height="24 " src="/ic-linkedin.svg" alt="linkedin" />
+                        </a>
+                        <a href="#">
+                            <img width="24" height="24 " src="/ic-line.svg" alt="line" />
+                        </a>
+                        <a href="#">
+                            <img width="24" height="24 " src="/ic-threads.svg" alt="threads" />
+                        </a>
+                        <a href="#">
+                            <img width="24" height="24 " src="/ic-facebook.svg" alt="facebook" />
+                        </a>
+                    </div>
+                    <div class="goTop">
+                        <a href="#">
+                            <img width="24" height="24 " src="/arraw-right-02.svg" alt="top" />
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // ===== goTop：點擊滑動回頁面頂部 =====
+    // 不使用 scrollTo(behavior:'smooth')：它會跟 href="#" 的原生錨點捲動互相搶同一個捲軸，
+    // 導致捲一半就卡住。改成自己用 requestAnimationFrame 緩動、behavior:'auto'，避開衝突。
+    function easeInOutCubic(t: number) {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+
+    document.querySelector<HTMLAnchorElement>('#share .goTop a')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        const DURATION = 600;
+        const startY = window.scrollY;
+        const startTime = performance.now();
+        function tick(now: number) {
+            const t = Math.min((now - startTime) / DURATION, 1);
+            window.scrollTo({ top: startY * (1 - easeInOutCubic(t)), behavior: 'auto' });
+            if (t < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+    });
+</script>
