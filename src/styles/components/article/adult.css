@@ -63,3 +63,13 @@
 #adult .box .button ul li.white:hover{
     background-color:rgba(0, 0, 0, 0.15);
 }
+
+
+@media (max-width:767px) {
+    #adult .box {
+        width: 70%;
+        max-width: auto;
+        background-color: #fff;
+        padding: 36px;
+    }
+}

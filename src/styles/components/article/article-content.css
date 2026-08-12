@@ -239,21 +239,19 @@ h1 p{
     margin-bottom: 20px;
 }
 #article .content .imgPlaceholder .icon{
-    width: 48px;
-    aspect-ratio: 16/9;
+    width: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0.3;
 }
-#article .content .imgPlaceholder .icon svg{
-    width: 20px;
-    height: 20px;
+#article .content .imgPlaceholder .icon img{
+    width: 100%;
+    height: auto;
 }
 #article .content .imgPlaceholder .logo{
     width: 110px;
     height: auto;
-    opacity: 0.3;
+    opacity: 0.2;
 }
 
 #article .content .faq{
