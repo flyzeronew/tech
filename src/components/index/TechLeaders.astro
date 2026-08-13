@@ -1,5 +1,94 @@
 ---
 import '../../styles/components/index/tech-leaders.css';
+
+interface TechTitanArticle {
+    news_title: string;
+    news_content_html: string | null;
+    news_article_url: string | null;
+    news_published_at: string | null;
+}
+
+interface TechTitanMedia {
+    media_title: string;
+    media_url: string | null;
+    media_published_at: string | null;
+}
+
+interface TechTitanImage {
+    url: string;
+}
+
+interface TechTitan {
+    tech_titan_name: string;
+    tech_titan_job_title: string;
+    tech_titan_title: string;
+    tech_titan_image: TechTitanImage[] | null;
+    tech_titan_articles: TechTitanArticle | null;
+    tech_titan_media: TechTitanMedia | null;
+}
+
+interface ListCard {
+    time: string;
+    title: string;
+    description: string;
+    href: string;
+}
+
+// news_content_html 是完整文章全文，後台目前沒有獨立的摘要欄位，暫時用截斷全文取代（跟 Hero.astro 的做法一致）
+function stripHtml(html: string | null, maxLength: number): string {
+    if (!html) return '';
+    const text = html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+    return text.length > maxLength ? `${text.slice(0, maxLength)}…` : text;
+}
+
+function formatDate(dateStr: string | null): string {
+    if (!dateStr) return '';
+    return dateStr.slice(0, 10).replace(/-/g, '/');
+}
+
+let techTitan: TechTitan | null = null;
+try {
+    const res = await fetch(
+        `${import.meta.env.STRAPI_URL}/api/index-page?populate[s9_2_tech_titan][populate]=*`,
+        { headers: { Authorization: `Bearer ${import.meta.env.STRAPI_API_TOKEN}` } },
+    );
+    if (res.ok) {
+        const json = await res.json();
+        techTitan = json.data?.s9_2_tech_titan?.[0] ?? null;
+    }
+} catch {
+    techTitan = null;
+}
+
+const name = techTitan?.tech_titan_name ?? '黃仁勳';
+const jobTitle = techTitan?.tech_titan_job_title ?? 'NVIDIA 共同創辦人暨執行長';
+const peoTitle = techTitan?.tech_titan_title ?? '';
+const rawImage = techTitan?.tech_titan_image?.[0]?.url ?? null;
+const image = rawImage
+    ? (rawImage.startsWith('http') ? rawImage : `${import.meta.env.STRAPI_URL}${rawImage}`)
+    : '/techLeader01.jpg';
+
+// 「相關報導」清單由兩個不同來源的單一關聯組成：一篇文章庫的文章 + 一則影音庫的影音，
+// 分別對應後台 tech_titan_articles 和 tech_titan_media 這兩個獨立欄位（都只能各關聯 1 筆）
+const listCards: ListCard[] = [];
+if (techTitan?.tech_titan_articles) {
+    const a = techTitan.tech_titan_articles;
+    listCards.push({
+        time: formatDate(a.news_published_at),
+        title: a.news_title,
+        description: stripHtml(a.news_content_html, 60),
+        href: a.news_article_url ?? '#',
+    });
+}
+if (techTitan?.tech_titan_media) {
+    const m = techTitan.tech_titan_media;
+    listCards.push({
+        time: formatDate(m.media_published_at),
+        title: m.media_title,
+        description: '',
+        href: m.media_url ?? '#',
+    });
+}
 ---
 <section data-nav="dark">
     <div id="techLeaders">
@@ -10,47 +99,38 @@ import '../../styles/components/index/tech-leaders.css';
                     <p>TECH LEADERS</p>
                 </div>
                 <div class="nameBox">
-                    <p class="name">黃仁勳</p>
-                    <p class="job">NVIDIA 共同創辦人暨執行長</p>
+                    <p class="name">{name}</p>
+                    <p class="job">{jobTitle}</p>
                 </div>
             </div>
             <div class="people">
                 <div class="img">
-                    <img width="400" height="400" src="/techLeader01.jpg" alt="techLeader" loading="lazy" />
+                    <img width="1280" height="720" src={image} alt={name} loading="lazy" />
                 </div>
                 <div class="peoTitle">
-                    別怕 AI 搶飯碗！籲親自使用 AI 縮小科技落差，揭能源供應成美 AI 發展重要瓶頸。
+                    {peoTitle}
                 </div>
-                <div class="list">
-                    <ul>
-                        <li>
-                            <a href="#">
-                                <div class="time">
-                                    2026/07/12
-                                </div>
-                                <div class="title">
-                                    台積電有夠強！外媒盛讚「投資首選」：整個AI產業都靠它
-                                </div>
-                                <div class="description">
-                                    外國媒體與分析師高度讚譽台積電在先進製程的絕對壟斷地位，認為其在AI浪潮中是不可或缺的龍頭與投資首選。
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <div class="time">
-                                    2026/07/10
-                                </div>
-                                <div class="title">
-                                    護國神山又一大客戶？路透：Meta自研AI晶片找台積電代工
-                                </div>
-                                <div class="description">
-                                    根據路透社報導，科技巨頭 Meta 為了擺脫對輝達的過度依賴，積極研發新一代自研 AI 晶片，並傳出將全數交由台積電代工。
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+                {listCards.length > 0 && (
+                    <div class="list">
+                        <ul>
+                            {listCards.map((card) => (
+                                <li>
+                                    <a href={card.href} target="_blank" rel="noopener noreferrer">
+                                        <div class="time">
+                                            {card.time}
+                                        </div>
+                                        <div class="title">
+                                            {card.title}
+                                        </div>
+                                        <div class="description">
+                                            {card.description}
+                                        </div>
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
             </div>
         </div>
     </div>

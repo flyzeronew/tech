@@ -1,12 +1,106 @@
 ---
 import '../../styles/components/index/hero.css';
+
+interface ArticleBlockData {
+    news_title: string;
+    news_category: string | null;
+    news_content_html: string | null;
+    news_featured_image_url: string | null;
+    news_published_at: string | null;
+    news_article_url: string | null;
+}
+
+interface MediaBlockData {
+    media_title: string;
+    media_source: string | null;
+    media_image_url: string | null;
+    media_published_at: string | null;
+    media_url: string | null;
+}
+
+interface ArticleBlock {
+    __component: 'shared.article-block';
+    article_block: ArticleBlockData | null;
+}
+
+interface MediaBlock {
+    __component: 'shared.media-block';
+    media_block: MediaBlockData | null;
+}
+
+type HeroZoneItem = ArticleBlock | MediaBlock;
+
+interface HeroCard {
+    tag: string;
+    title: string;
+    description: string;
+    image: string;
+    date: string;
+    href: string;
+}
+
+function formatDate(iso: string | null): string {
+    if (!iso) return '';
+    const d = new Date(iso);
+    return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
+}
+
+// news_content_html 是完整文章全文，後台目前沒有獨立的摘要欄位，暫時用截斷全文取代
+function stripHtml(html: string | null, maxLength: number): string {
+    if (!html) return '';
+    const text = html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+    return text.length > maxLength ? `${text.slice(0, maxLength)}…` : text;
+}
+
+function toCard(item: HeroZoneItem): HeroCard | null {
+    if (item.__component === 'shared.article-block' && item.article_block) {
+        const a = item.article_block;
+        return {
+            tag: a.news_category ?? '',
+            title: a.news_title,
+            description: stripHtml(a.news_content_html, 100),
+            image: a.news_featured_image_url ?? '/main-view-01.jpg',
+            date: formatDate(a.news_published_at),
+            href: a.news_article_url ?? '#',
+        };
+    }
+    if (item.__component === 'shared.media-block' && item.media_block) {
+        const m = item.media_block;
+        return {
+            tag: m.media_source ?? '',
+            title: m.media_title,
+            description: '',
+            image: m.media_image_url ?? '/main-view-01.jpg',
+            date: formatDate(m.media_published_at),
+            href: m.media_url ?? '#',
+        };
+    }
+    return null;
+}
+
+let heroCards: HeroCard[] = [];
+try {
+    const res = await fetch(
+        `${import.meta.env.STRAPI_URL}/api/hero-zone?populate[hero_zone][on][shared.article-block][populate]=article_block&populate[hero_zone][on][shared.media-block][populate]=media_block`,
+        { headers: { Authorization: `Bearer ${import.meta.env.STRAPI_API_TOKEN}` } },
+    );
+    if (res.ok) {
+        const json = await res.json();
+        const items: HeroZoneItem[] = json.data?.hero_zone ?? [];
+        heroCards = items.map(toCard).filter((c): c is HeroCard => c !== null);
+    }
+} catch {
+    heroCards = [];
+}
+
+const [kvCard, ...listCards] = heroCards;
 ---
 <section>
     <div id="hero">
         <div class="kv">
             <div class="box">
                 <div class="img" data-nav="dark">
-                    <img width="1440" height="400" src="/main-view-01.jpg" alt="kv" />
+                    <img width="1440" height="400" src={kvCard?.image ?? '/main-view-01.jpg'} alt="kv" />
                 </div>
                 <div class="txtBox" data-nav="light">
                     <div class="inBox" >
@@ -16,16 +110,16 @@ import '../../styles/components/index/hero.css';
                         </div>
                         <div class="newsBox type2">
                             <div class="tag">
-                                亞利桑那觀察
+                                {kvCard?.tag}
                             </div>
                             <div class="title">
-                                台積電晶片產能吃緊！日經爆：超微、Google轉求三星
+                                {kvCard?.title}
                             </div>
                             <div class="description">
-                                AI 基礎設施需求飆升，台積電先進製程供不應求，比亞迪、Google、超微、特斯拉日益傾向尋求三星代工——一場牽動全球供應鏈的產能挪移正在發生。
+                                {kvCard?.description}
                             </div>
                             <div class="more">
-                                <a href="#">
+                                <a href={kvCard?.href ?? '#'} target="_blank" rel="noopener noreferrer">
                                     <span>閱讀完整報導</span>
                                     <div class="arraw">
                                         <img width="28" height="28" src="/arraw-right-01.svg" alt="arraw" />
@@ -40,150 +134,32 @@ import '../../styles/components/index/hero.css';
         <div class="newslist type2">
             <div class="inBox">
                 <ul>
-                    <li>
-                        <a href="#">
-                            <div class="date">2026/06/22</div>
-                            <div class="news">
-                                <div class="img">
-                                    <img width="96" height="54" src="/news-image-01.jpg" alt="arraw" loading="lazy" />
-                                </div>
-                                <div class="titleBox">
-                                    <div class="tag">
-                                        Podcast
+                    {listCards.map((card) => (
+                        <li>
+                            <a href={card.href} target="_blank" rel="noopener noreferrer">
+                                <div class="date">{card.date}</div>
+                                <div class="news">
+                                    <div class="img">
+                                        <img width="96" height="54" src={card.image} alt="arraw" loading="lazy" />
                                     </div>
-                                    <div class="time">
-                                        2026/06/22
-                                    </div>
-                                    <div class="title">
-                                        三星全球導入ChatGPT與Codex　OpenAI拿下最大企業部署案之一
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="arraw">
-                                <img width="24" height="24 " src="/arraw-right-02.svg" alt="arraw" />
-                            </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <div class="date">2026/06/22</div>
-                            <div class="news">
-                                <div class="img">
-                                    <img width="96" height="54" src="/news-image-02.jpg" alt="arraw" loading="lazy" />
-                                </div>
-                                <div class="titleBox">
-                                    <div class="tag">
-                                        專題
-                                    </div>
-                                    <div class="time">
-                                        2026/06/22
-                                    </div>
-                                    <div class="title">
-                                        Q1全球半導體營收達3190億美元 季增27%創新高 記憶體翻倍成主力
+                                    <div class="titleBox">
+                                        <div class="tag">
+                                            {card.tag}
+                                        </div>
+                                        <div class="time">
+                                            {card.date}
+                                        </div>
+                                        <div class="title">
+                                            {card.title}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="arraw">
-                                <img width="24" height="24 " src="/arraw-right-02.svg" alt="arraw" />
-                            </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <div class="date">2026/06/22</div>
-                            <div class="news">
-                                <div class="img">
-                                    <img width="96" height="54" src="/news-image-03.jpg" alt="arraw" loading="lazy" />
+                                <div class="arraw">
+                                    <img width="24" height="24 " src="/arraw-right-02.svg" alt="arraw" />
                                 </div>
-                                <div class="titleBox">
-                                    <div class="tag">
-                                        精選影片
-                                    </div>
-                                    <div class="time">
-                                        2026/06/22
-                                    </div>
-                                    <div class="title">
-                                        護國神山太狂！德國廠外溢效應　薩克森各縣市爭取與台合作
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="arraw">
-                                <img width="24" height="24 " src="/arraw-right-02.svg" alt="arraw" />
-                            </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <div class="date">2026/06/22</div>
-                            <div class="news">
-                                <div class="img">
-                                    <img width="96" height="54" src="/news-image-04.jpg" alt="arraw" loading="lazy" />
-                                </div>
-                                <div class="titleBox">
-                                    <div class="tag">
-                                        專題
-                                    </div>
-                                    <div class="time">
-                                        2026/06/22
-                                    </div>
-                                    <div class="title">
-                                        AI時代不缺聰明人！黃仁勳曝輝達徵才標準：1特質一定成功
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="arraw">
-                                <img width="24" height="24 " src="/arraw-right-02.svg" alt="arraw" />
-                            </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <div class="date">2026/06/22</div>
-                            <div class="news">
-                                <div class="img">
-                                    <img width="96" height="54" src="/news-image-05.jpg" alt="arraw" loading="lazy" />
-                                </div>
-                                <div class="titleBox">
-                                    <div class="tag">
-                                        專題
-                                    </div>
-                                    <div class="time">
-                                        2026/06/22
-                                    </div>
-                                    <div class="title">
-                                        跟台積電完成簽約！擴廠落腳「南科特定區A區」
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="arraw">
-                                <img width="24" height="24 " src="/arraw-right-02.svg" alt="arraw" />
-                            </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <div class="date">2026/06/22</div>
-                            <div class="news">
-                                <div class="img">
-                                    <img width="96" height="54" src="/news-image-06.jpg" alt="arraw" loading="lazy" />
-                                </div>
-                                <div class="titleBox">
-                                    <div class="tag">
-                                        專題
-                                    </div>
-                                    <div class="time">
-                                        2026/06/22
-                                    </div>
-                                    <div class="title">
-                                        台積電發威！美廠第1季暴賺188億　一季賺贏去年全年
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="arraw">
-                                <img width="24" height="24 " src="/arraw-right-02.svg" alt="arraw" />
-                            </div>
-                        </a>
-                    </li>
+                            </a>
+                        </li>
+                    ))}
                 </ul>
             </div>
         </div>

@@ -123,6 +123,21 @@
     height: 28px;
     transform: rotate(-45deg);
 }
+/* 有影片時 playIcon 取代 .cardArraw（互斥渲染，見 New.astro），套用同樣的尺寸/位置/滑入動畫，讓右下角只會出現其中一個 */
+#new .list .item .img .statusIcon.playIcon{
+    right: -60px;
+    bottom: -60px;
+    left: auto;
+    top: auto;
+    width: 60px;
+    height: 60px;
+    border: 1px solid #242EF7;
+    transition: right 0.3s ease, bottom 0.3s ease;
+}
+#new .list .item .img:hover .statusIcon.playIcon{
+    right: 0;
+    bottom: 0;
+}
 #new .list .item .cardLink:hover .img::after{
     opacity: 1;
 }

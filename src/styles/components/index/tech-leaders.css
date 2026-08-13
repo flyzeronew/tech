@@ -71,6 +71,9 @@
     border-right: none;
     padding-right: 0;
 }
+#techLeaders .people .list ul li:only-child{
+    width: 100%;
+}
 #techLeaders .people .list ul li .img{
     width: 100%;
     aspect-ratio: 16/9;

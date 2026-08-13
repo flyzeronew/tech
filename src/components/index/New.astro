@@ -1,26 +1,64 @@
 ---
 import '../../styles/components/index/new.css';
 
-const newsItems = [
-    {
-        image: '/news-image-07.jpg',
-        title: '三星全球導入 ChatGPT 與 Codex　OpenAI 拿下最大企業部署案之一',
-        description: '企業級 AI 落地再下一城，OpenAI 在大型製造業者的滲透加速。',
-        tags: ['AI', '半導體'],
-    },
-    {
-        image: '/news-image-01.jpg',
-        title: '台積電美國廠稼動率衝高　法人喊上調全年資本支出',
-        description: '隨先進封裝與 CoWoS 產能持續擴充，法人圈預期今年資本支出可望再上修。',
-        tags: ['半導體', '資本支出'],
-    },
-    {
-        image: '/news-image-02.jpg',
-        title: '輝達加碼投資機器人新創　押注實體 AI 下一波浪潮',
-        description: '黃仁勳看好「實體 AI」為下一個成長引擎，宣布加碼投資多家機器人新創公司。',
-        tags: ['AI', '機器人'],
-    },
-];
+interface ArticleData {
+    news_title: string;
+    news_category: string | null;
+    news_content_html: string | null;
+    news_featured_image_url: string | null;
+    news_article_url: string | null;
+    news_youtube_id: string | null;
+}
+
+interface TechZone {
+    tech_title: string;
+    tech_small_title: string;
+    teck_block: ArticleData[];
+}
+
+interface NewsCard {
+    image: string;
+    title: string;
+    description: string;
+    tags: string[];
+    href: string;
+    hasVideo: boolean;
+}
+
+// news_content_html 是完整文章全文，後台目前沒有獨立的摘要欄位，暫時用截斷全文取代（跟 Hero.astro 的做法一致）
+function stripHtml(html: string | null, maxLength: number): string {
+    if (!html) return '';
+    const text = html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+    return text.length > maxLength ? `${text.slice(0, maxLength)}…` : text;
+}
+
+let techZone: TechZone | null = null;
+try {
+    const res = await fetch(
+        `${import.meta.env.STRAPI_URL}/api/index-page?populate[s1_tech_zone][populate]=teck_block`,
+        { headers: { Authorization: `Bearer ${import.meta.env.STRAPI_API_TOKEN}` } },
+    );
+    if (res.ok) {
+        const json = await res.json();
+        techZone = json.data?.s1_tech_zone?.[0] ?? null;
+    }
+} catch {
+    techZone = null;
+}
+
+const itemTitle = {
+    main: techZone?.tech_title ?? '最新科技情報',
+    small: techZone?.tech_small_title ?? 'TECH SIGNALS',
+};
+
+const newsItems: NewsCard[] = (techZone?.teck_block ?? []).map((a) => ({
+    image: a.news_featured_image_url ?? '/news-image-01.jpg',
+    title: a.news_title,
+    description: stripHtml(a.news_content_html, 60),
+    tags: a.news_category ? [a.news_category] : [],
+    href: a.news_article_url ?? '#',
+    hasVideo: Boolean(a.news_youtube_id),
+}));
 ---
 <section data-nav="light">
     <div id="new">
@@ -30,8 +68,8 @@ const newsItems = [
                     <div class="flex">
                         <div class="titleBox">
                             <div class="itemTitle">
-                                <p>最新科技情報</p>
-                                <p>TECH SIGNALS</p>
+                                <p>{itemTitle.main}</p>
+                                <p>{itemTitle.small}</p>
                             </div>
                             <div class="title">
                                 讀懂<span>趨勢</span><br>
@@ -42,12 +80,16 @@ const newsItems = [
                             <div class="itemTrack">
                                 {newsItems.map((item, i) => (
                                     <div class="item" class:list={{ 'is-active': i === 0 }} data-index={i} data-rel={Math.min(2, i)}>
-                                        <a href="#" class="cardLink">
+                                        <a href={item.href} class="cardLink" target="_blank" rel="noopener noreferrer">
                                             <div class="img">
                                                 <img width="600" height="342" src={item.image} alt="img" />
-                                                <div class="cardArraw">
-                                                    <img width="28" height="28" src="/arraw-right-01.svg" alt="arraw" />
-                                                </div>
+                                                {item.hasVideo ? (
+                                                    <div class="statusIcon playIcon"></div>
+                                                ) : (
+                                                    <div class="cardArraw">
+                                                        <img width="28" height="28" src="/arraw-right-01.svg" alt="arraw" />
+                                                    </div>
+                                                )}
                                             </div>
                                             <div class="txtBox">
                                                 <div class="title">

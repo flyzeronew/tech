@@ -1,5 +1,42 @@
 ---
 import '../../styles/components/index/video.css';
+
+interface MediaItem {
+    media_title: string;
+    media_source: string;
+    media_url: string | null;
+    media_image_url: string | null;
+}
+
+interface VideoCard {
+    image: string;
+    title: string;
+    href: string;
+    isSquare: boolean;
+}
+
+let mediaItems: MediaItem[] = [];
+try {
+    const res = await fetch(
+        `${import.meta.env.STRAPI_URL}/api/media-libraries?sort=media_published_at:desc&pagination[pageSize]=8`,
+        { headers: { Authorization: `Bearer ${import.meta.env.STRAPI_API_TOKEN}` } },
+    );
+    if (res.ok) {
+        const json = await res.json();
+        mediaItems = json.data ?? [];
+    }
+} catch {
+    mediaItems = [];
+}
+
+// media_source 不是 youtube 的（apple_podcast、firstory 等）用的是方形封面，
+// 套用 is-square 置中縮放；youtube 是 16:9 縮圖，維持原本 cover 裁切
+const videoItems: VideoCard[] = mediaItems.map((m) => ({
+    image: m.media_image_url ?? '/video01.jpg',
+    title: m.media_title,
+    href: m.media_url ?? '#',
+    isSquare: m.media_source !== 'youtube',
+}));
 ---
 <section data-nav="light">
     <div id="video">
@@ -10,138 +47,39 @@ import '../../styles/components/index/video.css';
                     <p>VIDEO & PODCAST</p>
                 </div>
                 <div class="list">
-                    <div class="item">
-                        <div class="imgBox">
-                            <div class="img">
-                                <div class="statusIcon playIcon"></div>
-                                <img width="650" height="354" src="/video02.jpg" alt="img" loading="lazy" />
-                            </div>
-                            <div class="title">
-                                <p>
-                                    1科技最前線看懂產業趨勢科技最前線看懂產業趨勢科技最前線看懂
-                                    產業趨勢科技最前線看懂產業趨勢科技最前線看懂產業趨勢
-                                </p>
-                            </div>
-                        </div>                        
-                    </div>
-                    <div class="item">
-                        <div class="imgBox">
-                            <div class="img">
-                                <div class="statusIcon playIcon"></div>
-                                <img width="650" height="354" src="/video01.jpg" alt="img" loading="lazy" />
-                            </div>
-                            <div class="title">
-                                <p>
-                                    科技最前線看懂產業趨勢科技最前線看懂產業趨勢科技最前線看懂
-                                    產業趨勢科技最前線看懂產業趨勢科技最前線看懂產業趨勢
-                                </p>
+                    {videoItems.map((item) => (
+                        <div class="item" class:list={{ 'is-square': item.isSquare }}>
+                            <div class="imgBox">
+                                <div class="img">
+                                    <div class="statusIcon playIcon"></div>
+                                    <img width="650" height="354" src={item.image} alt="img" loading="lazy" />
+                                </div>
+                                <div class="title">
+                                    <p>{item.title}</p>
+                                </div>
                             </div>
                         </div>
-                    </div>                    
-                    <div class="item">
-                        <div class="imgBox">
-                            <div class="img">
-                                <div class="statusIcon playIcon"></div>
-                                <img width="650" height="354" src="/video03.jpg" alt="img" loading="lazy" />
-                            </div>
-                            <div class="title">
-                                <p>
-                                    科技最前線看懂產業趨勢科技最前線看懂產業趨勢科技最前線看懂
-                                    產業趨勢科技最前線看懂產業趨勢科技最前線看懂產業趨勢
-                                </p>
-                            </div>
-                        </div>                        
-                    </div>
-                    <div class="item">
-                        <div class="imgBox">
-                            <div class="img">
-                                <div class="statusIcon playIcon"></div>
-                                <img width="650" height="354" src="/video04.jpg" alt="img" loading="lazy" />
-                            </div>
-                            <div class="title">
-                                <p>
-                                    科技最前線看懂產業趨勢科技最前線看懂產業趨勢科技最前線看懂
-                                    產業趨勢科技最前線看懂產業趨勢科技最前線看懂產業趨勢
-                                </p>
-                            </div>
-                        </div>                        
-                    </div>
-                    <div class="item">
-                        <div class="imgBox">
-                            <div class="img">
-                                <div class="statusIcon playIcon"></div>
-                                <img width="650" height="354" src="/video03.jpg" alt="img" loading="lazy" />
-                            </div>
-                            <div class="title">
-                                <p>
-                                    科技最前線看懂產業趨勢科技最前線看懂產業趨勢科技最前線看懂
-                                    產業趨勢科技最前線看懂產業趨勢科技最前線看懂產業趨勢
-                                </p>
-                            </div>
-                        </div>                        
-                    </div>
-                    <div class="item">
-                        <div class="imgBox">
-                            <div class="img">
-                                <div class="statusIcon playIcon"></div>
-                                <img width="650" height="354" src="/video05.jpg" alt="img" loading="lazy" />
-                            </div>
-                            <div class="title">
-                                <p>
-                                    科技最前線看懂產業趨勢科技最前線看懂產業趨勢科技最前線看懂
-                                    產業趨勢科技最前線看懂產業趨勢科技最前線看懂產業趨勢
-                                </p>
-                            </div>
-                        </div>                        
-                    </div>
-                    <div class="item">
-                        <div class="imgBox">
-                            <div class="img">
-                                <div class="statusIcon playIcon"></div>
-                                <img width="650" height="354" src="/video01.jpg" alt="img" loading="lazy" />
-                            </div>
-                            <div class="title">
-                                <p>
-                                    科技最前線看懂產業趨勢科技最前線看懂產業趨勢科技最前線看懂
-                                    產業趨勢科技最前線看懂產業趨勢科技最前線看懂產業趨勢
-                                </p>
-                            </div>
-                        </div>                        
-                    </div>
-                    <div class="item">
-                        <div class="imgBox">
-                            <div class="img">
-                                <div class="statusIcon playIcon"></div>
-                                <img width="650" height="354" src="/video02.jpg" alt="img" loading="lazy" />
-                            </div>
-                            <div class="title">
-                                <p>
-                                    科技最前線看懂產業趨勢科技最前線看懂產業趨勢科技最前線看懂
-                                    產業趨勢科技最前線看懂產業趨勢科技最前線看懂產業趨勢
-                                </p>
-                            </div>
-                        </div>                        
-                    </div>
+                    ))}
                     <div class="videoBlob"></div>
-          
+
                 </div>
 
                 <div class="linkList">
                     <div class="linkItem">
                         <p>《科技最前線》看懂產業趨勢</p>
                         <div class="more">
-                            <a href="#">
+                            <a href="https://www.youtube.com/watch?v=JPmb6UzzpBo&list=PLmVlUjKuEG7SikBn4h8gZKuN0gn_yxetj" target="_blank" rel="noopener noreferrer">
                                 <span>前往 YouTube 頻道</span>
                                 <div class="arraw">
                                     <img width="28" height="28" src="/arraw-right-03.svg" alt="arraw" />
                                 </div>
                             </a>
-                        </div>                        
+                        </div>
                     </div>
                     <div class="linkItem">
                         <p>《新聞幕後》聽懂科技趨勢</p>
                         <div class="more">
-                            <a href="#">
+                            <a href="https://www.youtube.com/results?search_query=%E6%96%B0%E8%81%9E%E5%B9%95%E5%BE%8C" target="_blank" rel="noopener noreferrer">
                                 <span>前往 Podcast 頻道</span>
                                 <div class="arraw">
                                     <img width="28" height="28" src="/arraw-right-03.svg" alt="arraw" />

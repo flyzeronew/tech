@@ -15,7 +15,7 @@
     background-repeat: no-repeat;
 }
 #video .inBox{
-    padding: 120px 0;
+    padding: 152px 0 100px;
     overflow:unset;
 }
 #video .list{
@@ -49,6 +49,7 @@
     width: 100%;
     height: auto;
     overflow: hidden;
+    aspect-ratio: 16/9;
 }
 #video .list .item .img::after{
     content: '';
@@ -89,6 +90,37 @@
     object-fit: cover;
     transition: transform 0.3s ease;
 }
+/* 正方形封面（例如 Podcast）：框維持原本 16:9 比例，圖片改用 contain 依高度置中縮放，不裁切、不變形，
+   兩側露空背景透明。.img 原本的 overflow:hidden 只會裁到「整個框」的邊界，兩側透明空白還在框內、
+   不會被裁掉——用 clip-path 另外裁到「正方形圖片本身」的範圍，這樣 playIcon 滑入時才會被正確遮住，
+   不會在還沒進到圖片範圍前就先穿幫、飄在透明空白區塊上 */
+#video .list .item.is-square .img{
+    aspect-ratio: 650 / 354;
+    background-color: transparent;
+    clip-path: inset(0 calc((100% - 100% * 354 / 650) / 2));
+}
+#video .list .item.is-square .img img{
+    object-fit: contain;
+}
+/* 標題文字寬度跟著置中後的正方形圖片走，不要跟 16:9 框一樣寬：
+   contain 縮放後，正方形圖片的寬度＝框高度＝框寬度 × (354/650) */
+#video .list .item.is-square .imgBox .title{
+    width: calc(100% * 354 / 650);
+    margin: 0 auto;
+}
+/* hover 變暗的遮罩原本是蓋滿整個 16:9 框（inset:0），正方形圖片置中後只佔框寬的一部分，
+   遮罩也要跟著只蓋圖片本身的範圍，不要連兩側透明空白也一起變暗 */
+#video .list .item.is-square .img::after{
+    left: 50%;
+    right: auto;
+    width: calc(100% * 354 / 650);
+    transform: translateX(-50%);
+}
+/* playIcon 預設要維持在整個 16:9 框的邊界之外（right 負值），才會被 .img 的 overflow:hidden 蓋住看不到；
+   hover 滑入後才收到跟正方形圖片右邊界對齊的位置（不是收到框的邊緣，兩側是透明的，收到框邊緣會露出一截空隙） */
+#video .list .item.is-square .img:hover .statusIcon{
+    right: calc((100% - 100% * 354 / 650) / 2);
+}
 #video .list .item:hover .img{
     transform: scale(1.05);
 }
@@ -105,17 +137,17 @@
 #video .list .item:nth-child(3){
     left: 72.75%;
     top: 26.3%;
-    width: 13.77%;
+    width: 30%;
 }
 #video .list .item:nth-child(4){
     left: 31.6%;
-    top: 37.1%;
+    top: 35%;
     width: 33.62%;
 }
 #video .list .item:nth-child(5){
-    left: 6.96%;
-    top: 52.46%;
-    width: 18.84%;
+    left: 4%;
+    top: 55%;
+    width: 30%;
 }
 #video .list .item:nth-child(6){
     left: 58.84%;
@@ -144,10 +176,10 @@
 #video .linkList .linkItem p{
     font-weight: 700;
     font-size: 22px;
-    line-height: 32px;
+    line-height: 30px;
     letter-spacing: 0%;
     color: #242EF7;
-    margin-bottom: 15px;
+    margin-bottom: 16px;
 }
 #video .linkList .linkItem .more{
     display: flex;
@@ -166,7 +198,7 @@
     width: 90%;
     font-weight: 700;
     font-size: 16px;
-    line-height: 22px;
+    line-height: 24px;
     letter-spacing: 0%;
     color: #fff;
 }
