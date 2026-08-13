@@ -74,6 +74,14 @@ header nav .menu a.dropdown .arraw{
     align-items: center;
     justify-content: center;
     transition: transform 0.3s;
+    background-image: url('/direction-down-b.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+/* act 項目背景是藍色，箭頭改用白色版本才有對比 */
+header nav .menu a.dropdown.act .arraw{
+    background-image: url('/direction-down.svg');
 }
 header nav .menu li.hasSub{
     position: relative;
@@ -185,6 +193,15 @@ header nav .pc.type2 .logo{
     background-color: transparent;
     color: #000;
 }
+/* type1/type2 底下 .act 的藍底會被上面兩條規則蓋掉，箭頭要跟著改用該狀態的字色版本，不能再依 .act 判斷 */
+header nav .pc.type1 .menu a.dropdown .arraw,
+header nav .pc.type1 .menu a.dropdown.act .arraw{
+    background-image: url('/direction-down.svg');
+}
+header nav .pc.type2 .menu a.dropdown .arraw,
+header nav .pc.type2 .menu a.dropdown.act .arraw{
+    background-image: url('/direction-down-b.svg');
+}
 header nav .pc.type1 .menu .subMenu{
     background-color: rgba(0, 0, 0, 0.1);
     color: #fff;
@@ -270,13 +287,16 @@ header nav .mobile .menuBox a{
 header nav .mobile .menuBox li.act a{
     color: #242EF7;
 }
-header nav .mobile .menuBox li.act .arraw{
+header nav .mobile .menuBox li.hasSub .arraw{
     width: 20px;
     height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: transform 0.3s;
+    background-image: url('/direction-down-b.svg');
+}
+header nav .mobile .menuBox li.act .arraw{
     background-image: url('/direction-down-blue.svg');
 }
 header nav .mobile .menuBox .subMenu{
