@@ -143,7 +143,7 @@ const partnerLogos = footerPartners.map((p) => ({
     // 後端沒有自己的 API，改用獨立的 Google Apps Script 專案當輕量後端（不綁定 Sheet，不存檔）：
     // 表單 POST 過去後，Apps Script 直接寄信通知蔣翠芳副理（monica@tvbs.com.tw）。
     // 部署步驟＋完整的 Apps Script 程式碼見 GOOGLE_APPS_SCRIPT.md，部署後把下面這個網址換成實際拿到的 Web App URL。
-    const COLLAB_FORM_ENDPOINT = 'https://script.google.com/macros/s/REPLACE_WITH_DEPLOYMENT_ID/exec';
+    const COLLAB_FORM_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyyxOEmcBRaiREKI1GM2VoEGrlR9Uwij642eHcD2_Sy3iaDc1Quhu8YlYbTXwHniCw/exec';
 
     const collabForm = document.querySelector<HTMLFormElement>('#partners .collabForm');
     const formMsg = document.querySelector<HTMLElement>('#partners .formMsg');
