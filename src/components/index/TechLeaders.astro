@@ -8,14 +8,12 @@ interface TechTitanArticle {
     news_published_at: string | null;
 }
 
-interface TechTitanMedia {
-    media_title: string;
-    media_url: string | null;
-    media_published_at: string | null;
-}
-
 interface TechTitanImage {
     url: string;
+}
+
+interface TechTitanMedia {
+    media_url: string | null;
 }
 
 interface TechTitan {
@@ -23,7 +21,7 @@ interface TechTitan {
     tech_titan_job_title: string;
     tech_titan_title: string;
     tech_titan_image: TechTitanImage[] | null;
-    tech_titan_articles: TechTitanArticle | null;
+    tech_titan_articles: TechTitanArticle[] | null;
     tech_titan_media: TechTitanMedia | null;
 }
 
@@ -54,7 +52,8 @@ try {
     );
     if (res.ok) {
         const json = await res.json();
-        techTitan = json.data?.s9_2_tech_titan?.[0] ?? null;
+        // s9_2_tech_titan 是單一 component（不是可放多筆的關聯），回傳就是物件本身，不需要 [0] 取第一筆
+        techTitan = json.data?.s9_2_tech_titan ?? null;
     }
 } catch {
     techTitan = null;
@@ -67,31 +66,20 @@ const rawImage = techTitan?.tech_titan_image?.[0]?.url ?? null;
 const image = rawImage
     ? (rawImage.startsWith('http') ? rawImage : `${import.meta.env.STRAPI_URL}${rawImage}`)
     : '/techLeader01.jpg';
+// 上方大圖＋人物介紹的連結來自 tech_titan_media（人物相關的影音報導），跟下面「相關報導」清單的 tech_titan_articles 是分開的欄位
+const mediaHref = techTitan?.tech_titan_media?.media_url ?? '#';
 
-// 「相關報導」清單由兩個不同來源的單一關聯組成：一篇文章庫的文章 + 一則影音庫的影音，
-// 分別對應後台 tech_titan_articles 和 tech_titan_media 這兩個獨立欄位（都只能各關聯 1 筆）
-const listCards: ListCard[] = [];
-if (techTitan?.tech_titan_articles) {
-    const a = techTitan.tech_titan_articles;
-    listCards.push({
-        time: formatDate(a.news_published_at),
-        title: a.news_title,
-        description: stripHtml(a.news_content_html, 60),
-        href: a.news_article_url ?? '#',
-    });
-}
-if (techTitan?.tech_titan_media) {
-    const m = techTitan.tech_titan_media;
-    listCards.push({
-        time: formatDate(m.media_published_at),
-        title: m.media_title,
-        description: '',
-        href: m.media_url ?? '#',
-    });
-}
+// 「相關報導」清單只來自後台 tech_titan_articles 這個欄位，現在已經改成可放多筆的關聯，
+// 直接依後台實際筆數渲染，不假設固定 1 or 2 則
+const listCards: ListCard[] = (techTitan?.tech_titan_articles ?? []).map((a) => ({
+    time: formatDate(a.news_published_at),
+    title: a.news_title,
+    description: stripHtml(a.news_content_html, 60),
+    href: a.news_article_url ?? '#',
+}));
 ---
 <section data-nav="dark">
-    <div id="techLeaders">
+    <div id="leaders">
         <div class="inBox">
             <div class="titleBox">
                 <div class="itemTitle">
@@ -104,12 +92,14 @@ if (techTitan?.tech_titan_media) {
                 </div>
             </div>
             <div class="people">
-                <div class="img">
-                    <img width="1280" height="720" src={image} alt={name} loading="lazy" />
-                </div>
-                <div class="peoTitle">
-                    {peoTitle}
-                </div>
+                <a class="cardLink" href={mediaHref} target="_blank" rel="noopener noreferrer">
+                    <div class="img">
+                        <img width="1280" height="720" src={image} alt={name} loading="lazy" />
+                    </div>
+                    <div class="peoTitle">
+                        {peoTitle}
+                    </div>
+                </a>
                 {listCards.length > 0 && (
                     <div class="list">
                         <ul>

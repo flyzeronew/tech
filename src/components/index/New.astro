@@ -1,22 +1,26 @@
 ---
 import '../../styles/components/index/new.css';
 
+interface ArticleTag {
+    name: string;
+}
+
 interface ArticleData {
     news_title: string;
-    news_category: string | null;
+    news_tag: ArticleTag[] | null;
     news_content_html: string | null;
     news_featured_image_url: string | null;
     news_article_url: string | null;
     news_youtube_id: string | null;
 }
 
-interface TechZone {
+interface TechZoneEntry {
     tech_title: string;
-    tech_small_title: string;
-    teck_block: ArticleData[];
+    articles: ArticleData[];
 }
 
 interface NewsCard {
+    bigTitle: string;
     image: string;
     title: string;
     description: string;
@@ -32,33 +36,47 @@ function stripHtml(html: string | null, maxLength: number): string {
     return text.length > maxLength ? `${text.slice(0, maxLength)}…` : text;
 }
 
-let techZone: TechZone | null = null;
+// 大標題原本是手動排版成兩行（讀懂趨勢／再行動），現在文字改從後台拉、長度不固定，
+// 改成每 4 個字自動換行，維持原本的大字級排版節奏
+function wrapEvery4Chars(text: string): string {
+    const chars = Array.from(text);
+    const lines: string[] = [];
+    for (let i = 0; i < chars.length; i += 4) {
+        lines.push(chars.slice(i, i + 4).join(''));
+    }
+    return lines.join('<br>');
+}
+
+// 「最新科技情報／TECH SIGNALS」這組小標題前台固定寫死，不從後台拉——
+// s1_tech_zone 是 3 筆，各自帶自己的 tech_title（滾動卡片上方的大標題文字）+ 一組文章（目前各 3 篇，不一定固定 3）。
+// 前台把每一筆底下的文章攤平成依序的卡片清單，每張卡片各自標記自己所屬的 tech_title；
+// 捲動時同一筆底下的文章共用同一個大標題，捲過該筆最後一篇才會自然換到下一筆的大標題，
+// 不需要另外寫兩層捲動邏輯。
+let techZoneEntries: TechZoneEntry[] = [];
 try {
     const res = await fetch(
-        `${import.meta.env.STRAPI_URL}/api/index-page?populate[s1_tech_zone][populate]=teck_block`,
+        `${import.meta.env.STRAPI_URL}/api/index-page?populate[s1_tech_zone][populate]=articles`,
         { headers: { Authorization: `Bearer ${import.meta.env.STRAPI_API_TOKEN}` } },
     );
     if (res.ok) {
         const json = await res.json();
-        techZone = json.data?.s1_tech_zone?.[0] ?? null;
+        techZoneEntries = json.data?.s1_tech_zone ?? [];
     }
 } catch {
-    techZone = null;
+    techZoneEntries = [];
 }
 
-const itemTitle = {
-    main: techZone?.tech_title ?? '最新科技情報',
-    small: techZone?.tech_small_title ?? 'TECH SIGNALS',
-};
-
-const newsItems: NewsCard[] = (techZone?.teck_block ?? []).map((a) => ({
-    image: a.news_featured_image_url ?? '/news-image-01.jpg',
-    title: a.news_title,
-    description: stripHtml(a.news_content_html, 60),
-    tags: a.news_category ? [a.news_category] : [],
-    href: a.news_article_url ?? '#',
-    hasVideo: Boolean(a.news_youtube_id),
-}));
+const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
+    (entry.articles ?? []).map((a) => ({
+        bigTitle: wrapEvery4Chars(entry.tech_title),
+        image: a.news_featured_image_url ?? '/news-image-01.jpg',
+        title: a.news_title,
+        description: stripHtml(a.news_content_html, 60),
+        tags: (a.news_tag ?? []).map((t) => t.name),
+        href: a.news_article_url ?? '#',
+        hasVideo: Boolean(a.news_youtube_id),
+    })),
+);
 ---
 <section data-nav="light">
     <div id="new">
@@ -68,18 +86,19 @@ const newsItems: NewsCard[] = (techZone?.teck_block ?? []).map((a) => ({
                     <div class="flex">
                         <div class="titleBox">
                             <div class="itemTitle">
-                                <p>{itemTitle.main}</p>
-                                <p>{itemTitle.small}</p>
+                                <p>最新科技情報</p>
+                                <p>TECH SIGNALS</p>
                             </div>
                             <div class="title">
-                                讀懂<span>趨勢</span><br>
-                                再<span>行動</span>
+                                <div class="titleTrack">
+                                    <div class="titleLine" set:html={newsItems[0]?.bigTitle}></div>
+                                </div>
                             </div>
                         </div>
                         <div class="list">
                             <div class="itemTrack">
                                 {newsItems.map((item, i) => (
-                                    <div class="item" class:list={{ 'is-active': i === 0 }} data-index={i} data-rel={Math.min(2, i)}>
+                                    <div class="item" class:list={{ 'is-active': i === 0 }} data-index={i} data-rel={Math.min(2, i)} data-big-title={item.bigTitle}>
                                         <a href={item.href} class="cardLink" target="_blank" rel="noopener noreferrer">
                                             <div class="img">
                                                 <img width="600" height="342" src={item.image} alt="img" />
@@ -122,6 +141,8 @@ const newsItems: NewsCard[] = (techZone?.teck_block ?? []).map((a) => ({
     const stickyWrap = document.querySelector<HTMLElement>('#new .stickyWrap');
     const pinInner = document.querySelector<HTMLElement>('#new .pinInner');
     const items = document.querySelectorAll<HTMLElement>('#new .list .item');
+    const titleEl = document.querySelector<HTMLElement>('#new .titleBox .title');
+    const titleTrackEl = document.querySelector<HTMLElement>('#new .titleBox .titleTrack');
 
     if (stickyWrap && pinInner && items.length) {
         // 1024px 以下：pinInner 高度是隨內容撐開（非固定 100vh），實際放行時機以量到的高度為準，
@@ -142,6 +163,50 @@ const newsItems: NewsCard[] = (techZone?.teck_block ?? []).map((a) => ({
         }
 
         let activeIndex = 0;
+        let pushTimer: number | undefined;
+
+        // 大標題只在真的換文字時（捲過組界）才切換，同一組內的卡片切換不會誤觸發：
+        // 新文字從下方接上舊文字，兩行一起往上位移，把舊文字推出 .title 的裁切範圍，
+        // 位移動畫播完後移除舊的那行、軌道歸位，這樣下次切換才會從乾淨的單行狀態開始。
+        //
+        // 使用者快速上下捲動時，這個函式可能在前一次動畫的 350ms 計時器還沒結束前就被再次觸發：
+        // 如果只是單純 clearTimeout 前一個計時器、繼續疊加下一行，殘留的舊行會一直沒被移除、
+        // 一路往 track 裡堆積，.title 的高度鎖定也會跟著失效，導致整塊往下撐開版面（跑版）。
+        // 所以每次呼叫一開始就強制把 track 內除了「最後一行」以外的殘留行全部清掉、位移瞬間歸零，
+        // 確保不管觸發幾次、觸發得多密集，都一定是從乾淨的單行狀態重新開始。
+        function pushBigTitle(nextHtml: string) {
+            const track = titleTrackEl;
+            if (!titleEl || !track) return;
+            const lines = Array.from(track.querySelectorAll<HTMLElement>('.titleLine'));
+            const currentLine = lines[lines.length - 1];
+            if (!currentLine || currentLine.innerHTML === nextHtml) return;
+            window.clearTimeout(pushTimer);
+
+            lines.slice(0, -1).forEach((el) => el.remove());
+            track.style.transition = 'none';
+            track.style.transform = 'translateY(0)';
+            void track.offsetWidth; // 強制 reflow，讓上面的瞬間歸位先生效，避免跟接下來的位移動畫混在一起
+
+            // 換行數（2 行或 3 行）可能因文字長度不同而變，先把裁切範圍鎖定在「目前」這行的高度，
+            // 否則等一下把新的一行接進 track 後，.title 會直接被撐高、兩行同時整段露出來，看不出推擠效果
+            const pushDistance = currentLine.offsetHeight;
+            titleEl.style.height = `${pushDistance}px`;
+
+            const nextLine = document.createElement('div');
+            nextLine.className = 'titleLine';
+            nextLine.innerHTML = nextHtml;
+            track.appendChild(nextLine);
+
+            track.style.transition = 'transform 0.35s ease';
+            track.style.transform = `translateY(-${pushDistance}px)`;
+
+            pushTimer = window.setTimeout(() => {
+                currentLine.remove();
+                titleEl!.style.height = ''; // 交還給新的一行自然撐開高度，下次切換時會依新內容重新鎖定
+                track.style.transition = 'none';
+                track.style.transform = 'translateY(0)';
+            }, 350);
+        }
 
         function setActive(index: number) {
             if (index === activeIndex && stickyWrap!.dataset.inited) return;
@@ -153,6 +218,7 @@ const newsItems: NewsCard[] = (techZone?.teck_block ?? []).map((a) => ({
                 const rel = Math.max(-1, Math.min(2, i - index));
                 item.dataset.rel = String(rel);
             });
+            pushBigTitle(items[index]?.dataset.bigTitle ?? '');
         }
 
         function update() {

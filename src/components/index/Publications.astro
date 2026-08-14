@@ -1,5 +1,52 @@
 ---
 import '../../styles/components/index/publications.css';
+
+interface BookZoneItem {
+    book_name: string;
+    book_description: string | null;
+    book_url: string | null;
+    book_image: { url: string } | null;
+}
+
+interface BookCard {
+    title: string;
+    description: string;
+    href: string;
+    image: string;
+}
+
+let bookItems: BookZoneItem[] = [];
+try {
+    const res = await fetch(
+        `${import.meta.env.STRAPI_URL}/api/index-page?populate[s6_book_zone][populate]=book_image`,
+        { headers: { Authorization: `Bearer ${import.meta.env.STRAPI_API_TOKEN}` } },
+    );
+    if (res.ok) {
+        const json = await res.json();
+        bookItems = json.data?.s6_book_zone ?? [];
+    }
+} catch {
+    bookItems = [];
+}
+
+const bookCards: BookCard[] = bookItems.map((b) => ({
+    title: b.book_name,
+    description: b.book_description ?? '',
+    href: b.book_url ?? '#',
+    image: b.book_image?.url
+        ? (b.book_image.url.startsWith('http') ? b.book_image.url : `${import.meta.env.STRAPI_URL}${b.book_image.url}`)
+        : '/real-book1.png',
+}));
+
+// 每個 <li> 書架區塊除了一本後台真實資料的書（.book.real）外，前面會擺幾本純裝飾用的書背（book1~9.png）撐場面，
+// 書本數量不固定（後台可能新增/減少），所以裝飾書背的數量與圖片改用 index 循環決定，而不是寫死 4 組
+const FILLER_IMAGES = ['/book1.png', '/book2.png', '/book3.png', '/book4.png', '/book5.png', '/book6.png', '/book7.png', '/book8.png', '/book9.png'];
+const FILLER_COUNTS = [3, 4, 5, 4];
+
+function getFillers(index: number): string[] {
+    const count = FILLER_COUNTS[index % FILLER_COUNTS.length];
+    return Array.from({ length: count }, (_, j) => FILLER_IMAGES[(index * 3 + j) % FILLER_IMAGES.length]);
+}
 ---
 <section data-nav="light">
     <div id="publications">
@@ -10,7 +57,7 @@ import '../../styles/components/index/publications.css';
                     <p>PUBLICATIONS</p>
                 </div>
                 <div class="more">
-                    <a href="#">                        
+                    <a href="https://www.books.com.tw/" target="_blank" rel="noopener noreferrer">                        
                         <span class="pc">全部出版品</span> 
                         <span class="mobile">更多</span> 
                         <div class="arraw">
@@ -21,149 +68,36 @@ import '../../styles/components/index/publications.css';
             </div>
             <div class="books">
                 <ul>
-                    <li>
-                        <div class="book">
-                            <img width="100" height="499" src="/book1.png" alt="book" loading="lazy" />
-                        </div>
-                        <div class="book">
-                            <img width="52" height="480" src="/book2.png" alt="book" loading="lazy" />
-                        </div>
-                        <div class="book">
-                            <img width="52" height="480" src="/book3.png" alt="book" loading="lazy" />
-                        </div>
-                        <div class="book real">
-                            <div class="img">
-                                <img width="52" height="480" src="/real-book1.png" alt="book" loading="lazy" />
-                            </div>
-                            <div class="txtBox">
-                                <div class="title">
-                                    晶三角：矽時代地緣政治下，美台中全球半導體安全
+                    {bookCards.map((book, i) => (
+                        <li>
+                            {getFillers(i).map((src, j) => (
+                                <div class="book">
+                                    <img width={j === 0 ? 100 : 52} height={j === 0 ? 499 : 480} src={src} alt="book" loading="lazy" />
                                 </div>
-                                <div class="description">
-                                    晶片時代，面對半導體地緣政治的必修課，解讀台美中半導體三角賽局的關鍵之作！
+                            ))}
+                            <div class="book real">
+                                <div class="img">
+                                    <img width="52" height="480" src={book.image} alt="book" loading="lazy" />
                                 </div>
-                                <div class="more">
-                                    <a href="#">
-                                        <span>前往博客來</span>
-                                        <div class="arraw">
-                                            <img width="28" height="28" src="/arraw-right-01.svg" alt="arraw" />
-                                        </div>
-                                    </a>
+                                <div class="txtBox">
+                                    <div class="title">
+                                        {book.title}
+                                    </div>
+                                    <div class="description">
+                                        {book.description}
+                                    </div>
+                                    <div class="more">
+                                        <a href={book.href} target="_blank" rel="noopener noreferrer">
+                                            <span>前往博客來</span>
+                                            <div class="arraw">
+                                                <img width="28" height="28" src="/arraw-right-01.svg" alt="arraw" />
+                                            </div>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </li>
-
-                    <li>
-                        <div class="book">
-                            <img width="100" height="499" src="/book4.png" alt="book" loading="lazy" />
-                        </div>
-                        <div class="book">
-                            <img width="52" height="480" src="/book5.png" alt="book" loading="lazy" />
-                        </div>
-                        <div class="book">
-                            <img width="52" height="480" src="/book6.png" alt="book" loading="lazy" />
-                        </div>
-                        <div class="book">
-                            <img width="52" height="480" src="/book7.png" alt="book" loading="lazy" />
-                        </div>
-                        <div class="book real">
-                            <div class="img">
-                                <img width="52" height="480" src="/real-book2.png" alt="book" loading="lazy" />
-                            </div>
-                            <div class="txtBox">
-                                <div class="title">
-                                    華府政治解碼
-                                </div>
-                                <div class="description">
-                                    華府政治解碼華府政治解碼華府政治解碼華府政治解碼華府政治解碼華府政治解碼
-                                </div>
-                                <div class="more">
-                                    <a href="#">
-                                        <span>前往博客來</span>
-                                        <div class="arraw">
-                                            <img width="28" height="28" src="/arraw-right-01.svg" alt="arraw" />
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-
-                    <li>
-                        <div class="book">
-                            <img width="100" height="499" src="/book8.png" alt="book" loading="lazy" />
-                        </div>
-                        <div class="book">
-                            <img width="52" height="480" src="/book9.png" alt="book" loading="lazy" />
-                        </div>
-                        <div class="book">
-                            <img width="52" height="480" src="/book1.png" alt="book" loading="lazy" />
-                        </div>
-                        <div class="book">
-                            <img width="52" height="480" src="/book2.png" alt="book" loading="lazy" />
-                        </div>
-                        <div class="book">
-                            <img width="52" height="480" src="/book3.png" alt="book" loading="lazy" />
-                        </div>
-                        <div class="book real">
-                            <div class="img">
-                                <img width="52" height="480" src="/real-book3.png" alt="book" loading="lazy" />
-                            </div>
-                            <div class="txtBox">
-                                <div class="title">
-                                    一觸即發:一位非常時期美國國防部長的回憶錄
-                                </div>
-                                <div class="description">
-                                    有實力才有和平
-                                </div>
-                                <div class="more">
-                                    <a href="#">
-                                        <span>前往博客來</span>
-                                        <div class="arraw">
-                                            <img width="28" height="28" src="/arraw-right-01.svg" alt="arraw" />
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-
-                    <li>
-                        <div class="book">
-                            <img width="100" height="499" src="/book4.png" alt="book" loading="lazy" />
-                        </div>
-                        <div class="book">
-                            <img width="52" height="480" src="/book5.png" alt="book" loading="lazy" />
-                        </div>
-                        <div class="book">
-                            <img width="52" height="480" src="/book6.png" alt="book" loading="lazy" />
-                        </div>
-                        <div class="book">
-                            <img width="52" height="480" src="/book7.png" alt="book" loading="lazy" />
-                        </div>
-                        <div class="book real">
-                            <div class="img">
-                                <img width="52" height="480" src="/real-book4.png" alt="book" loading="lazy" />
-                            </div>
-                            <div class="txtBox">
-                                <div class="title">
-                                    地下帝國
-                                </div>
-                                <div class="description">
-                                    地下帝國地下帝國地下帝國地下帝國地下帝國地下帝國
-                                </div>
-                                <div class="more">
-                                    <a href="#">
-                                        <span>前往博客來</span>
-                                        <div class="arraw">
-                                            <img width="28" height="28" src="/arraw-right-01.svg" alt="arraw" />
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
+                        </li>
+                    ))}
                 </ul>
             </div>
             <!-- 768px 以下：書架下方共用的資訊面板，點選書本時把該本書的 txtBox 內容置換進來 -->
@@ -199,6 +133,14 @@ import '../../styles/components/index/publications.css';
         let isTouching = false;
         let startX = 0;
         let scrollStart = 0;
+        // 單純點擊（例如點書本上的「前往博客來」連結）也會先觸發 pointerdown，
+        // 如果一按下就立刻 setPointerCapture，之後的 click 事件會被整個 .books 容器搶走，
+        // 連結就永遠點不出去（hover 仍能看到網址，因為那是瀏覽器原生行為，跟 JS 無關）。
+        // 改成移動超過門檻才視為「真的在拖曳」，此時才 setPointerCapture、套用捲動；
+        // 沒超過門檻就當作一般點擊放行，讓底下的連結能正常收到 click。
+        const DRAG_THRESHOLD = 5;
+        let hasDragged = false;
+        let activePointerId: number | null = null;
 
         // 圖片預設可以被瀏覽器原生拖曳，會打斷我們自己的拖曳捲動，這裡直接擋掉
         books.addEventListener('dragstart', (e) => e.preventDefault());
@@ -206,21 +148,33 @@ import '../../styles/components/index/publications.css';
         books.addEventListener('pointerdown', (e) => {
             if (e.pointerType === 'touch') return; // 手機／觸控裝置改用瀏覽器原生的觸控捲動（見下方 touchstart／touchend）
             isDown = true;
-            books.classList.add('dragging');
+            hasDragged = false;
+            activePointerId = e.pointerId;
             startX = e.clientX;
             scrollStart = books.scrollLeft;
-            books.setPointerCapture(e.pointerId);
         });
 
         books.addEventListener('pointermove', (e) => {
             if (!isDown) return;
-            books.scrollLeft = scrollStart - (e.clientX - startX);
+            const delta = e.clientX - startX;
+            if (!hasDragged) {
+                if (Math.abs(delta) < DRAG_THRESHOLD) return;
+                hasDragged = true;
+                books.classList.add('dragging');
+                books.setPointerCapture(e.pointerId);
+            }
+            books.scrollLeft = scrollStart - delta;
         });
 
         let scrollPos = books.scrollLeft;
 
         const endDrag = () => {
+            if (hasDragged && activePointerId !== null && books.hasPointerCapture(activePointerId)) {
+                books.releasePointerCapture(activePointerId);
+            }
             isDown = false;
+            hasDragged = false;
+            activePointerId = null;
             books.classList.remove('dragging');
             scrollPos = books.scrollLeft;
         };

@@ -1,5 +1,33 @@
 ---
 import '../../styles/components/index/partners.css';
+
+interface FooterPartner {
+    link_name: string;
+    link_url: string | null;
+    link_icon: string | null;
+}
+
+let footerPartners: FooterPartner[] = [];
+try {
+    const res = await fetch(
+        `${import.meta.env.STRAPI_URL}/api/footer?populate=*`,
+        { headers: { Authorization: `Bearer ${import.meta.env.STRAPI_API_TOKEN}` } },
+    );
+    if (res.ok) {
+        const json = await res.json();
+        footerPartners = json.data?.footer_partner ?? [];
+    }
+} catch {
+    footerPartners = [];
+}
+
+const partnerLogos = footerPartners.map((p) => ({
+    name: p.link_name,
+    href: p.link_url ?? '#',
+    icon: p.link_icon
+        ? (p.link_icon.startsWith('http') ? p.link_icon : `${import.meta.env.STRAPI_URL}${p.link_icon}`)
+        : '/logo_AXIOSPhoenix.png',
+}));
 ---
 <section data-nav="light">
     <div id="partners">
@@ -26,21 +54,11 @@ import '../../styles/components/index/partners.css';
                                 </div>
                             </div>
                             <div class="logos">
-                                <a href="#">
-                                    <img width="282" height="48" src="/logo_Arizona CommerceAuthority.png" alt="partner" loading="lazy" />
-                                </a>
-                                <a href="#">
-                                    <img width="282" height="48" src="/logo_AXIOSPhoenix.png" alt="partner" loading="lazy" />
-                                </a>
-                                <a href="#">
-                                    <img width="282" height="48" src="/logo_PhoenixNewTimes.png" alt="partner" loading="lazy" />
-                                </a>
-                                <a href="#">
-                                    <img width="282" height="48" src="/logo_ArizonaDailyStar.png" alt="partner" loading="lazy" />
-                                </a>
-                                <a href="#">
-                                    <img width="282" height="48" src="/logo_TheArizonaRepublic.png" alt="partner" loading="lazy" />
-                                </a>
+                                {partnerLogos.map((partner) => (
+                                    <a href={partner.href} target="_blank" rel="noopener noreferrer">
+                                        <img width="282" height="48" src={partner.icon} alt={partner.name} loading="lazy" />
+                                    </a>
+                                ))}
                             </div>
                         </li>
                         <li>
@@ -78,6 +96,7 @@ import '../../styles/components/index/partners.css';
                                             </div>
                                         </button>
                                     </div>
+                                    <p class="formMsg" role="status"></p>
                                 </form>
                             </div>
                         </li>
@@ -89,21 +108,21 @@ import '../../styles/components/index/partners.css';
                                 </div>
                             </div>
                             <div class="follow">
-                                <a href="#" class="followItem">
+                                <a href="https://www.linkedin.com/showcase/tvbs-tech/" target="_blank" rel="noopener noreferrer" class="followItem">
                                     <img width="24" height="24" src="/ic-linkedin.svg" alt="LinkedIn" />
                                     <span>追蹤 LinkedIn</span>
                                     <div class="arraw">
                                         <img width="28" height="28" src="/arraw-right-02.svg" alt="arraw" />
                                     </div>
                                 </a>
-                                <a href="#" class="followItem">
+                                <a href="https://www.youtube.com/watch?v=JPmb6UzzpBo&list=PLmVlUjKuEG7SikBn4h8gZKuN0gn_yxetj" target="_blank" rel="noopener noreferrer" class="followItem">
                                     <img width="24" height="24" src="/ic-youtube.svg" alt="YouTube" />
                                     <span>訂閱 YouTube</span>
                                     <div class="arraw">
                                         <img width="28" height="28" src="/arraw-right-02.svg" alt="arraw" />
                                     </div>
                                 </a>
-                                <a href="#" class="followItem">
+                                <a href="https://podcasts.apple.com/tw/podcast/%E6%96%B0%E8%81%9E%E5%B9%95%E5%BE%8C/id1737083276" target="_blank" rel="noopener noreferrer" class="followItem">
                                     <img width="24" height="24" src="/ic-podcast.svg" alt="Podcast" />
                                     <span>追蹤 Podcast</span>
                                     <div class="arraw">
@@ -118,3 +137,44 @@ import '../../styles/components/index/partners.css';
         </div>
     </div>
 </section>
+
+<script>
+    // ===== 與我們合作（#partners .collabForm）：送出到 Google Apps Script Web App =====
+    // 後端沒有自己的 API，改用獨立的 Google Apps Script 專案當輕量後端（不綁定 Sheet，不存檔）：
+    // 表單 POST 過去後，Apps Script 直接寄信通知蔣翠芳副理（monica@tvbs.com.tw）。
+    // 部署步驟＋完整的 Apps Script 程式碼見 GOOGLE_APPS_SCRIPT.md，部署後把下面這個網址換成實際拿到的 Web App URL。
+    const COLLAB_FORM_ENDPOINT = 'https://script.google.com/macros/s/REPLACE_WITH_DEPLOYMENT_ID/exec';
+
+    const collabForm = document.querySelector<HTMLFormElement>('#partners .collabForm');
+    const formMsg = document.querySelector<HTMLElement>('#partners .formMsg');
+
+    collabForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitBtn = collabForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = true;
+        if (formMsg) {
+            formMsg.textContent = '送出中…';
+            formMsg.classList.remove('is-error');
+        }
+
+        try {
+            // Apps Script Web App 對跨網域 POST 的 CORS 支援不穩定，用 no-cors 送出可以避開預檢請求，
+            // 但代價是讀不到回應內容/狀態碼——這裡採「只要 fetch 沒有丟出網路層錯誤就視為送出成功」的做法，
+            // 這也是靜態網站串 Apps Script 常見的處理方式。
+            await fetch(COLLAB_FORM_ENDPOINT, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: new FormData(collabForm),
+            });
+            if (formMsg) formMsg.textContent = '送出成功，感謝您的洽詢！';
+            collabForm.reset();
+        } catch {
+            if (formMsg) {
+                formMsg.textContent = '送出失敗，請稍後再試一次。';
+                formMsg.classList.add('is-error');
+            }
+        } finally {
+            if (submitBtn) submitBtn.disabled = false;
+        }
+    });
+</script>

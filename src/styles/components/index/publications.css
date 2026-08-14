@@ -99,16 +99,16 @@
     column-gap: 20px;
     transition: transform 0.3s ease;
 }
-#publications .books .book.real .img:hover{
+#publications .books .book.real:hover .img{
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
 }
-#publications .books ul li:has(.book.real .img:hover) .book:not(.real){
+#publications .books ul li:has(.book.real:hover) .book:not(.real){
     transform: rotate(-1.5deg) translateX(-4px);
 }
-#publications .books ul li:has(+ li .book.real .img:hover) .book:not(.real){
+#publications .books ul li:has(+ li .book.real:hover) .book:not(.real){
     transform: rotate(-1.5deg) translateX(-4px);
 }
-#publications .books ul li:has(.book.real .img:hover) + li .book:not(.real){
+#publications .books ul li:has(.book.real:hover) + li .book:not(.real){
     transform: rotate(1.5deg) translateX(4px);
 }
 #publications .books .book.real .txtBox{
@@ -116,9 +116,12 @@
     overflow: hidden;
     transition: .8s;
 }
-#publications .books .book.real .img:hover ~ .txtBox{
+#publications .books .book.real:hover .txtBox{
     width: 250px;
     transition: .8s;
+}
+#publications .booksInfoPanel{
+    display: none;
 }
 #publications .books .book.real .txtBox .title,
 #publications .books .book.real .txtBox .description{
@@ -129,12 +132,22 @@
     font-weight: 700;
     line-height: 24px;
     margin-bottom: 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 #publications .books .book.real .txtBox .description{
     margin-bottom: 12px;
     font-size:  14px;
     font-weight: 400;
     line-height: 22px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 #publications .books .book.real .txtBox .more a .arraw img{
     transform: rotate(0deg);
@@ -179,7 +192,7 @@
         overflow: hidden;
         transition: .8s;
     }
-    #publications .books .book.real .img:hover ~ .txtBox {
+    #publications .books .book.real:hover .txtBox {
         width: 250px;
         height: 220px;
         transition: .8s;
@@ -206,6 +219,7 @@
         display: none;
     }
     #publications .booksInfoPanel {
+        display: block;
         min-height: 150px;
         overflow: hidden;
         padding: 0 25px;

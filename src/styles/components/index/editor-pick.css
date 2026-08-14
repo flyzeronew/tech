@@ -1,57 +1,57 @@
 /* 編輯選讀 */
-#editorPick{
+#pick{
     background-color: #242EF7;
     color: #fff;
 }
-#editorPick .inBox{
+#pick .inBox{
     padding: 150px 0 80px;
 }
-#editorPick .titleBox{
+#pick .titleBox{
     display: flex;
     justify-content: space-between;
     margin-bottom: 60px;
 }
-#editorPick .titleBox .itemTitle p{
+#pick .titleBox .itemTitle p{
     color: #fff;
 }
-#editorPick .editor{
+#pick .editor{
     width: 60%;
     display: flex;
     column-gap: 20px;
 }
-#editorPick .editor .img{
+#pick .editor .img{
     width: 240px;
     aspect-ratio: 1/1;
     object-fit: cover;
 }
-#editorPick .editor .txtBox{
+#pick .editor .txtBox{
     width: 60%;
 }
-#editorPick .editor .txtBox .info{
+#pick .editor .txtBox .info{
     display: flex;
     flex-direction: column;
     row-gap: 10px;
 }
-#editorPick .editor .txtBox .info .name{
+#pick .editor .txtBox .info .name{
     font-weight: 700;
     font-size: 36px;
     line-height: 48px;
     letter-spacing: 0%;
 }
-#editorPick .editor .txtBox .info .Job{
+#pick .editor .txtBox .info .Job{
     font-weight: 400;
     font-size: 16px;
     line-height: 24px;
     letter-spacing: 0%;
     margin-bottom: 20px;
 }
-#editorPick .editor .txtBox .info .description{
+#pick .editor .txtBox .info .description{
     font-weight: 400;
     font-size: 18px;
     line-height: 28px;
     letter-spacing: 0%;
 }
-#editorPick .motto{
+#pick .motto{
     position: relative;
     width: 40%;
     padding-top: 50px;
@@ -62,7 +62,7 @@
     padding: 40px;
     box-sizing: border-box;
 }
-#editorPick .motto::before{
+#pick .motto::before{
     content: "";
     position: absolute;
     left: 0;
@@ -73,7 +73,7 @@
     background-size: contain;
     background-repeat: no-repeat;
 }
-#editorPick .motto::after{
+#pick .motto::after{
     content: "";
     position: absolute;
     right: 0px;
@@ -84,16 +84,16 @@
     background-size: contain;
     background-repeat: no-repeat;
 }
-#editorPick .moreArea{
+#pick .moreArea{
     background-color: #F0F0F0;
     padding: 40px 0 80px;
     color: #242EF7;
     margin-top: 60px;
 }
-#editorPick .moreArea .areaTitleBox{
+#pick .moreArea .areaTitleBox{
     padding: 0 80px 40px;
 }
-#editorPick .moreArea .title{
+#pick .moreArea .title{
     font-weight: 900;
     font-size: 48px;
     line-height: 64px;
@@ -101,7 +101,7 @@
     margin-bottom: 20px;
     margin-bottom: 60px;
 }
-#editorPick .moreArea .description{
+#pick .moreArea .description{
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
@@ -112,16 +112,16 @@
     letter-spacing: 0%;
     margin-bottom: 20px;
 }
-#editorPick .moreArea .description p{
+#pick .moreArea .description p{
     width: 60%;
     flex: none;
 }
-#editorPick .moreArea .btn{
+#pick .moreArea .btn{
     display: flex;
     gap: 12px;
     flex-shrink: 0;
 }
-#editorPick .moreArea .btn button{
+#pick .moreArea .btn button{
     width: 48px;
     height: 48px;
     display: flex;
@@ -132,47 +132,47 @@
     cursor: pointer;
     transition: background-color 0.3s;
 }
-#editorPick .moreArea .btn button:hover{
+#pick .moreArea .btn button:hover{
     background-color: rgba(0, 0, 0, 0.1);
 }
-#editorPick .moreArea .btn button img{
+#pick .moreArea .btn button img{
     width: 20px;
     height: 20px;
 }
-#editorPick .moreArea .btn .prevBtn img{
+#pick .moreArea .btn .prevBtn img{
     transform: rotate(180deg);
 }
-#editorPick .moreArea .list{
+#pick .moreArea .list{
     padding-left: 80px;
     overflow: hidden;
 }
-#editorPick .moreArea .project .title {
+#pick .moreArea .project .title {
     font-size: 32px;
     font-weight: 700;
     line-height: 50px;
     margin-bottom: 10px;
 }
-#editorPick .moreArea .project .description {
+#pick .moreArea .project .description {
     font-size: 18px;
     font-weight: 400;
     line-height: 26px;
     letter-spacing: 0%;
 }
-#editorPick .moreArea .moreSwiper{
+#pick .moreArea .moreSwiper{
     display: block;
     width: 100%;
     opacity: 0;
 }
-#editorPick .moreArea .moreSwiper.is-ready{
+#pick .moreArea .moreSwiper.is-ready{
     opacity: 1;
     transition: opacity 0.3s ease;
 }
-#editorPick .moreArea .moreSwiper swiper-slide{
+#pick .moreArea .moreSwiper swiper-slide{
     display: inline-block;
     width: 450px;
     vertical-align: top;
 }
-#editorPick .moreArea .moreSwiper swiper-slide .box{
+#pick .moreArea .moreSwiper swiper-slide .box{
     display: block;
     width: 100%;
     background-color: #fff;
@@ -181,12 +181,12 @@
     box-sizing: border-box;
     color: inherit;
 }
-#editorPick .moreArea .moreSwiper swiper-slide .box .img{
+#pick .moreArea .moreSwiper swiper-slide .box .img{
     width: 100%;
     height: auto;
     margin-bottom: 36px;
 }
-#editorPick .moreArea .moreSwiper swiper-slide .box .img::after{
+#pick .moreArea .moreSwiper swiper-slide .box .img::after{
     content: '';
     position: absolute;
     inset: 0;
@@ -194,7 +194,7 @@
     opacity: 0;
     transition: opacity 0.3s;
 }
-#editorPick .moreArea .moreSwiper swiper-slide .box .img .cardArraw{
+#pick .moreArea .moreSwiper swiper-slide .box .img .cardArraw{
     position: absolute;
     right: -60px;
     bottom: -60px;
@@ -208,35 +208,35 @@
     border: 1px solid #242EF7;
     transition: right 0.3s ease, bottom 0.3s ease;
 }
-#editorPick .moreArea .moreSwiper swiper-slide .box .img .cardArraw img{
+#pick .moreArea .moreSwiper swiper-slide .box .img .cardArraw img{
     width: 28px;
     height: 28px;
     transform: rotate(-45deg);
 }
-#editorPick .moreArea .moreSwiper swiper-slide .box:hover .img::after{
+#pick .moreArea .moreSwiper swiper-slide .box:hover .img::after{
     opacity: 1;
 }
-#editorPick .moreArea .moreSwiper swiper-slide .box:hover .img .cardArraw{
+#pick .moreArea .moreSwiper swiper-slide .box:hover .img .cardArraw{
     right: 0;
     bottom: 0;
 }
-#editorPick .moreArea .moreSwiper swiper-slide .box .txtBox{
+#pick .moreArea .moreSwiper swiper-slide .box .txtBox{
     padding: 20px;
 }
-#editorPick .moreArea .moreSwiper swiper-slide .box .txtBox .tag{
+#pick .moreArea .moreSwiper swiper-slide .box .txtBox .tag{
     font-size: 12px;
     font-weight: 400;
     line-height: 16px;
     letter-spacing: 0%;
 }
-#editorPick .moreArea .moreSwiper swiper-slide .box .txtBox .title{
+#pick .moreArea .moreSwiper swiper-slide .box .txtBox .title{
     font-size: 18px;
     font-weight: 700;
     line-height: 26px;
     letter-spacing: 0%;
     margin-bottom: 10px;
 }
-#editorPick .moreArea .moreSwiper swiper-slide .box .txtBox .tag{
+#pick .moreArea .moreSwiper swiper-slide .box .txtBox .tag{
     width: max-content;
     font-size: 12px;
     font-weight: 400;
@@ -247,7 +247,7 @@
     padding: 4px 8px;
     margin-bottom: 20px;
 }
-#editorPick .moreArea .moreSwiper swiper-slide .box .txtBox .title{
+#pick .moreArea .moreSwiper swiper-slide .box .txtBox .title{
     color: #000;
     font-size: 28px;
     font-weight: 700;
@@ -259,7 +259,7 @@
     -webkit-box-orient: vertical;
     margin-bottom: 16px;
 }
-#editorPick .moreArea .moreSwiper swiper-slide .box .txtBox .description{
+#pick .moreArea .moreSwiper swiper-slide .box .txtBox .description{
     font-size: 16px;
     font-weight: 400;
     line-height: 24px;
@@ -273,133 +273,133 @@
     margin-bottom: 0px;
 }
 @media (max-width:1279px) {
-    #editorPick .editor {
+    #pick .editor {
         margin-bottom: 0px;
     }
-    #editorPick .motto,
-    #editorPick .editor .txtBox .info .name,
-    #editorPick .moreArea .project .title,
-    #editorPick .moreArea .moreSwiper swiper-slide .box .txtBox .title{
+    #pick .motto,
+    #pick .editor .txtBox .info .name,
+    #pick .moreArea .project .title,
+    #pick .moreArea .moreSwiper swiper-slide .box .txtBox .title{
         font-size: 36px;
         line-height: 48px;
     }
-    #editorPick .motto {
+    #pick .motto {
         padding: 40px;
     }
-    #editorPick .moreArea .title {
+    #pick .moreArea .title {
         font-size: 40px;
         line-height: 50px;
         margin-bottom: 30px;
     }
-    #editorPick .moreArea .description {
+    #pick .moreArea .description {
         font-size: 18px;
         line-height: 26px;
         margin-bottom: 20px;
     }
-    #editorPick .moreArea .btn button {
+    #pick .moreArea .btn button {
         width: 40px;
         height: 40px;
     }
-    #editorPick .moreArea .moreSwiper swiper-slide .box .img {
+    #pick .moreArea .moreSwiper swiper-slide .box .img {
         margin-bottom: 0px;
     }
-    #editorPick .moreArea .moreSwiper swiper-slide .box .txtBox .tag {
+    #pick .moreArea .moreSwiper swiper-slide .box .txtBox .tag {
         margin-bottom: 10px;
     }
 }
 @media (max-width:1023px) {
-    #editorPick .inBox {
+    #pick .inBox {
         padding: 132px 40px 100px;
     }
-    #editorPick .flex{
+    #pick .flex{
         display: block;
     }
-    #editorPick .editor,#editorPick .motto{
+    #pick .editor,#pick .motto{
         width: 100%;
     }
-    #editorPick .editor{
+    #pick .editor{
         margin-bottom: 40px;
     }
-    #editorPick .moreArea {
+    #pick .moreArea {
         padding: 40px 0px 80px 40px;
     }
-    #editorPick .moreArea .areaTitleBox {
+    #pick .moreArea .areaTitleBox {
         padding: 0 40px 40px 0;
     }
-    #editorPick .moreArea .list {
+    #pick .moreArea .list {
         padding-left: 0px;
     }
-    #editorPick .moreArea .project .title{
+    #pick .moreArea .project .title{
         font-size: 32px;
         line-height: 50px;
     }
-    #editorPick .moreArea .moreSwiper swiper-slide .box .txtBox .title{
+    #pick .moreArea .moreSwiper swiper-slide .box .txtBox .title{
         font-size: 28px;
         line-height: 36px;
     }
 }
 @media (max-width:767px) {
-    #editorPick .inBox {
+    #pick .inBox {
         padding: 132px 20px 100px 20px;
     }
-    #editorPick .editor .img {
+    #pick .editor .img {
         width: 20%;
     }
-    #editorPick .editor .txtBox {
+    #pick .editor .txtBox {
         width: 80%;
     }
-    #editorPick .motto {
+    #pick .motto {
         padding: 32px;
         font-size: 28px;
         line-height: 40px;
     }
-    #editorPick .moreArea {
+    #pick .moreArea {
         padding: 40px 0px 80px 20px;
     }
-    #editorPick .moreArea .areaTitleBox {
+    #pick .moreArea .areaTitleBox {
         padding: 0 20px 40px 0;
     }
-    #editorPick .moreArea .description {
+    #pick .moreArea .description {
         width: 100%;
         display: block;
         font-size: 18px;
         line-height: 26px;
         margin-bottom: 0px;
     }
-    #editorPick .moreArea .description p {
+    #pick .moreArea .description p {
         width: 100%;
         margin-bottom: 40px;
     }
-    #editorPick .moreArea .btn{
+    #pick .moreArea .btn{
         justify-content: flex-end;
     }
-    #editorPick .moreArea .project .title {
+    #pick .moreArea .project .title {
         font-size: 28px;
         line-height: 40px;
     }
-    #editorPick .moreArea .project .description {
+    #pick .moreArea .project .description {
         font-size: 16px;
         line-height: 24px;
         margin-bottom: 20px;
     }
-    #editorPick .moreArea .moreSwiper swiper-slide .box {
+    #pick .moreArea .moreSwiper swiper-slide .box {
         padding:12px 12px 24px;
     }
-    #editorPick .moreArea .moreSwiper swiper-slide .box .txtBox {
+    #pick .moreArea .moreSwiper swiper-slide .box .txtBox {
         padding:38px 20px 0px;
     }
-    #editorPick .moreArea .moreSwiper swiper-slide{
+    #pick .moreArea .moreSwiper swiper-slide{
         width: 400px;
     }
-    #editorPick .titleBox {
+    #pick .titleBox {
         margin-bottom: 40px;
     }
-    #editorPick .moreArea {
+    #pick .moreArea {
         margin-top: 40px;
     }
 }
 @media (max-width:767px) {
-    #editorPick .moreArea .moreSwiper swiper-slide{
+    #pick .moreArea .moreSwiper swiper-slide{
         width: 300px;
     }
 }

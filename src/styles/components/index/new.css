@@ -38,6 +38,12 @@
     font-size: 80px;
     line-height: 100px;
     letter-spacing: 0%;
+    /* 裁切出目前這行文字的顯示範圍：換組別時 JS 會把高度鎖定在舊文字的高度，
+       新文字接在下面、兩行一起往上位移，新文字才會被舊文字「推」出這個範圍才顯示出來 */
+    overflow: hidden;
+}
+#new .titleBox .titleTrack{
+    /* 位移動畫（transform/transition）由 JS 控制 */
 }
 #new .titleBox .itemTitle{
     margin-bottom: 20%;

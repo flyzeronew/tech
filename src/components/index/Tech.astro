@@ -1,5 +1,56 @@
 ---
 import '../../styles/components/index/tech.css';
+
+interface TechArticle {
+    news_title: string;
+    news_content_html: string | null;
+    news_featured_image_url: string | null;
+    news_published_at: string | null;
+    news_article_url: string | null;
+}
+
+interface TechCard {
+    date: string;
+    title: string;
+    description: string;
+    image: string;
+    href: string;
+}
+
+function formatDate(iso: string | null): string {
+    if (!iso) return '';
+    const d = new Date(iso);
+    return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
+}
+
+// news_content_html 是完整文章全文，後台目前沒有獨立的摘要欄位，暫時用截斷全文取代（跟 Hero.astro 的做法一致）
+function stripHtml(html: string | null, maxLength: number): string {
+    if (!html) return '';
+    const text = html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+    return text.length > maxLength ? `${text.slice(0, maxLength)}…` : text;
+}
+
+let techArticles: TechArticle[] = [];
+try {
+    const res = await fetch(
+        `${import.meta.env.STRAPI_URL}/api/index-page?populate[s_4_2s]=true`,
+        { headers: { Authorization: `Bearer ${import.meta.env.STRAPI_API_TOKEN}` } },
+    );
+    if (res.ok) {
+        const json = await res.json();
+        techArticles = json.data?.s_4_2s ?? [];
+    }
+} catch {
+    techArticles = [];
+}
+
+const newsCards: TechCard[] = techArticles.map((a) => ({
+    date: formatDate(a.news_published_at),
+    title: a.news_title,
+    description: stripHtml(a.news_content_html, 60),
+    image: a.news_featured_image_url ?? '/news-image-01.jpg',
+    href: a.news_article_url ?? '#',
+}));
 ---
 <section data-nav="light">
     <div id="tech">
@@ -22,138 +73,26 @@ import '../../styles/components/index/tech.css';
 
             <div class="newslist">
                 <ul>
-                    <li>
-                        <a href="#">
-                            <div class="date">2026/06/22</div>
-                            <div class="news">
-                                <div class="img">
-                                    <img width="96" height="54" src="/news-image-01.jpg" alt="arraw" loading="lazy" />
-                                </div>
-                                <div class="titleBox">
-                                    <div class="time">2026/06/22</div>
-                                    <div class="title">
-                                        三星全球導入ChatGPT與Codex　OpenAI拿下最大企業部署案之一
+                    {newsCards.map((card) => (
+                        <li>
+                            <a href={card.href} target="_blank" rel="noopener noreferrer">
+                                <div class="date">{card.date}</div>
+                                <div class="news">
+                                    <div class="img">
+                                        <img width="96" height="54" src={card.image} alt="arraw" loading="lazy" />
                                     </div>
-                                    <div class="description">
-                                        外國媒體與分析師高度讚譽台積電在先進製程的絕對壟斷地位，認為其在AI浪潮中是不可或缺的龍頭與投資首選。
+                                    <div class="titleBox">
+                                        <div class="time">{card.date}</div>
+                                        <div class="title">{card.title}</div>
+                                        <div class="description">{card.description}</div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="arraw">
-                                <img width="24" height="24 " src="/arraw-right-02.svg" alt="arraw" />
-                            </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <div class="date">2026/06/22</div>
-                            <div class="news">
-                                <div class="img">
-                                    <img width="96" height="54" src="/news-image-02.jpg" alt="arraw" loading="lazy" />
+                                <div class="arraw">
+                                    <img width="24" height="24 " src="/arraw-right-02.svg" alt="arraw" />
                                 </div>
-                                <div class="titleBox">
-                                    <div class="time">2026/06/22</div>
-                                    <div class="title">
-                                        Q1全球半導體營收達3190億美元 季增27%創新高 記憶體翻倍成主力
-                                    </div>
-                                    <div class="description">
-                                        外國媒體與分析師高度讚譽台積電在先進製程的絕對壟斷地位，認為其在AI浪潮中是不可或缺的龍頭與投資首選。
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="arraw">
-                                <img width="24" height="24 " src="/arraw-right-02.svg" alt="arraw" />
-                            </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <div class="date">2026/06/22</div>
-                            <div class="news">
-                                <div class="img">
-                                    <img width="96" height="54" src="/news-image-03.jpg" alt="arraw" loading="lazy" />
-                                </div>
-                                <div class="titleBox">
-                                    <div class="time">2026/06/22</div>
-                                    <div class="title">
-                                        護國神山太狂！德國廠外溢效應　薩克森各縣市爭取與台合作
-                                    </div>
-                                    <div class="description">
-                                        外國媒體與分析師高度讚譽台積電在先進製程的絕對壟斷地位，認為其在AI浪潮中是不可或缺的龍頭與投資首選。
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="arraw">
-                                <img width="24" height="24 " src="/arraw-right-02.svg" alt="arraw" />
-                            </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <div class="date">2026/06/22</div>
-                            <div class="news">
-                                <div class="img">
-                                    <img width="96" height="54" src="/news-image-04.jpg" alt="arraw" loading="lazy" />
-                                </div>
-                                <div class="titleBox">
-                                    <div class="time">2026/06/22</div>
-                                    <div class="title">
-                                        AI時代不缺聰明人！黃仁勳曝輝達徵才標準：1特質一定成功
-                                    </div>
-                                    <div class="description">
-                                        外國媒體與分析師高度讚譽台積電在先進製程的絕對壟斷地位，認為其在AI浪潮中是不可或缺的龍頭與投資首選。
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="arraw">
-                                <img width="24" height="24 " src="/arraw-right-02.svg" alt="arraw" />
-                            </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <div class="date">2026/06/22</div>
-                            <div class="news">
-                                <div class="img">
-                                    <img width="96" height="54" src="/news-image-05.jpg" alt="arraw" loading="lazy" />
-                                </div>
-                                <div class="titleBox">
-                                    <div class="time">2026/06/22</div>
-                                    <div class="title">
-                                        AI時代不缺聰明人！黃仁勳曝輝達徵才標準：1特質一定成功
-                                    </div>
-                                    <div class="description">
-                                        外國媒體與分析師高度讚譽台積電在先進製程的絕對壟斷地位，認為其在AI浪潮中是不可或缺的龍頭與投資首選。
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="arraw">
-                                <img width="24" height="24 " src="/arraw-right-02.svg" alt="arraw" />
-                            </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <div class="date">2026/06/22</div>
-                            <div class="news">
-                                <div class="img">
-                                    <img width="96" height="54" src="/news-image-06.jpg" alt="arraw" loading="lazy" />
-                                </div>
-                                <div class="titleBox">
-                                    <div class="time">2026/06/22</div>
-                                    <div class="title">
-                                        AI時代不缺聰明人！黃仁勳曝輝達徵才標準：1特質一定成功
-                                    </div>
-                                    <div class="description">
-                                        外國媒體與分析師高度讚譽台積電在先進製程的絕對壟斷地位，認為其在AI浪潮中是不可或缺的龍頭與投資首選。
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="arraw">
-                                <img width="24" height="24 " src="/arraw-right-02.svg" alt="arraw" />
-                            </div>
-                        </a>
-                    </li>
+                            </a>
+                        </li>
+                    ))}
                 </ul>
             </div>
         </div>

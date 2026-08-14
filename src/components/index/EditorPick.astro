@@ -2,7 +2,7 @@
 import '../../styles/components/index/editor-pick.css';
 ---
 <section data-nav="dark">
-    <div id="editorPick">
+    <div id="pick">
         <div class="inBox">
             <div class="titleBox">
                 <div class="itemTitle">
@@ -227,7 +227,7 @@ import '../../styles/components/index/editor-pick.css';
 </section>
 
 <script>
-    // ===== 編輯選讀（#editorPick）影響 AI 的十件事清單：改用 Swiper 輪播套件 =====
+    // ===== 編輯選讀（#pick）影響 AI 的十件事清單：改用 Swiper 輪播套件 =====
     import { register } from 'swiper/element/bundle';
     register();
 
@@ -238,8 +238,8 @@ import '../../styles/components/index/editor-pick.css';
             spaceBetween: 20,
             loop: true,
             navigation: {
-                nextEl: '#editorPick .moreArea .btn .nextBtn',
-                prevEl: '#editorPick .moreArea .btn .prevBtn',
+                nextEl: '#pick .moreArea .btn .nextBtn',
+                prevEl: '#pick .moreArea .btn .prevBtn',
             },
         });
         moreSwiperEl.initialize();

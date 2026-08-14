@@ -1,18 +1,18 @@
 /* 科技大人物 */
-#techLeaders{
+#leaders{
     background-color: #505050;
     color: #fff;
 }
-#techLeaders .inBox{
+#leaders .inBox{
     padding: 150px 0 80px;
 }
-#techLeaders .titleBox{
+#leaders .titleBox{
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: start;
     margin-bottom: 60px;
 }
-#techLeaders .titleBox .itemTitle{
+#leaders .titleBox .itemTitle{
     grid-column: 1;
     justify-self: start;
     font-size: 32px;
@@ -20,36 +20,40 @@
     line-height: 50px;
     margin-bottom: 10px;
 }
-#techLeaders .titleBox .itemTitle p{
+#leaders .titleBox .itemTitle p{
     color: #fff;
 }
-#techLeaders .titleBox .nameBox{
+#leaders .titleBox .nameBox{
     grid-column: 2;
     justify-self: center;
 }
-#techLeaders .titleBox .name{
+#leaders .titleBox .name{
     font-size: 48px;
     font-weight: 900;
     line-height: 64px;
     letter-spacing: 0%;
 }
-#techLeaders .titleBox .job{
+#leaders .titleBox .job{
     font-size: 22px;
     font-weight: 700;
     line-height: 30px;
     letter-spacing: 0%;
 }
-#techLeaders .people{
+#leaders .people{
     padding: 40px 80px 80px;
     background-color: #F0F0F0;
 }
-#techLeaders .people .img{
+/* .img／.peoTitle 包在同一個 <a> 裡面才能一起連結，display:contents 讓這個 <a> 不影響原本的排版計算 */
+#leaders .people .cardLink{
+    display: contents;
+}
+#leaders .people .img{
     width: 100%;
     aspect-ratio: 16/9;
     object-fit: cover;
     margin-bottom: 10px;
 }
-#techLeaders .people .peoTitle{
+#leaders .people .peoTitle{
     font-size: 36px;
     font-weight: 700;
     line-height: 48px;
@@ -58,29 +62,29 @@
     margin-bottom: 60px;
     overflow: hidden;
 }
-#techLeaders .people .list ul{
+#leaders .people .list ul{
     display: flex;
     gap: 20px;
 }
-#techLeaders .people .list ul li{
+#leaders .people .list ul li{
     width: 50%;
     border-right: 1px solid #CECECE;
     padding-right: 20px;
 }
-#techLeaders .people .list ul li:last-child{
+#leaders .people .list ul li:last-child{
     border-right: none;
     padding-right: 0;
 }
-#techLeaders .people .list ul li:only-child{
+#leaders .people .list ul li:only-child{
     width: 100%;
 }
-#techLeaders .people .list ul li .img{
+#leaders .people .list ul li .img{
     width: 100%;
     aspect-ratio: 16/9;
     object-fit: cover;
     margin-bottom: 10px;
 }
-#techLeaders .people .list ul li .time{
+#leaders .people .list ul li .time{
     font-size: 13px;
     font-weight: 400;
     line-height: 18px;
@@ -89,7 +93,7 @@
     margin-bottom: 10px;
     color: #505050;
 }
-#techLeaders .people .list ul li .title{
+#leaders .people .list ul li .title{
     font-size: 22px;
     font-weight: 700;
     line-height: 30px;
@@ -102,7 +106,7 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
 }
-#techLeaders .people .list ul li .description{
+#leaders .people .list ul li .description{
     font-size: 16px;
     font-weight: 400;
     line-height: 24px;
@@ -116,50 +120,50 @@
 }
 
 @media (max-width:1279px) {
-    #techLeaders .titleBox .name {
+    #leaders .titleBox .name {
         font-size: 36px;
         line-height: 48px;
     }
-    #techLeaders .titleBox .job {
+    #leaders .titleBox .job {
         font-size: 20px;
         line-height: 28px;
     }
-    #techLeaders .people .peoTitle {
+    #leaders .people .peoTitle {
         font-size: 28px;
         line-height: 36px;
         margin-bottom: 40px;
     }
 }
 @media (max-width:1023px) {
-    #techLeaders .inBox {
+    #leaders .inBox {
         padding: 132px 40px 100px;
     }
-    #techLeaders .titleBox {
+    #leaders .titleBox {
         display: block;
         margin-bottom: 60px;
     }
-    #techLeaders .titleBox .itemTitle {
+    #leaders .titleBox .itemTitle {
         margin-bottom: 20px;
     }
-    #techLeaders .titleBox .nameBox{
+    #leaders .titleBox .nameBox{
         grid-column: unset;
         justify-self: unset;
     }
-    #techLeaders .people {
+    #leaders .people {
         padding: 40px 40px 60px;
     }
 }
 @media (max-width:767px) {
-    #techLeaders .inBox {
+    #leaders .inBox {
         padding: 132px 20px 100px;
     }
-    #techLeaders .people {
+    #leaders .people {
         padding: 40px 20px 60px;
     }
-    #techLeaders .people .list ul {
+    #leaders .people .list ul {
         display: block;
     }
-    #techLeaders .people .list ul li {
+    #leaders .people .list ul li {
         width: 100%;
         border-right: none;
         padding-right: 0;
@@ -167,7 +171,7 @@
         padding-bottom: 20px;
         margin-bottom: 20px;
     }
-    #techLeaders .people .list ul li:last-child {
+    #leaders .people .list ul li:last-child {
         margin-bottom: 0px;
         border-bottom: none;
         padding-bottom: 0;
