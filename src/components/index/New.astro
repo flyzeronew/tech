@@ -161,7 +161,7 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
         // 1024px 以下：pinInner 高度是隨內容撐開（非固定 100vh），實際放行時機以量到的高度為準，
         // 不能假設它跟螢幕一樣高，否則捲動距離的計算會跟瀏覽器實際放行的時機對不上，出現多滾一大段的空白
         const mobileQuery = window.matchMedia('(max-width: 1023px)');
-        const MOBILE_STEP_VH = 100;
+        const MOBILE_STEP_VH = 80;
         const MOBILE_TAIL_VH = 20;
 
         function setHeight() {
