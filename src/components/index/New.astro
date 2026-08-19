@@ -174,10 +174,12 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
         let ticking = false;
         let sectionInView = true;
         let switching = false;
-        let lockY = 0;
         let switchTimer: number | undefined;
+        let touchActive = false;
+        let pendingLock = false;
+        // iOS 彈性捲動很容易在門檻附近來回幾個 px；往回要再滑過這段才換回上一張
+        const BACK_HYSTERESIS = 0.35;
 
-        // 換卡 CSS 為 0.8s，凍結略短於動畫，讓卡片先走完大半再恢復手指捲動
         function switchDuration() {
             return mobileQuery.matches ? 600 : 0;
         }
@@ -188,23 +190,41 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
 
         function unlockSwitch() {
             switching = false;
+            pendingLock = false;
             window.removeEventListener('touchmove', preventTouchScroll);
             document.documentElement.style.touchAction = '';
         }
 
-        function lockForSwitch(index: number) {
+        function armTouchLock() {
             const ms = switchDuration();
-            if (ms <= 0) return;
-            const currentScrolled = -stickyWrap!.getBoundingClientRect().top;
-            const targetScrolled = index * cachedStepPx;
-            const nextY = window.scrollY + (targetScrolled - currentScrolled);
-            window.scrollTo(0, nextY);
-            lockY = nextY;
-            switching = true;
+            if (ms <= 0) {
+                switching = false;
+                return;
+            }
             document.documentElement.style.touchAction = 'none';
             window.addEventListener('touchmove', preventTouchScroll, { passive: false });
             window.clearTimeout(switchTimer);
             switchTimer = window.setTimeout(unlockSwitch, ms);
+        }
+
+        function lockForSwitch() {
+            const ms = switchDuration();
+            if (ms <= 0) return;
+            switching = true;
+            // Safari 在手指還沒離開時若 scrollTo / preventDefault，會把這次手勢的捲動還原，
+            // 下一張就會「出現後再滑回去」。等 touchend 再鎖住後續手勢。
+            if (touchActive) {
+                pendingLock = true;
+                return;
+            }
+            armTouchLock();
+        }
+
+        function onTouchEnd() {
+            touchActive = false;
+            if (!pendingLock) return;
+            pendingLock = false;
+            armTouchLock();
         }
 
         function setHeight() {
@@ -289,7 +309,19 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
             pushBigTitle(items[index]?.dataset.bigTitle ?? '');
             // 只在「往下、且還不是最後一張」時凍結。滑回第一張、或最後一張再往下離開區塊時，
             // scrollTo 拉回會跟手指慣性／iOS 彈性捲動互搶，畫面會抖。
-            if (inited && index > prev && index < items.length - 1) lockForSwitch(index);
+            if (inited && index > prev && index < items.length - 1) lockForSwitch();
+        }
+
+        function indexFromScroll(scrolled: number) {
+            const maxIndex = items.length - 1;
+            if (cachedStepPx <= 0) return 0;
+            const raw = scrolled / cachedStepPx;
+            if (!stickyWrap!.dataset.inited) {
+                return Math.min(maxIndex, Math.max(0, Math.floor(raw)));
+            }
+            if (raw >= activeIndex + 1) return Math.min(maxIndex, Math.floor(raw));
+            if (raw < activeIndex - BACK_HYSTERESIS) return Math.max(0, Math.floor(raw));
+            return activeIndex;
         }
 
         function update() {
@@ -298,16 +330,11 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
                 return;
             }
             const scrolled = Math.min(Math.max(-stickyWrap!.getBoundingClientRect().top, 0), cachedScrollable);
-            const index = Math.min(items.length - 1, Math.floor(scrolled / cachedStepPx));
-            setActive(index);
+            setActive(indexFromScroll(scrolled));
         }
 
         function onScroll() {
-            if (switching) {
-                // 忽略 8px 以內的彈性偏移，避免 freeze 跟 iOS rubber-band 互相拉扯造成震動
-                if (Math.abs(window.scrollY - lockY) > 8) window.scrollTo(0, lockY);
-                return;
-            }
+            if (switching) return;
             if (!sectionInView || ticking) return;
             ticking = true;
             requestAnimationFrame(() => {
@@ -355,6 +382,9 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
         update();
         window.addEventListener('scroll', onScroll, { passive: true });
         window.addEventListener('resize', onResize);
+        window.addEventListener('touchstart', () => { touchActive = true; }, { passive: true });
+        window.addEventListener('touchend', onTouchEnd, { passive: true });
+        window.addEventListener('touchcancel', onTouchEnd, { passive: true });
         new IntersectionObserver((entries) => {
             sectionInView = entries[0]?.isIntersecting ?? true;
             if (sectionInView) update();
