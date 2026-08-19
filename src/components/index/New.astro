@@ -159,19 +159,31 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
 
     if (stickyWrap && pinInner && items.length) {
         // 1024px 以下：pinInner 高度是隨內容撐開（非固定 100vh），實際放行時機以量到的高度為準，
-        // 不能假設它跟螢幕一樣高，否則捲動距離的計算會跟瀏覽器實際放行的時機對不上，出現多滾一大段的空白
+        // 不能假設它跟螢幕一樣高，否則捲動距離的計算會跟瀏覽器實際放行的時機對不上，出現多滾一大段的空白。
+        // 每張卡若仍要滑完整個 100vh 才切換，區塊會釘很久、慣性滑動也容易感覺卡住；
+        // 改成約半個螢幕切一張，尾段留一點緩衝讓最後一張還能停一下再放行。
         const mobileQuery = window.matchMedia('(max-width: 1023px)');
-        const MOBILE_STEP_VH = 80;
-        const MOBILE_TAIL_VH = 20;
+        const MOBILE_STEP_VH = 55;
+        const MOBILE_TAIL_VH = 12;
+
+        let cachedScrollable = 0;
+        let cachedStepPx = 1;
+        let lastViewportWidth = window.innerWidth;
+        let ticking = false;
+        let sectionInView = true;
 
         function setHeight() {
             if (mobileQuery.matches) {
-                const stepPx = (MOBILE_STEP_VH / 100) * window.innerHeight;
-                const tailPx = (MOBILE_TAIL_VH / 100) * window.innerHeight;
-                const scrollDistance = (items.length - 1) * stepPx + tailPx;
-                stickyWrap!.style.height = `${pinInner!.offsetHeight + scrollDistance}px`;
+                // 用當下視窗高度鎖定 step，之後捲動中不再重算——iOS 網址列收合會讓 innerHeight
+                // 變大，若每幀跟著改 step，卡片索引會在手指還在滑時跳動。
+                const vh = window.visualViewport?.height ?? window.innerHeight;
+                cachedStepPx = (MOBILE_STEP_VH / 100) * vh;
+                const tailPx = (MOBILE_TAIL_VH / 100) * vh;
+                cachedScrollable = (items.length - 1) * cachedStepPx + tailPx;
+                stickyWrap!.style.height = `${pinInner!.offsetHeight + cachedScrollable}px`;
             } else {
                 stickyWrap!.style.height = `${items.length * 100}vh`;
+                cachedScrollable = stickyWrap!.offsetHeight - window.innerHeight;
             }
         }
 
@@ -228,35 +240,43 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
             items.forEach((item, i) => {
                 item.classList.toggle('is-active', i === index);
                 // 相對位置：0 為當前卡片，正數為疊在下方待出現的卡片，負數為已經翻過去的卡片
-                const rel = Math.max(-1, Math.min(2, i - index));
-                item.dataset.rel = String(rel);
+                const rel = String(Math.max(-1, Math.min(2, i - index)));
+                if (item.dataset.rel !== rel) item.dataset.rel = rel;
             });
             pushBigTitle(items[index]?.dataset.bigTitle ?? '');
         }
 
         function update() {
-            const rect = stickyWrap!.getBoundingClientRect();
+            if (cachedScrollable <= 0) {
+                setActive(0);
+                return;
+            }
+            const scrolled = Math.min(Math.max(-stickyWrap!.getBoundingClientRect().top, 0), cachedScrollable);
             if (mobileQuery.matches) {
-                const scrollable = stickyWrap!.offsetHeight - pinInner!.offsetHeight;
-                if (scrollable <= 0) {
-                    setActive(0);
-                    return;
-                }
-                const scrolled = Math.min(Math.max(-rect.top, 0), scrollable);
-                const stepPx = (MOBILE_STEP_VH / 100) * window.innerHeight;
-                const index = Math.min(items.length - 1, Math.floor(scrolled / stepPx));
+                const index = Math.min(items.length - 1, Math.floor(scrolled / cachedStepPx));
                 setActive(index);
             } else {
-                const scrollable = stickyWrap!.offsetHeight - window.innerHeight;
-                if (scrollable <= 0) {
-                    setActive(0);
-                    return;
-                }
-                const scrolled = Math.min(Math.max(-rect.top, 0), scrollable);
-                const progress = scrolled / scrollable;
-                const index = Math.min(items.length - 1, Math.floor(progress * items.length));
+                const index = Math.min(items.length - 1, Math.floor((scrolled / cachedScrollable) * items.length));
                 setActive(index);
             }
+        }
+
+        function onScroll() {
+            if (!sectionInView || ticking) return;
+            ticking = true;
+            requestAnimationFrame(() => {
+                update();
+                ticking = false;
+            });
+        }
+
+        function onResize() {
+            // iOS 網址列收合會觸發 resize，若跟著重算 stickyWrap 高度，整段會在滑動途中突然變長變短。
+            // 只在寬度真的變了（旋轉／桌機拉視窗）才重算。
+            if (mobileQuery.matches && window.innerWidth === lastViewportWidth) return;
+            lastViewportWidth = window.innerWidth;
+            setHeight();
+            update();
         }
 
         setHeight();
@@ -287,10 +307,11 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
         window.addEventListener('load', correctHashScroll);
 
         update();
-        window.addEventListener('scroll', update, { passive: true });
-        window.addEventListener('resize', () => {
-            setHeight();
-            update();
-        });
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onResize);
+        new IntersectionObserver((entries) => {
+            sectionInView = entries[0]?.isIntersecting ?? true;
+            if (sectionInView) update();
+        }, { rootMargin: '200px 0px' }).observe(stickyWrap);
     }
 </script>
