@@ -179,7 +179,7 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
 
         // 換卡 CSS 為 0.8s，凍結略短於動畫，讓卡片先走完大半再恢復手指捲動
         function switchDuration() {
-            return mobileQuery.matches ? 500 : 0;
+            return mobileQuery.matches ? 600 : 0;
         }
 
         function preventTouchScroll(e: TouchEvent) {
