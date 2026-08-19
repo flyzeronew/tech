@@ -177,11 +177,9 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
         let lockY = 0;
         let switchTimer: number | undefined;
 
-        // 跟 CSS 換卡 transition 對齊：≤767 是 1s，平板 0.35s。鎖住期間不讓手指把捲動疊加到下一張。
+        // 換卡 CSS 為 0.8s，凍結略短於動畫，讓卡片先走完大半再恢復手指捲動
         function switchDuration() {
-            if (window.matchMedia('(max-width: 767px)').matches) return 1000;
-            if (mobileQuery.matches) return 350;
-            return 0;
+            return mobileQuery.matches ? 500 : 0;
         }
 
         function preventTouchScroll(e: TouchEvent) {
@@ -274,7 +272,8 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
             if (switching) return;
             const inited = Boolean(stickyWrap!.dataset.inited);
             if (index === activeIndex && inited) return;
-            // 手機動畫期間一次只走一張，避免慣性滑動一次跳過多張；桌機維持原本跟滾輪走
+            const prev = activeIndex;
+            // 手機往下切卡一次只走一張，避免慣性滑動一次跳過多張；桌機維持原本跟滾輪走
             if (inited && mobileQuery.matches) {
                 if (index > activeIndex) index = activeIndex + 1;
                 else if (index < activeIndex) index = activeIndex - 1;
@@ -288,7 +287,9 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
                 if (item.dataset.rel !== rel) item.dataset.rel = rel;
             });
             pushBigTitle(items[index]?.dataset.bigTitle ?? '');
-            if (inited) lockForSwitch(index);
+            // 只在「往下、且還不是最後一張」時凍結。滑回第一張、或最後一張再往下離開區塊時，
+            // scrollTo 拉回會跟手指慣性／iOS 彈性捲動互搶，畫面會抖。
+            if (inited && index > prev && index < items.length - 1) lockForSwitch(index);
         }
 
         function update() {
@@ -303,7 +304,8 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
 
         function onScroll() {
             if (switching) {
-                if (window.scrollY !== lockY) window.scrollTo(0, lockY);
+                // 忽略 8px 以內的彈性偏移，避免 freeze 跟 iOS rubber-band 互相拉扯造成震動
+                if (Math.abs(window.scrollY - lockY) > 8) window.scrollTo(0, lockY);
                 return;
             }
             if (!sectionInView || ticking) return;
