@@ -1,79 +1,79 @@
 /* 國際媒體夥伴 */
-#partners{
+#collaboration{
     background-color: #fff;
     color: #000;
 }
-#partners .inBox{
+#collaboration .inBox{
     padding: 150px 0 0px;
 }
-#partners .bigTitleBox{
+#collaboration .bigTitleBox{
     margin-bottom: 100px;
 }
-#partners .bigTitleBox .title{
+#collaboration .bigTitleBox .title{
     font-size: 80px;
     font-weight: 400;
     line-height: 100px;
     letter-spacing: 0%;
     margin-bottom: 24px;
 }
-#partners .bigTitleBox .title span{
+#collaboration .bigTitleBox .title span{
     font-weight: 700;
 }
-#partners .bigTitleBox .description{
+#collaboration .bigTitleBox .description{
     font-size: 24px;
     font-weight: 700;
     line-height: 36px;
     letter-spacing: 0%;
 }
-#partners .form .list ul li{
+#collaboration .form .list ul li{
     display: flex;
     margin-bottom: 100px;
 }
-#partners .form .list ul li .titleBox{
+#collaboration .form .list ul li .titleBox{
     width: 40%;
 }
-#partners .form .list ul li .logos{
+#collaboration .form .list ul li .logos{
     width: 60%;
     display: flex;
     flex-wrap: wrap;
     column-gap: 80px;
     row-gap: 40px;
 }
-#partners .form .list ul li .logos a{
+#collaboration .form .list ul li .logos a{
     display: block;
     width: auto;
     height: 48px;
     object-fit: cover;
 }
-#partners .form .list ul li .logos a img {
+#collaboration .form .list ul li .logos a img {
     width: auto;
     height: 100%;
 }
-#partners .form .list ul li .data{
+#collaboration .form .list ul li .data{
     width: 60%;
 }
-#partners .collabForm{
+#collaboration .collabForm{
     display: flex;
     flex-direction: column;
     row-gap: 16px;
 }
-#partners .collabForm .row{
+#collaboration .collabForm .row{
     display: flex;
     column-gap: 20px;
 }
-#partners .collabForm .field{
+#collaboration .collabForm .field{
     flex: 1;
     display: flex;
     flex-direction: column;
     row-gap: 4px;
 }
-#partners .collabForm label{
+#collaboration .collabForm label{
     font-weight: 700;
     font-size: 16px;
     line-height: 24px;
     letter-spacing: 0%;
 }
-#partners .collabForm input{
+#collaboration .collabForm input{
     width: 100%;
     border: none;
     border-bottom: 1px solid #000;
@@ -87,11 +87,12 @@
     background: transparent;
     outline: none;
     box-sizing: border-box;
+    caret-color: #000;
 }
-#partners .collabForm input::placeholder{
+#collaboration .collabForm input::placeholder{
     color: rgba(0, 0, 0, 0.35);
 }
-#partners .more button{
+#collaboration .more button{
     width: 100%;
     margin-top: 8px;
     padding: 0;
@@ -102,38 +103,38 @@
     justify-content: space-between;
     transition: background-color 0.3s;
 }
-#partners .more button:hover{
+#collaboration .more button:hover{
     background-color: rgba(0, 0, 0, 0.1);
 }
-#partners .more button span{
+#collaboration .more button span{
     color: #000;
     flex: 1;
 }
-#partners .more button .arraw{
+#collaboration .more button .arraw{
     width: 60px;
     height: 60px;
     transform: rotate(0deg);
     border-left: 1px solid #000;
 }
-#partners .more button .arraw img{
+#collaboration .more button .arraw img{
     width: 28px;
     height: 28px;
     transform: rotate(0deg);
 }
-#partners .formMsg{
+#collaboration .formMsg{
     margin-top: 12px;
     font-size: 14px;
     min-height: 1em;
 }
-#partners .formMsg.is-error{
+#collaboration .formMsg.is-error{
     color: #E02020;
 }
-#partners .form .list ul li .follow{
+#collaboration .form .list ul li .follow{
     width: 60%;
     display: flex;
     flex-direction: column;
 }
-#partners .followItem{
+#collaboration .followItem{
     display: flex;
     align-items: center;
     column-gap: 20px;
@@ -141,12 +142,12 @@
     border-bottom: 1px solid #000;
     box-sizing: border-box;
 }
-#partners .followItem img:first-child{
+#collaboration .followItem img:first-child{
     width: 24px;
     height: 24px;
     flex-shrink: 0;
 }
-#partners .followItem span{
+#collaboration .followItem span{
     flex: 1;
     font-weight: 700;
     font-size: 22px;
@@ -154,7 +155,7 @@
     letter-spacing: 0%;
     color: #000;
 }
-#partners .followItem .arraw{
+#collaboration .followItem .arraw{
     width: 60px;
     height: 60px;
     display: flex;
@@ -162,12 +163,12 @@
     justify-content: center;
     flex-shrink: 0;
 }
-#partners .followItem .arraw img{
+#collaboration .followItem .arraw img{
     width: 28px;
     height: 28px;
 }
 @media (max-width:1279px) {
-    #partners .form .list ul li .logos {
+    #collaboration .form .list ul li .logos {
         width: 60%;
         display: flex;
         flex-wrap: wrap;
@@ -176,62 +177,62 @@
     }
 }
 @media (max-width:1023px) {
-    #partners .inBox {
+    #collaboration .inBox {
         padding: 132px 40px 0px;
     }
-    #partners .itemTitle{
+    #collaboration .itemTitle{
         margin-bottom: 20px;
     }
-    #partners .form .list ul li {
+    #collaboration .form .list ul li {
         display: block;
         margin-bottom: 100px;
     }
-    #partners .form .list ul li:last-child {
+    #collaboration .form .list ul li:last-child {
         margin-bottom: 0px;
     }
-    #partners .form .list ul li .titleBox,
-    #partners .form .list ul li .logos,
-    #partners .form .list ul li .data,
-    #partners .form .list ul li .follow
+    #collaboration .form .list ul li .titleBox,
+    #collaboration .form .list ul li .logos,
+    #collaboration .form .list ul li .data,
+    #collaboration .form .list ul li .follow
     {
         width: 100%;
         
     }
-    #partners .form .list ul li .logos a {
+    #collaboration .form .list ul li .logos a {
         display: block;
         width: auto;
         height: 27px;
         object-fit: cover;
     }
-    #partners .form .list ul li .logos {
+    #collaboration .form .list ul li .logos {
         column-gap: auto;
     }
-    #partners .more button .arraw {
+    #collaboration .more button .arraw {
         width: 45px;
         height: 45px;
     }
 }
 @media (max-width:767px) {
-    #partners .bigTitleBox .title {
+    #collaboration .bigTitleBox .title {
         font-size: 56px;
         line-height: 72px;
     }
-    #partners .bigTitleBox .description {
+    #collaboration .bigTitleBox .description {
         font-size: 18px;
         line-height: 26px;
     }
-    #partners .inBox {
+    #collaboration .inBox {
         padding: 132px 20px 100px;
     }
-    #partners .form .list ul li .logos {
+    #collaboration .form .list ul li .logos {
         display: block;
     }
-    #partners .form .list ul li .logos a {
+    #collaboration .form .list ul li .logos a {
         width: auto;
         height: 30px;
         margin-bottom: 40px;
     }
-    #partners .followItem span {
+    #collaboration .followItem span {
         flex: 1;
         font-size: 20px;
         line-height: 28px;

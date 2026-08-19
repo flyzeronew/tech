@@ -1,36 +1,42 @@
 ---
+import { STRAPI_URL, STRAPI_API_TOKEN } from 'astro:env/server';
 import '../../styles/components/index/partners.css';
+import { cachedFetchJson, CACHE_TTL } from '../../lib/fetchCache';
 
 interface FooterPartner {
     link_name: string;
     link_url: string | null;
-    link_icon: string | null;
+    link_icon: { url: string }[] | null;
 }
+
+const DEFAULT_PARTNER_LOGO = '/logo_AXIOSPhoenix.png';
 
 let footerPartners: FooterPartner[] = [];
 try {
-    const res = await fetch(
-        `${import.meta.env.STRAPI_URL}/api/footer?populate=*`,
-        { headers: { Authorization: `Bearer ${import.meta.env.STRAPI_API_TOKEN}` } },
+    const json = await cachedFetchJson<{ data?: { footer_partner?: FooterPartner[] } }>(
+        `${STRAPI_URL}/api/footer?populate[footer_partner][populate][link_icon]=true`,
+        { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
+        CACHE_TTL.NAV,
     );
-    if (res.ok) {
-        const json = await res.json();
-        footerPartners = json.data?.footer_partner ?? [];
-    }
+    footerPartners = json?.data?.footer_partner ?? [];
 } catch {
     footerPartners = [];
 }
 
-const partnerLogos = footerPartners.map((p) => ({
-    name: p.link_name,
-    href: p.link_url ?? '#',
-    icon: p.link_icon
-        ? (p.link_icon.startsWith('http') ? p.link_icon : `${import.meta.env.STRAPI_URL}${p.link_icon}`)
-        : '/logo_AXIOSPhoenix.png',
-}));
+const partnerLogos = footerPartners.map((p) => {
+    const rawIcon = p.link_icon?.[0]?.url;
+    const icon = rawIcon
+        ? (rawIcon.startsWith('http') ? rawIcon : `${STRAPI_URL}${rawIcon}`)
+        : DEFAULT_PARTNER_LOGO;
+    return {
+        name: p.link_name,
+        href: p.link_url ?? '#',
+        icon,
+    };
+});
 ---
 <section data-nav="light">
-    <div id="partners">
+    <div id="collaboration">
         <div class="inBox">
             <div class="bigTitleBox">
                 <div class="title">
@@ -139,14 +145,14 @@ const partnerLogos = footerPartners.map((p) => ({
 </section>
 
 <script>
-    // ===== 與我們合作（#partners .collabForm）：送出到 Google Apps Script Web App =====
+    // ===== 與我們合作（#collaboration .collabForm）：送出到 Google Apps Script Web App =====
     // 後端沒有自己的 API，改用獨立的 Google Apps Script 專案當輕量後端（不綁定 Sheet，不存檔）：
     // 表單 POST 過去後，Apps Script 直接寄信通知蔣翠芳副理（monica@tvbs.com.tw）。
     // 部署步驟＋完整的 Apps Script 程式碼見 GOOGLE_APPS_SCRIPT.md，部署後把下面這個網址換成實際拿到的 Web App URL。
     const COLLAB_FORM_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyyxOEmcBRaiREKI1GM2VoEGrlR9Uwij642eHcD2_Sy3iaDc1Quhu8YlYbTXwHniCw/exec';
 
-    const collabForm = document.querySelector<HTMLFormElement>('#partners .collabForm');
-    const formMsg = document.querySelector<HTMLElement>('#partners .formMsg');
+    const collabForm = document.querySelector<HTMLFormElement>('#collaboration .collabForm');
+    const formMsg = document.querySelector<HTMLElement>('#collaboration .formMsg');
 
     collabForm?.addEventListener('submit', async (e) => {
         e.preventDefault();

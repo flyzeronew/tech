@@ -1,8 +1,14 @@
 ---
 import '../../styles/components/article/adult.css';
+
+interface Props {
+    show?: boolean;
+}
+
+const { show = false } = Astro.props;
 ---
 <section>
-    <div id="adult">
+    <div id="adult" style={show ? { display: 'flex' } : undefined}>
         <div class="box">
             <div class="img">
                 <img src="/18-adult.svg" alt="adult warning" width="75" height="62">

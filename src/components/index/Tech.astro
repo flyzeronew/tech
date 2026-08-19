@@ -1,12 +1,19 @@
 ---
+import { STRAPI_URL, STRAPI_API_TOKEN } from 'astro:env/server';
 import '../../styles/components/index/tech.css';
+import { resolveSummary } from '../../lib/articleSummary';
+import { resolveArticleImage, type RawNewsImage } from '../../lib/articleImage';
+import { cachedFetchJson, CACHE_TTL } from '../../lib/fetchCache';
 
 interface TechArticle {
+    id: number;
+    news_article_id: string;
     news_title: string;
     news_content_html: string | null;
+    news_summary: string | null;
     news_featured_image_url: string | null;
+    news_image: RawNewsImage[] | null;
     news_published_at: string | null;
-    news_article_url: string | null;
 }
 
 interface TechCard {
@@ -23,23 +30,25 @@ function formatDate(iso: string | null): string {
     return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
 }
 
-// news_content_html 是完整文章全文，後台目前沒有獨立的摘要欄位，暫時用截斷全文取代（跟 Hero.astro 的做法一致）
+// news_summary 是後台可選填的摘要欄位，優先用它；沒填才退回用 news_content_html 截斷全文
 function stripHtml(html: string | null, maxLength: number): string {
     if (!html) return '';
     const text = html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
     return text.length > maxLength ? `${text.slice(0, maxLength)}…` : text;
 }
 
+// 改成直接撈 news_category=tech 的最新 6 篇（不再靠後台 s_4_2s 手動關聯挑選），
+// 一定是 tech 分類，全部連到 /tech/{id} 內頁
 let techArticles: TechArticle[] = [];
 try {
-    const res = await fetch(
-        `${import.meta.env.STRAPI_URL}/api/index-page?populate[s_4_2s]=true`,
-        { headers: { Authorization: `Bearer ${import.meta.env.STRAPI_API_TOKEN}` } },
+    const json = await cachedFetchJson<{ data?: TechArticle[] }>(
+        `${STRAPI_URL}/api/article-libs?filters[news_category][$eq]=tech&sort=news_published_at:desc&pagination[pageSize]=6` +
+            `&fields[0]=news_title&fields[1]=news_featured_image_url&fields[2]=news_published_at&fields[3]=news_content_html&fields[4]=news_summary&fields[5]=news_article_id` +
+            `&populate[news_image][fields][0]=url`,
+        { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
+        CACHE_TTL.NEWS,
     );
-    if (res.ok) {
-        const json = await res.json();
-        techArticles = json.data?.s_4_2s ?? [];
-    }
+    techArticles = json?.data ?? [];
 } catch {
     techArticles = [];
 }
@@ -47,9 +56,9 @@ try {
 const newsCards: TechCard[] = techArticles.map((a) => ({
     date: formatDate(a.news_published_at),
     title: a.news_title,
-    description: stripHtml(a.news_content_html, 60),
-    image: a.news_featured_image_url ?? '/news-image-01.jpg',
-    href: a.news_article_url ?? '#',
+    description: resolveSummary(a.news_summary, stripHtml(a.news_content_html, 60)),
+    image: resolveArticleImage(a.news_image, a.news_featured_image_url, '/news-image-01.jpg'),
+    href: `/tech/${a.news_article_id}`,
 }));
 ---
 <section data-nav="light">
@@ -61,7 +70,7 @@ const newsCards: TechCard[] = techArticles.map((a) => ({
                     <p>EVERYDAY TECH</p>
                 </div>
                 <div class="more">
-                    <a href="#">                         
+                    <a href="/tech">                         
                         <span class="pc">更多科技生活</span> 
                         <span class="mobile">更多</span>                
                         <div class="arraw">
@@ -75,7 +84,7 @@ const newsCards: TechCard[] = techArticles.map((a) => ({
                 <ul>
                     {newsCards.map((card) => (
                         <li>
-                            <a href={card.href} target="_blank" rel="noopener noreferrer">
+                            <a href={card.href}>
                                 <div class="date">{card.date}</div>
                                 <div class="news">
                                     <div class="img">

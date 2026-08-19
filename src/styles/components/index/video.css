@@ -44,6 +44,9 @@
     position: absolute;
     z-index: 1;
 }
+#video .list .item .cardLink{
+    display: contents;
+}
 #video .list .item .img{
     position: relative;
     width: 100%;

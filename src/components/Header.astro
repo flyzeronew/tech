@@ -1,5 +1,7 @@
 ---
+import { STRAPI_URL, STRAPI_API_TOKEN } from 'astro:env/server';
 import '../styles/components/header.css';
+import { cachedFetchJson, CACHE_TTL } from '../lib/fetchCache';
 
 interface SubLink {
     link_name: string;
@@ -27,16 +29,31 @@ type NavItem = LinkInfo | SubLinkInfo;
 
 let navItems: NavItem[] = [];
 try {
-    const res = await fetch(
-        `${import.meta.env.STRAPI_URL}/api/nav-bar?populate[nav][on][shared.sub-link-info][populate]=*&populate[nav][on][shared.link-info]=true`,
-        { headers: { Authorization: `Bearer ${import.meta.env.STRAPI_API_TOKEN}` } },
+    const json = await cachedFetchJson<{ data?: { nav?: NavItem[] } }>(
+        `${STRAPI_URL}/api/nav-bar?populate[nav][on][shared.sub-link-info][populate]=*&populate[nav][on][shared.link-info]=true`,
+        { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
+        CACHE_TTL.NAV,
     );
-    if (res.ok) {
-        const json = await res.json();
-        navItems = json.data?.nav ?? [];
-    }
+    navItems = json?.data?.nav ?? [];
 } catch {
     navItems = [];
+}
+
+// 導覽列的錨點連結（例如 #spotlight、#crossover）對應的區塊都只存在首頁。在首頁上維持原本的
+// bare "#spotlight"，讓下面的 script 用自訂緩動捲動；不在首頁時，把 href 算成完整的 "/#spotlight"，
+// 讓連結本身仍然是可以被「開新分頁」「複製連結」等原生操作正常使用的合法網址；
+// 但一般左鍵點擊會被下面的 script 攔截，改用 sessionStorage 記錄目標、不帶 hash 導回首頁根路徑，
+// 進站後在 window 的 load 事件才真正捲動——不能單純依賴瀏覽器原生的錨點捲動，因為 #signals 的
+// scrollytelling 區塊（見 New.astro）是進站後才用 JS 把高度撐開到好幾倍 viewport，原生捲動的
+// 時機不保證晚於這個撐開動作，實測會不穩定地卡在 #signals 中間。"#top" 沒有對應區塊，不在首頁時
+// 直接連回根路徑就好（新頁面本來就從頂端開始，不需要額外記錄捲動目標）。
+const isHomepage = Astro.url.pathname === '/';
+function resolveNavHref(url: string): string {
+    if (!url.startsWith('#') || url === '#' || isHomepage) return url;
+    return url === '#top' ? '/' : `/${url}`;
+}
+function anchorId(url: string): string | undefined {
+    return url.startsWith('#') && url !== '#' ? url.slice(1) : undefined;
 }
 ---
 <header>
@@ -73,7 +90,7 @@ try {
                                     </li>
                                 ) : (
                                     <li>
-                                        <a href={item.link_url} class:list={{ act: item.link_syle === 'act' }}>{item.link_name}</a>
+                                        <a href={resolveNavHref(item.link_url)} data-anchor-id={anchorId(item.link_url)} class:list={{ act: item.link_syle === 'act' }}>{item.link_name}</a>
                                     </li>
                                 )
                             ))}
@@ -127,7 +144,7 @@ try {
                             </li>
                         ) : (
                             <li class:list={{ act: item.link_syle === 'act' }}>
-                                <a href={item.link_url}>{item.link_name}</a>
+                                <a href={resolveNavHref(item.link_url)} data-anchor-id={anchorId(item.link_url)}>{item.link_name}</a>
                             </li>
                         )
                     ))}
@@ -135,17 +152,61 @@ try {
             </div>
         </div>
     </nav>
-    <!-- <div class="menuHeight"></div> -->
+    <div class="menuHeight"></div>
 </header>
 
 <script>
-    // ===== 導覽列錨點連結：緩速滑動至目標區塊（原生 smooth 速度太快，改用自訂緩動動畫）=====
+    // ===== 導覽列錨點連結 =====
+    // 在首頁上：這些連結是 bare "#spotlight" 這種 href，用 a[href^="#"] 選到，播放自訂緩動捲動。
+    // 不在首頁時：href 已經在伺服器端算成完整的 "/#spotlight"（見 frontmatter 的 resolveNavHref），
+    // 但一般左鍵點擊會被下面第二段攔截，改成不帶 hash、用 sessionStorage 記錄目標後導回首頁，
+    // 進站後在 window 的 load 事件才真正捲動（見下方「跨頁捲動」說明，兩段共用同一個 SCROLL_TARGET_KEY）。
+    const SCROLL_TARGET_KEY = 'tvbsScrollTarget';
     const DURATION = 1200; // 捲動時間（毫秒），數字越大滑動越慢
     // 導覽列是浮在內容上方的透明懸浮列，捲動時直接讓區塊頂到「視窗最頂端」即可，不用再扣除導覽列高度
 
     function easeInOutCubic(t: number) {
         return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     }
+
+    function scrollToElementInstant(el: HTMLElement) {
+        const html = document.documentElement;
+        const prevScrollBehavior = html.style.scrollBehavior;
+        html.style.scrollBehavior = 'auto';
+        el.scrollIntoView({ block: 'start' });
+        html.style.scrollBehavior = prevScrollBehavior;
+    }
+
+    // ===== 跨頁捲動：從其他頁面導回首頁後，捲到指定錨點區塊 =====
+    // 不能單純依賴瀏覽器原生的錨點捲動（網址帶 #spotlight 直接進站）：#signals 的 scrollytelling 區塊
+    // （見 New.astro）是進站後才用 JS 把高度撐開到好幾倍 viewport，原生捲動的時機不保證晚於
+    // 這個撐開動作，實測會不穩定地卡在 #signals 中間。改成完全不靠網址上的 hash，用 sessionStorage
+    // 記錄要捲到哪個區塊，等 window 的 load 事件（所有資源、版面都撐開穩定後）才真正捲動，
+    // 一次讀取後就清掉，重新整理不會再觸發。
+    const pendingScrollTarget = sessionStorage.getItem(SCROLL_TARGET_KEY);
+    if (pendingScrollTarget) {
+        sessionStorage.removeItem(SCROLL_TARGET_KEY);
+        const target = document.getElementById(pendingScrollTarget);
+        if (target) {
+            scrollToElementInstant(target);
+            window.addEventListener('load', () => scrollToElementInstant(target));
+        }
+    }
+
+    // ===== 不在首頁時：攔截點擊，改用上面的跨頁捲動流程 =====
+    // 用 data-anchor-id（伺服器端渲染時標記，見 frontmatter 的 anchorId）挑出「連到首頁區塊」的
+    // 連結，不管目前 href 是 bare "#spotlight" 還是完整的 "/#spotlight" 都選得到。
+    document.querySelectorAll<HTMLAnchorElement>('header nav a[data-anchor-id]').forEach((link) => {
+        link.addEventListener('click', (e) => {
+            if (location.pathname === '/') return; // 首頁上交給下面第二段的緩動捲動處理
+            // 只攔截單純左鍵點擊，開新分頁／複製連結等原生操作維持用 href 本身（完整的 "/#spotlight"）運作
+            if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+            e.preventDefault();
+            const id = link.dataset.anchorId!;
+            if (id !== 'top') sessionStorage.setItem(SCROLL_TARGET_KEY, id);
+            window.location.href = '/';
+        });
+    });
 
     document.querySelectorAll<HTMLAnchorElement>('header nav a[href^="#"]').forEach((link) => {
         link.addEventListener('click', (e) => {
@@ -159,18 +220,23 @@ try {
                 e.preventDefault();
                 return;
             }
-            // 「AI最新趨勢」主按鈕沒有對應區塊，點擊時捲回頁首
-            const target = id ? document.getElementById(id) : null;
-            if (id && !target) return;
+            // "#top" 一律代表「頁面最頂端」，不能用 DOM 查詢算目標位置：Header.astro 開頭那個
+            // <div id="top"> 每一頁都有渲染，但它在 position:fixed 的 <header> 裡，
+            // getBoundingClientRect().top 恆為 0，拿它算 targetY 會變成「捲到目前位置」的無效運算
+            // （點擊會整個沒反應），特殊處理成固定目標 0，不查那個 div。
+            const isTopLink = id === 'top';
+            const target = id && !isTopLink ? document.getElementById(id) : null;
 
             e.preventDefault();
 
             document.querySelector('header nav .mobile')?.classList.remove('is-open');
 
             const startY = window.scrollY;
-            const targetY = target
-                ? target.getBoundingClientRect().top + startY
-                : 0;
+            const targetY = isTopLink
+                ? 0
+                : target
+                    ? target.getBoundingClientRect().top + startY
+                    : 0;
 
             // 手機版不做捲動動畫，直接跳到錨點位置。
             // 部分行動瀏覽器對 scrollTo() 傳入 behavior:'auto' 不會確實覆蓋掉 global.css 的
@@ -272,6 +338,30 @@ try {
     burger?.addEventListener('click', () => {
         mobileNav?.classList.toggle('is-open');
     });
+</script>
+
+<script>
+    // ===== 手機版導覽列高度撐開（.menuHeight） =====
+    // header nav 是 position: fixed 蓋在內容上面：桌機版靠 header.css 的 .menuHeight{height:0} 讓內容
+    // 直接貼齊頂端（設計上是透明疊在首頁 Hero 上）；手機版的 .bar 是不透明實色列，下面的內容要往下推開
+    // 才不會被蓋住。CSS 先給 56px 當初始/無 JS 時的靜態預設值，這裡再量測 .bar 實際渲染高度校正一次，
+    // 避免不同裝置字體渲染、瀏覽器縮放等造成的高度誤差。
+    const mobileBar = document.querySelector<HTMLElement>('header nav .mobile .bar');
+    const menuHeight = document.querySelector<HTMLElement>('header .menuHeight');
+    const mobileQuery = window.matchMedia('(max-width: 1023px)');
+
+    function syncMenuHeight() {
+        if (!mobileBar || !menuHeight) return;
+        if (mobileQuery.matches) {
+            menuHeight.style.height = `${mobileBar.getBoundingClientRect().height}px`;
+        } else {
+            menuHeight.style.removeProperty('height');
+        }
+    }
+
+    syncMenuHeight();
+    window.addEventListener('resize', syncMenuHeight);
+    mobileQuery.addEventListener('change', syncMenuHeight);
 </script>
 
 <script>

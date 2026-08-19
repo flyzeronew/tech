@@ -1,4 +1,5 @@
 ---
+import { STRAPI_URL, STRAPI_API_TOKEN } from 'astro:env/server';
 import '../../styles/components/index/video.css';
 
 interface MediaItem {
@@ -15,19 +16,44 @@ interface VideoCard {
     isSquare: boolean;
 }
 
-let mediaItems: MediaItem[] = [];
-try {
-    const res = await fetch(
-        `${import.meta.env.STRAPI_URL}/api/media-libraries?sort=media_published_at:desc&pagination[pageSize]=8`,
-        { headers: { Authorization: `Bearer ${import.meta.env.STRAPI_API_TOKEN}` } },
-    );
-    if (res.ok) {
-        const json = await res.json();
-        mediaItems = json.data ?? [];
+// youtube／apple_podcast 各抓 4 則（依 createdAt 由新到舊），再依固定順序排列：
+// youtube, youtube, apple_podcast, youtube, apple_podcast, apple_podcast, youtube, apple_podcast。
+// 每個來源各自依 createdAt 新到舊的順序，依序被抽出放進對應的位置。
+const DISPLAY_ORDER = [
+    'youtube', 'youtube', 'apple_podcast', 'youtube',
+    'apple_podcast', 'apple_podcast', 'youtube', 'apple_podcast',
+] as const;
+
+async function fetchMediaBySource(source: string): Promise<MediaItem[]> {
+    try {
+        const res = await fetch(
+            `${STRAPI_URL}/api/media-libraries?filters[media_source][$eq]=${encodeURIComponent(source)}&sort=createdAt:desc&pagination[pageSize]=4`,
+            { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
+        );
+        if (res.ok) {
+            const json = await res.json();
+            return json.data ?? [];
+        }
+    } catch {
+        // fall through to empty array
     }
-} catch {
-    mediaItems = [];
+    return [];
 }
+
+const [youtubeItems, applePodcastItems] = await Promise.all([
+    fetchMediaBySource('youtube'),
+    fetchMediaBySource('apple_podcast'),
+]);
+
+const sourceQueues: Record<string, MediaItem[]> = {
+    youtube: [...youtubeItems],
+    apple_podcast: [...applePodcastItems],
+};
+
+const mediaItems: MediaItem[] = DISPLAY_ORDER.flatMap((source) => {
+    const item = sourceQueues[source].shift();
+    return item ? [item] : [];
+});
 
 // media_source 不是 youtube 的（apple_podcast、firstory 等）用的是方形封面，
 // 套用 is-square 置中縮放；youtube 是 16:9 縮圖，維持原本 cover 裁切
@@ -49,15 +75,17 @@ const videoItems: VideoCard[] = mediaItems.map((m) => ({
                 <div class="list">
                     {videoItems.map((item) => (
                         <div class="item" class:list={{ 'is-square': item.isSquare }}>
-                            <div class="imgBox">
-                                <div class="img">
-                                    <div class="statusIcon playIcon"></div>
-                                    <img width="650" height="354" src={item.image} alt="img" loading="lazy" />
+                            <a class="cardLink" href={item.href} target="_blank" rel="noopener noreferrer">
+                                <div class="imgBox">
+                                    <div class="img">
+                                        <div class="statusIcon playIcon"></div>
+                                        <img width="650" height="354" src={item.image} alt="img" loading="lazy" />
+                                    </div>
+                                    <div class="title">
+                                        <p>{item.title}</p>
+                                    </div>
                                 </div>
-                                <div class="title">
-                                    <p>{item.title}</p>
-                                </div>
-                            </div>
+                            </a>
                         </div>
                     ))}
                     <div class="videoBlob"></div>
@@ -97,7 +125,7 @@ const videoItems: VideoCard[] = mediaItems.map((m) => ({
 <script>
     // ===== 精選影音（#video）背景藍色光暈 =====
     // 1. 頁面一載入就播放：光暈從畫面外右上方滑進來，先到畫面正中間，停一下再移到第一張圖片，才開放 hover。
-    //    不需要像 #issue／#crossover／#publications 那樣等區塊捲到頂端才觸發。
+    //    不需要像 #spotlight／#crossover／#publications 那樣等區塊捲到頂端才觸發。
     // 2. hover 到任一張圖片時，光暈平滑移動到那張圖片底下置中。
     const videoEl = document.getElementById('video');
     const list = videoEl?.querySelector<HTMLElement>('.list');

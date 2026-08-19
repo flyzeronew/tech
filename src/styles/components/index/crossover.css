@@ -126,6 +126,20 @@
 #crossover .newslist ul li:nth-child(3){ transition-delay: 0.23s; }
 #crossover .newslist ul li:nth-child(4){ transition-delay: 0.32s; }
 #crossover .newslist ul li:nth-child(5){ transition-delay: 0.41s; }
+
+/* 直接以錨點連結進站（見 Crossover.astro 的 skipAnim）：跳過整段進場動畫，直接呈現播完的最終畫面 */
+#crossover.no-anim .wipeOverlay,
+#crossover.no-anim .newslist ul li{
+    transition: none !important;
+}
+#crossover.no-anim .animLabel p{
+    animation: none !important;
+    opacity: 1 !important;
+}
+#crossover.no-anim .animLabel p::before{
+    animation: none !important;
+    opacity: 0 !important;
+}
 #crossover .newslist ul li:nth-child(6){ transition-delay: 0.50s; }
 /* 科技與財經 ed*/
 @media (max-width:1023px) {

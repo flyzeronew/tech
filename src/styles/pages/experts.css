@@ -88,7 +88,12 @@
     font-weight: 400;
     font-size: 18px;
     line-height: 26px;
-    min-height: 105px;
+    display: -webkit-box;
+    height: 78px;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* 專家旗下文章列 */
@@ -107,6 +112,7 @@
     font-weight: 700;
     font-size: 22px;
     line-height: 30px;
+    height: 60px;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
@@ -176,6 +182,10 @@
     }
 }
 @media (max-width:767px) {
+    #expertsPage .author .newsGroup .newsRow .rowTitle{
+        height: auto;
+        -webkit-line-clamp: unset;
+    }
     #expertsPage .author .desc{
         min-height: auto;
     }
