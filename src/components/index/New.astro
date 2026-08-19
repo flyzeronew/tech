@@ -163,8 +163,8 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
         // 手機跟桌機用同一套 step 算法，但手指一次滑過的距離比滾輪 1 格大，
         // 所以手機 step 拉長，避免一次滑就連切好幾張。
         const mobileQuery = window.matchMedia('(max-width: 1023px)');
-        const MOBILE_STEP_VH = 45;
-        const MOBILE_TAIL_VH = 10;
+        const MOBILE_STEP_VH = 32;
+        const MOBILE_TAIL_VH = 8;
         const DESKTOP_STEP_VH = 32;
         const DESKTOP_TAIL_VH = 8;
 
