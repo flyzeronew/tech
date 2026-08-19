@@ -294,9 +294,6 @@
         font-size: 36px;
         line-height: 48px;
     }
-    #signals .list {
-        height: 70vh;
-    }
     #signals .list .itemTrack {
         top: 35%;
         height: 400px;
@@ -306,9 +303,24 @@
     }
 
 }
-@media (max-height:924px) {
+@media (max-height:940px) {
+    #signals .list {
+        height: 63vh;
+    }
+}
+@media (max-height:900px) {
     #signals .list {
         height: 65vh;
+    }
+}
+@media (max-height:880px) {
+    #signals .list {
+        height: 70vh;
+    }
+}
+@media (max-height:780px) {
+    #signals .list {
+        height: 67vh;
     }
 }
 @media (max-height:700px) {
