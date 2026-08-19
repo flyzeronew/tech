@@ -250,17 +250,8 @@
     }
     #signals .list .item {
         padding: 24px;
-        /* 手機取消毛玻璃：多張卡 + sticky + 慣性捲動時 blur 是最主要的掉幀來源 */
-        -webkit-backdrop-filter: none;
-        backdrop-filter: none;
-        background-color: rgba(255, 255, 255, 0.88);
         /* 拿掉彈性 overshoot，避免換卡動畫跟原生慣性捲動互相搶 */
         transition: opacity 0.35s ease, transform 0.35s ease;
-    }
-    #signals .list .item[data-rel="0"],
-    #signals .list .item[data-rel="1"] {
-        -webkit-backdrop-filter: none;
-        backdrop-filter: none;
     }
     #signals .list {
         width: 100%;
