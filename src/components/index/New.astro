@@ -160,17 +160,11 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
     if (stickyWrap && pinInner && items.length) {
         // 1024px 以下：pinInner 高度是隨內容撐開（非固定 100vh），實際放行時機以量到的高度為準，
         // 不能假設它跟螢幕一樣高，否則捲動距離的計算會跟瀏覽器實際放行的時機對不上，出現多滾一大段的空白。
-        // 每張卡若仍要滑完整個 100vh 才切換，區塊會釘很久、慣性滑動也容易感覺卡住；
-        // 約 3/4 個螢幕切一張，比半螢幕慢一點、又不會回到整屏才換卡。
+        // 手機／桌機共用同一段 step：滑滿約 32vh 切一張，對齊桌機滾輪大約 1 格就換卡的節奏；
         // 尾段留一點緩衝讓最後一張還能停一下再放行。
         const mobileQuery = window.matchMedia('(max-width: 1023px)');
-        const MOBILE_STEP_VH = 65;
-        const MOBILE_TAIL_VH = 12;
-        // 桌機原本把整段高度拆成「卡片數 × 100vh」，每張卡要滑大半個螢幕才切，
-        // 滾輪往往要 2–3 格才有反應。改成跟手機同一套 step：滑滿一段就切一張。
-        // 32vh 大約對應一般滑鼠 1 格（視窗約 1080–1440 時），仍留一點餘裕避免觸控板輕掃就連跳兩張。
-        const DESKTOP_STEP_VH = 32;
-        const DESKTOP_TAIL_VH = 8;
+        const STEP_VH = 32;
+        const TAIL_VH = 8;
 
         let cachedScrollable = 0;
         let cachedStepPx = 1;
@@ -179,16 +173,13 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
         let sectionInView = true;
 
         function setHeight() {
-            const isMobile = mobileQuery.matches;
-            const stepVh = isMobile ? MOBILE_STEP_VH : DESKTOP_STEP_VH;
-            const tailVh = isMobile ? MOBILE_TAIL_VH : DESKTOP_TAIL_VH;
             // 用當下視窗高度鎖定 step，之後捲動中不再重算——iOS 網址列收合會讓 innerHeight
             // 變大，若每幀跟著改 step，卡片索引會在手指還在滑時跳動。
-            const vh = isMobile
+            const vh = mobileQuery.matches
                 ? (window.visualViewport?.height ?? window.innerHeight)
                 : window.innerHeight;
-            cachedStepPx = (stepVh / 100) * vh;
-            const tailPx = (tailVh / 100) * vh;
+            cachedStepPx = (STEP_VH / 100) * vh;
+            const tailPx = (TAIL_VH / 100) * vh;
             cachedScrollable = (items.length - 1) * cachedStepPx + tailPx;
             stickyWrap!.style.height = `${pinInner!.offsetHeight + cachedScrollable}px`;
         }
