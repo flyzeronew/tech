@@ -1,12 +1,19 @@
 ---
+import { STRAPI_URL, STRAPI_API_TOKEN } from 'astro:env/server';
 import '../../styles/components/index/crossover.css';
+import { resolveSummary } from '../../lib/articleSummary';
+import { resolveArticleImage, type RawNewsImage } from '../../lib/articleImage';
+import { cachedFetchJson, CACHE_TTL } from '../../lib/fetchCache';
 
 interface CrossoverArticle {
+    id: number;
+    news_article_id: string;
     news_title: string;
     news_content_html: string | null;
+    news_summary: string | null;
     news_featured_image_url: string | null;
+    news_image: RawNewsImage[] | null;
     news_published_at: string | null;
-    news_article_url: string | null;
 }
 
 interface CrossoverCard {
@@ -23,23 +30,25 @@ function formatDate(iso: string | null): string {
     return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
 }
 
-// news_content_html 是完整文章全文，後台目前沒有獨立的摘要欄位，暫時用截斷全文取代（跟 Hero.astro 的做法一致）
+// news_summary 是後台可選填的摘要欄位，優先用它；沒填才退回用 news_content_html 截斷全文
 function stripHtml(html: string | null, maxLength: number): string {
     if (!html) return '';
     const text = html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
     return text.length > maxLength ? `${text.slice(0, maxLength)}…` : text;
 }
 
+// 改成直接撈 news_category=money 的最新 6 篇（不再靠後台 s4_1 手動關聯挑選），
+// 一定是 money 分類，全部連到 /money/{id} 內頁
 let crossoverItems: CrossoverArticle[] = [];
 try {
-    const res = await fetch(
-        `${import.meta.env.STRAPI_URL}/api/index-page?populate[s4_1]=true`,
-        { headers: { Authorization: `Bearer ${import.meta.env.STRAPI_API_TOKEN}` } },
+    const json = await cachedFetchJson<{ data?: CrossoverArticle[] }>(
+        `${STRAPI_URL}/api/article-libs?filters[news_category][$eq]=money&sort=news_published_at:desc&pagination[pageSize]=6` +
+            `&fields[0]=news_title&fields[1]=news_featured_image_url&fields[2]=news_published_at&fields[3]=news_content_html&fields[4]=news_summary&fields[5]=news_article_id` +
+            `&populate[news_image][fields][0]=url`,
+        { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
+        CACHE_TTL.NEWS,
     );
-    if (res.ok) {
-        const json = await res.json();
-        crossoverItems = json.data?.s4_1 ?? [];
-    }
+    crossoverItems = json?.data ?? [];
 } catch {
     crossoverItems = [];
 }
@@ -47,9 +56,9 @@ try {
 const newsCards: CrossoverCard[] = crossoverItems.map((a) => ({
     date: formatDate(a.news_published_at),
     title: a.news_title,
-    description: stripHtml(a.news_content_html, 60),
-    image: a.news_featured_image_url ?? '/news-image-01.jpg',
-    href: a.news_article_url ?? '#',
+    description: resolveSummary(a.news_summary, stripHtml(a.news_content_html, 60)),
+    image: resolveArticleImage(a.news_image, a.news_featured_image_url, '/news-image-01.jpg'),
+    href: `/money/${a.news_article_id}`,
 }));
 ---
 <section data-nav="dark">
@@ -62,7 +71,7 @@ const newsCards: CrossoverCard[] = crossoverItems.map((a) => ({
                     <p>THE CROSSOVER</p>
                 </div>
                 <div class="more">
-                    <a href="#">
+                    <a href="/money">
                         <span class="pc">更多財經</span> 
                         <span class="mobile">更多</span>  
                         <div class="arraw">
@@ -76,7 +85,7 @@ const newsCards: CrossoverCard[] = crossoverItems.map((a) => ({
                 <ul>
                     {newsCards.map((card) => (
                         <li>
-                            <a href={card.href} target="_blank" rel="noopener noreferrer">
+                            <a href={card.href}>
                                 <div class="date">{card.date}</div>
                                 <div class="news">
                                     <div class="img">
@@ -105,7 +114,7 @@ const newsCards: CrossoverCard[] = crossoverItems.map((a) => ({
     // 1. 白色遮罩往上收合，露出底下已經完成排版的藍色區塊
     // 2. 遮罩收合得差不多後，標題套用跟頁首第一卡相同的 .animLabel 掃描動畫
     // 3. 新聞清單由上而下逐項淡入上移
-    // 跟 #issue 用同一套規則：用 requestAnimationFrame 每幀輪詢，而不是監聽 scroll 事件
+    // 跟 #spotlight 用同一套規則：用 requestAnimationFrame 每幀輪詢，而不是監聽 scroll 事件
     // （導覽列用 JS 自訂緩動捲動，純程式觸發的捲動 scroll 事件不一定每幀都確實觸發，每幀主動量測才準確）。
     // 不能單純判斷「top 跨越 0」：導覽列點擊的自訂緩動捲動是精準地「趨近」top = 0 這個目標並停在那裡，
     // 不會真的越過 0 到另一側，這種情況永遠不會發生正負交叉。改成偵測 top 第一次進入「接近 0（±2px 內）」
@@ -118,9 +127,17 @@ const newsCards: CrossoverCard[] = crossoverItems.map((a) => ({
     if (crossoverEl) {
         const NEAR = 2;
         let triggered = false;
+        // 直接以錨點連結進站（例如從其他頁面點導覽列連回 /#crossover，見 Header.astro 的跨頁導回
+        // 邏輯）時，一到頁面就已經在區塊頂端，不該播放設計給「使用者往下捲動發現」情境的進場動畫，
+        // 改成直接跳到動畫播完的最終狀態（見 crossover.css 的 .no-anim 規則），跟 #spotlight 同一套處理方式。
+        const skipAnim = location.hash === '#crossover';
         const trigger = () => {
             triggered = true;
             crossoverEl.classList.add('is-visible');
+            if (skipAnim) {
+                crossoverEl.classList.add('content-visible', 'no-anim');
+                return;
+            }
             window.setTimeout(() => {
                 crossoverEl.classList.add('content-visible');
             }, 550);

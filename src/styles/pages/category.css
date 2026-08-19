@@ -115,11 +115,23 @@
 #category .more{
     width: 100%;
 }
-#category .more a{
+#category .more a,
+#category .more button{
     margin:0 auto;
+    background: none;
+    padding: 0;
+    cursor: pointer;
 }
 #category .more .arraw img{
     transform: rotate(90deg);
+}
+#category .noMore{
+    width: 100%;
+    text-align: center;
+    color: #505050;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 24px;
 }
 @media (max-width:1279px) {
     #category .inBox{
@@ -148,7 +160,7 @@
 }
 @media (max-width:767px) {
     #category .cateTitle .title{
-        font-size: 56px;
+        font-size: 48px;
         line-height: 72px;
     }
     #category .cateTitle .en{
