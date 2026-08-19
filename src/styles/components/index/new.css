@@ -293,6 +293,9 @@
         -webkit-backdrop-filter:unset;
         backdrop-filter: unset;
     }
+    #signals .list .item{
+        transition: opacity 0.3s ease;
+    }
 }
 @media (max-width:413px) {
     #signals .flex {
