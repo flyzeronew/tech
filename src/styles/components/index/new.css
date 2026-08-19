@@ -70,13 +70,7 @@
     pointer-events: none;
     transform-origin: center center;
     /* 不對 filter 做 transition：手機上跟 backdrop-filter 疊在一起會強制每幀重繪模糊層 */
-    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-/* blur 只加在畫面上看得見的兩張（當前 + 下一張），其餘卡片就算 opacity:0 仍會被 GPU 算模糊 */
-#signals .list .item[data-rel="0"],
-#signals .list .item[data-rel="1"]{
-    -webkit-backdrop-filter: blur(30px);
-    backdrop-filter: blur(30px);
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 /* 用 data-rel 表示每張卡片與目前作用中卡片的相對位置：新卡片從下方邊界外滑上來、疊在舊卡片上方；舊卡片被蓋住後才縮小淡出消失 */
 #signals .list .item[data-rel="0"]{
@@ -288,13 +282,8 @@
         top: 40%;
         height: 425px;
     }
-    #signals .list .item[data-rel="0"],
-    #signals .list .item[data-rel="1"]{
-        -webkit-backdrop-filter:unset;
-        backdrop-filter: unset;
-    }
     #signals .list .item{
-        transition: opacity 0.3s ease;
+        transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 }
 @media (max-width:413px) {
