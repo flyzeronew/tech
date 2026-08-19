@@ -177,8 +177,6 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
         let switchTimer: number | undefined;
         let touchActive = false;
         let pendingLock = false;
-        // 這次手勢已經切過一張後，鬆手後的慣性不要再自動切下一張
-        let ignoreMomentum = false;
         // iOS 彈性捲動很容易在門檻附近來回幾個 px；往回要再滑過這段才換回上一張
         const BACK_HYSTERESIS = 0.35;
 
@@ -229,7 +227,6 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
             const ms = switchDuration();
             if (ms <= 0) return;
             switching = true;
-            ignoreMomentum = true;
             // Safari 在手指還沒離開時若 scrollTo / preventDefault，會把這次手勢的捲動還原，
             // 下一張就會「出現後再滑回去」。等 touchend 再對齊並鎖住。
             if (touchActive) {
@@ -242,7 +239,6 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
 
         function onTouchStart() {
             touchActive = true;
-            ignoreMomentum = false;
         }
 
         function onTouchEnd() {
@@ -355,8 +351,6 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
                 if (!switching) setActive(0);
                 return;
             }
-            // 鬆手後的慣性若已經超過下一張門檻，等下一次手指再開始才切，避免一次滑出兩張
-            if (ignoreMomentum && !touchActive) return;
             const scrolled = Math.min(Math.max(-stickyWrap!.getBoundingClientRect().top, 0), cachedScrollable);
             setActive(indexFromScroll(scrolled));
         }
