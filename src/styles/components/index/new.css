@@ -354,7 +354,12 @@
         height: 76vh;
     }
 }
-@media (max-width:413px) and (max-height:852px) {
+@media (max-width:413px) and (max-height:800px) {
+    #signals .list .itemTrack {
+        top: 39%;
+    }
+}
+@media (max-width:393px) and (max-height:852px) {
     #signals .list .itemTrack {
         top: 37%;
     }
