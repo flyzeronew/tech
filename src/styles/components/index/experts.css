@@ -91,16 +91,10 @@
 }
 #experts .list .item .txtBox .description{
     font-weight: 400;
-    height: 72px;
     font-size: 18px;
     line-height: 24px;
     letter-spacing: 0%;
     margin-bottom: 30px;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 #experts .list .item .txtBox .intro{
     margin-bottom: 30px;
@@ -123,14 +117,6 @@
     letter-spacing: 0%;
     padding: 15px 0;
     border-top: 1px solid #fff;
-}
-#experts .list .item .txtBox .intro a span{
-    height: 60px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 #experts .list .item .txtBox .more a{
     width: 99%;
@@ -156,54 +142,6 @@
     font-size: 18px;
     line-height: 24px;
     letter-spacing: 0%;
-}
-/* 超過五位專家：右上角「更多專家」按鈕（比照其他區塊 titleBox 內 .more 的白框樣式） */
-#experts .titleBox .viewMore a{
-    border: 1px solid #fff;
-}
-#experts .titleBox .viewMore a:hover{
-    background-color: rgba(255, 255, 255, 0.1);
-}
-#experts .titleBox .viewMore a span{
-    color: #fff;
-}
-#experts .titleBox .viewMore a .arraw{
-    border-left: 1px solid #fff;
-}
-
-/* 超過五位專家：三欄格線卡片排版（比照 /experts 列表頁），取代直向堆疊清單 */
-@media (min-width:1024px) {
-    #experts.gridMode .flex{
-        display: block;
-    }
-    #experts.gridMode .titleBox{
-        width: 100%;
-        align-items: center;
-        margin-bottom: 60px;
-    }
-    #experts.gridMode .list{
-        width: 100%;
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        column-gap: 40px;
-        row-gap: 80px;
-    }
-    #experts.gridMode .list .item{
-        display: block;
-        margin-bottom: 0;
-    }
-    #experts.gridMode .list .item .imgBox{
-        width: 100%;
-        margin-bottom: 40px;
-    }
-    #experts.gridMode .list .item .txtBox{
-        width: 100%;
-    }
-}
-@media (min-width:1024px) and (max-width:1279px) {
-    #experts.gridMode .list{
-        grid-template-columns: repeat(2, 1fr);
-    }
 }
 @media (max-width:1279px) {
     #experts .list .item .txtBox .name {
@@ -245,14 +183,6 @@
     }    
 }
 @media (max-width:767px) {
-    #experts .list .item .txtBox .intro a span{
-        height: auto;
-        -webkit-line-clamp: unset;
-    }
-    #experts .list .item .txtBox .description{
-        height: auto;
-        -webkit-line-clamp: unset;
-    }
     #experts .list .item .imgBox {
         width: 100%;
         display: flex;

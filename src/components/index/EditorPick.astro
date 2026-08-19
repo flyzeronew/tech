@@ -1,117 +1,5 @@
 ---
-import { STRAPI_URL, STRAPI_API_TOKEN } from 'astro:env/server';
 import '../../styles/components/index/editor-pick.css';
-import { resolveArticleLink } from '../../lib/articleLink';
-import { resolveSummary } from '../../lib/articleSummary';
-import { resolveArticleImage, type RawNewsImage } from '../../lib/articleImage';
-import { cachedFetchJson, CACHE_TTL } from '../../lib/fetchCache';
-
-interface EditorImage {
-    url: string;
-}
-
-interface EditorProfile {
-    author_name: string;
-    author_tag: string | null;
-    author_job_title: string | null;
-    author_image: EditorImage | null;
-}
-
-interface TitleArticleNews {
-    id: number;
-    news_article_id: string;
-    news_title: string;
-    news_category: string | null;
-    news_content_html: string | null;
-    news_summary: string | null;
-    news_featured_image_url: string | null;
-    news_image: RawNewsImage[] | null;
-    news_article_url: string | null;
-}
-
-interface TitleArticle {
-    tiitle: string;
-    summary: string;
-    article: TitleArticleNews | null;
-}
-
-interface EditorZone {
-    editor_qruote: string | null;
-    editor_title: string | null;
-    editor_description: string | null;
-    efitor: EditorProfile | null;
-    tiitle_article: TitleArticle[] | null;
-}
-
-interface PickCard {
-    projectTitle: string;
-    projectSummary: string;
-    tag: string;
-    title: string;
-    description: string;
-    image: string;
-    href: string;
-    external: boolean;
-}
-
-// news_summary 是後台可選填的摘要欄位，優先用它；沒填才退回用 news_content_html 截斷全文
-function stripHtml(html: string | null, maxLength: number): string {
-    if (!html) return '';
-    const text = html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
-    return text.length > maxLength ? `${text.slice(0, maxLength)}…` : text;
-}
-
-let editorZone: EditorZone | null = null;
-try {
-    const json = await cachedFetchJson<{ data?: { s9_1_editor_zone?: EditorZone | null } }>(
-        `${STRAPI_URL}/api/index-page?populate[s9_1_editor_zone][populate][efitor][populate]=*` +
-            `&populate[s9_1_editor_zone][populate][tiitle_article][populate][article][fields][0]=news_title` +
-            `&populate[s9_1_editor_zone][populate][tiitle_article][populate][article][fields][1]=news_content_html` +
-            `&populate[s9_1_editor_zone][populate][tiitle_article][populate][article][fields][2]=news_featured_image_url` +
-            `&populate[s9_1_editor_zone][populate][tiitle_article][populate][article][fields][3]=news_article_url` +
-            `&populate[s9_1_editor_zone][populate][tiitle_article][populate][article][fields][4]=news_category` +
-            `&populate[s9_1_editor_zone][populate][tiitle_article][populate][article][fields][5]=news_summary` +
-            `&populate[s9_1_editor_zone][populate][tiitle_article][populate][article][fields][6]=news_article_id` +
-            `&populate[s9_1_editor_zone][populate][tiitle_article][populate][article][populate][news_image][fields][0]=url`,
-        { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
-        CACHE_TTL.NAV,
-    );
-    editorZone = json?.data?.s9_1_editor_zone ?? null;
-} catch {
-    editorZone = null;
-}
-
-const editor = editorZone?.efitor ?? null;
-const editorName = editor?.author_name ?? '';
-const editorJob = editor?.author_tag
-    ? editor.author_tag.split(',').map((t) => t.trim()).filter(Boolean).join('・')
-    : '';
-// author_job_title 後台實際存放的是簡介文字（不是職稱），依內容比對而非欄位名稱決定用途
-const editorDescription = editor?.author_job_title ?? '';
-const rawEditorImage = editor?.author_image?.url ?? null;
-const editorImage = rawEditorImage
-    ? (rawEditorImage.startsWith('http') ? rawEditorImage : `${STRAPI_URL}${rawEditorImage}`)
-    : '/expert02.jpg';
-
-const motto = editorZone?.editor_qruote ?? '';
-const pickTitle = editorZone?.editor_title ?? '';
-const pickDescription = editorZone?.editor_description ?? '';
-
-const pickCards: PickCard[] = (editorZone?.tiitle_article ?? [])
-    .filter((item): item is TitleArticle & { article: TitleArticleNews } => item.article !== null)
-    .map((item) => {
-        const link = resolveArticleLink(item.article.news_category, item.article.news_article_id, item.article.news_article_url);
-        return {
-            projectTitle: item.tiitle,
-            projectSummary: item.summary,
-            tag: '專題',
-            title: item.article.news_title,
-            description: resolveSummary(item.article.news_summary, stripHtml(item.article.news_content_html, 60)),
-            image: resolveArticleImage(item.article.news_image, item.article.news_featured_image_url, '/issue-image-01.jpg'),
-            href: link.href,
-            external: link.external,
-        };
-    });
 ---
 <section data-nav="dark">
     <div id="pick">
@@ -125,35 +13,37 @@ const pickCards: PickCard[] = (editorZone?.tiitle_article ?? [])
             <div class="flex align-center">
                 <div class="editor">
                     <div class="img">
-                        <img width="400" height="400" src={editorImage} alt={editorName} loading="lazy" />
+                        <img width="400" height="400" src="/expert02.jpg" alt="expert" loading="lazy" />
                     </div>
                     <div class="txtBox">
                         <div class="info">
                             <div class="name">
-                                {editorName}
+                                Dimitri Bruyas
                             </div>
                             <div class="job">
-                                {editorJob}
+                                英語新聞組組長・《英文中國郵報》總編輯
                             </div>
                             <div class="description">
-                                {editorDescription}
+                                在台深耕媒體超過 20 年，擅長融合國際新聞觀點，以全英語、全方位角度報導台灣科技與半導體產業脈動，為海外決策者提供深度台灣視角。
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="motto">
-                    {motto}
+                    「亞利桑那正在複製的，其實是台灣三十年的產業經驗——半導體人才，沒有捷徑。」
                 </div>
             </div>
 
             <div class="moreArea">
                 <div class="areaTitleBox">
                     <div class="title">
-                        {pickTitle}
+                        影響 AI 的十件事
                     </div>
                     <div class="description">
                         <p>
-                            {pickDescription}
+                            當 AI 以前所未有的速度改寫世界，決定這場革命走向的，早已遠不止技術本身。
+                            從晶片與能源的實體考驗，到地緣政治與監管規範的重新界定，每一道暗潮都在重
+                            塑未來的商業秩序。
                         </p>
                         <div class="btn">
                             <button type="button" class="prevBtn" aria-label="上一個">
@@ -167,35 +57,168 @@ const pickCards: PickCard[] = (editorZone?.tiitle_article ?? [])
                 </div>
                 <div class="list">
                     <swiper-container init="false" class="moreSwiper">
-                        {pickCards.map((card) => (
-                            <swiper-slide>
-                                <div class="project">
-                                    <div class="title">
-                                        {card.projectTitle}
-                                    </div>
-                                    <div class="description">
-                                        {card.projectSummary}
+                        <swiper-slide>
+                            <div class="project">
+                                <div class="title">
+                                    01 能源
+                                </div>
+                                <div class="description">
+                                    數據中心用電量呈指數級爆發，乾淨且穩定的電力供給，正取代晶片成為 AI 發展最大瓶頸
+                                </div>
+                            </div>
+                            <a class="box" href="#">
+                                <div class="img">
+                                    <img width="800" height="450" src="/issue-image-02.jpg" alt="img" loading="lazy" />
+                                    <div class="cardArraw">
+                                        <img width="28" height="28" src="/arraw-right-01.svg" alt="arraw" />
                                     </div>
                                 </div>
-                                <a class="box" href={card.href} target={card.external ? '_blank' : undefined} rel={card.external ? 'noopener noreferrer' : undefined}>
-                                    <div class="img">
-                                        <img width="800" height="450" src={card.image} alt="img" loading="lazy" />
-                                        <div class="cardArraw">
-                                            <img width="28" height="28" src="/arraw-right-01.svg" alt="arraw" />
-                                        </div>
+                                <div class="txtBox">
+                                    <div class="tag">專題</div>
+                                    <div class="title">
+                                        三星全球導入 ChatGPT 與 Codex　OpenAI 拿下最大企業部署案之一
                                     </div>
-                                    <div class="txtBox">
-                                        <div class="tag">{card.tag}</div>
-                                        <div class="title">
-                                            {card.title}
-                                        </div>
-                                        <div class="description">
-                                            {card.description}
-                                        </div>
+                                    <div class="description">
+                                        企業級 AI 落地再下一城，OpenAI 在大型製造業者的滲透加速。
                                     </div>
-                                </a>
-                            </swiper-slide>
-                        ))}
+                                </div>
+                            </a>
+                        </swiper-slide>
+                        <swiper-slide>
+                            <div class="project">
+                                <div class="title">
+                                    02 地緣政治與監管
+                                </div>
+                                <div class="description">
+                                    各國法規與出口限制正在撕裂全球供應鏈，技術不再只是商業競賽，更演變為地緣政治的角力。
+                                </div>
+                            </div>
+                            <a class="box" href="#">
+                                <div class="img">
+                                    <img width="800" height="450" src="/issue-image-01.jpg" alt="img" loading="lazy" />
+                                    <div class="cardArraw">
+                                        <img width="28" height="28" src="/arraw-right-01.svg" alt="arraw" />
+                                    </div>
+                                </div>
+                                <div class="txtBox">
+                                    <div class="tag">專題</div>
+                                    <div class="title">
+                                        三星全球導入 ChatGPT 與 Codex　OpenAI 拿下最大企業部署案之一
+                                    </div>
+                                    <div class="description">
+                                        企業級 AI 落地再下一城，OpenAI 在大型製造業者的滲透加速。
+                                    </div>
+                                </div>
+                            </a>
+                        </swiper-slide>
+                        <swiper-slide>
+                            <div class="project">
+                                <div class="title">
+                                    03 ROI 考驗
+                                </div>
+                                <div class="description">
+                                    資本市場正從驚嘆技術轉為審視回報，缺乏實質商業模式的 AI 應用，將面臨第一波淘汰洗
+                                </div>
+                            </div>
+                            <a class="box" href="#">
+                                <div class="img">
+                                    <img width="800" height="450" src="/issue-image-03.jpg" alt="img" loading="lazy" />
+                                    <div class="cardArraw">
+                                        <img width="28" height="28" src="/arraw-right-01.svg" alt="arraw" />
+                                    </div>
+                                </div>
+                                <div class="txtBox">
+                                    <div class="tag">專題</div>
+                                    <div class="title">
+                                        三星全球導入 ChatGPT 與 Codex　OpenAI 拿下最大企業部署案之一
+                                    </div>
+                                    <div class="description">
+                                        企業級 AI 落地再下一城，OpenAI 在大型製造業者的滲透加速。
+                                    </div>
+                                </div>
+                            </a>
+                        </swiper-slide>
+                        <swiper-slide>
+                            <div class="project">
+                                <div class="title">
+                                    01 能源
+                                </div>
+                                <div class="description">
+                                    數據中心用電量呈指數級爆發，乾淨且穩定的電力供給，正取代晶片成為 AI 發展最大瓶頸
+                                </div>
+                            </div>
+                            <a class="box" href="#">
+                                <div class="img">
+                                    <img width="800" height="450" src="/issue-image-02.jpg" alt="img" loading="lazy" />
+                                    <div class="cardArraw">
+                                        <img width="28" height="28" src="/arraw-right-01.svg" alt="arraw" />
+                                    </div>
+                                </div>
+                                <div class="txtBox">
+                                    <div class="tag">專題</div>
+                                    <div class="title">
+                                        三星全球導入 ChatGPT 與 Codex　OpenAI 拿下最大企業部署案之一
+                                    </div>
+                                    <div class="description">
+                                        企業級 AI 落地再下一城，OpenAI 在大型製造業者的滲透加速。
+                                    </div>
+                                </div>
+                            </a>
+                        </swiper-slide>
+                        <swiper-slide>
+                            <div class="project">
+                                <div class="title">
+                                    02 地緣政治與監管
+                                </div>
+                                <div class="description">
+                                    各國法規與出口限制正在撕裂全球供應鏈，技術不再只是商業競賽，更演變為地緣政治的角力。
+                                </div>
+                            </div>
+                            <a class="box" href="#">
+                                <div class="img">
+                                    <img width="800" height="450" src="/issue-image-01.jpg" alt="img" loading="lazy" />
+                                    <div class="cardArraw">
+                                        <img width="28" height="28" src="/arraw-right-01.svg" alt="arraw" />
+                                    </div>
+                                </div>
+                                <div class="txtBox">
+                                    <div class="tag">專題</div>
+                                    <div class="title">
+                                        三星全球導入 ChatGPT 與 Codex　OpenAI 拿下最大企業部署案之一
+                                    </div>
+                                    <div class="description">
+                                        企業級 AI 落地再下一城，OpenAI 在大型製造業者的滲透加速。
+                                    </div>
+                                </div>
+                            </a>
+                        </swiper-slide>
+                        <swiper-slide>
+                            <div class="project">
+                                <div class="title">
+                                    03 ROI 考驗
+                                </div>
+                                <div class="description">
+                                    資本市場正從驚嘆技術轉為審視回報，缺乏實質商業模式的 AI 應用，將面臨第一波淘汰洗
+                                </div>
+                            </div>
+                            <a class="box" href="#">
+                                <div class="img">
+                                    <img width="800" height="450" src="/issue-image-03.jpg" alt="img" loading="lazy" />
+                                    <div class="cardArraw">
+                                        <img width="28" height="28" src="/arraw-right-01.svg" alt="arraw" />
+                                    </div>
+                                </div>
+                                <div class="txtBox">
+                                    <div class="tag">專題</div>
+                                    <div class="title">
+                                        三星全球導入 ChatGPT 與 Codex　OpenAI 拿下最大企業部署案之一
+                                    </div>
+                                    <div class="description">
+                                        企業級 AI 落地再下一城，OpenAI 在大型製造業者的滲透加速。
+                                    </div>
+                                </div>
+                            </a>
+                        </swiper-slide>
                     </swiper-container>
                 </div>
             </div>

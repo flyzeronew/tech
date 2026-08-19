@@ -9,15 +9,13 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "start": "node ./dist/server/entry.mjs",
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/node": "^11.1.2",
     "@fontsource/noto-sans-tc": "^5.2.9",
     "@fontsource/roboto": "^5.2.10",
     "@fontsource/roboto-flex": "^5.2.8",
-    "astro": "^7.2.2",
+    "astro": "^6.4.2",
     "sharp": "^0.35.2",
     "swiper": "^14.0.0"
   }

@@ -1,20 +1,11 @@
 ---
-import { STRAPI_URL, STRAPI_API_TOKEN } from 'astro:env/server';
 import '../../styles/components/index/hero.css';
-import { resolveArticleLink } from '../../lib/articleLink';
-import { resolveSummary } from '../../lib/articleSummary';
-import { resolveArticleImage, type RawNewsImage } from '../../lib/articleImage';
-import { cachedFetchJson, CACHE_TTL } from '../../lib/fetchCache';
 
 interface ArticleBlockData {
-    id: number;
-    news_article_id: string;
     news_title: string;
     news_category: string | null;
     news_content_html: string | null;
-    news_summary: string | null;
     news_featured_image_url: string | null;
-    news_image: RawNewsImage[] | null;
     news_published_at: string | null;
     news_article_url: string | null;
 }
@@ -46,7 +37,6 @@ interface HeroCard {
     image: string;
     date: string;
     href: string;
-    external: boolean;
 }
 
 function formatDate(iso: string | null): string {
@@ -55,7 +45,7 @@ function formatDate(iso: string | null): string {
     return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
 }
 
-// news_summary 是後台可選填的摘要欄位，優先用它；沒填才退回用 news_content_html 截斷全文
+// news_content_html 是完整文章全文，後台目前沒有獨立的摘要欄位，暫時用截斷全文取代
 function stripHtml(html: string | null, maxLength: number): string {
     if (!html) return '';
     const text = html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
@@ -65,15 +55,13 @@ function stripHtml(html: string | null, maxLength: number): string {
 function toCard(item: HeroZoneItem): HeroCard | null {
     if (item.__component === 'shared.article-block' && item.article_block) {
         const a = item.article_block;
-        const link = resolveArticleLink(a.news_category, a.news_article_id, a.news_article_url);
         return {
             tag: a.news_category ?? '',
             title: a.news_title,
-            description: resolveSummary(a.news_summary, stripHtml(a.news_content_html, 100)),
-            image: resolveArticleImage(a.news_image, a.news_featured_image_url, '/main-view-01.jpg'),
+            description: stripHtml(a.news_content_html, 100),
+            image: a.news_featured_image_url ?? '/main-view-01.jpg',
             date: formatDate(a.news_published_at),
-            href: link.href,
-            external: link.external,
+            href: a.news_article_url ?? '#',
         };
     }
     if (item.__component === 'shared.media-block' && item.media_block) {
@@ -85,7 +73,6 @@ function toCard(item: HeroZoneItem): HeroCard | null {
             image: m.media_image_url ?? '/main-view-01.jpg',
             date: formatDate(m.media_published_at),
             href: m.media_url ?? '#',
-            external: true,
         };
     }
     return null;
@@ -93,14 +80,15 @@ function toCard(item: HeroZoneItem): HeroCard | null {
 
 let heroCards: HeroCard[] = [];
 try {
-    const json = await cachedFetchJson<{ data?: { hero_zone?: HeroZoneItem[] } }>(
-        `${STRAPI_URL}/api/hero-zone?populate[hero_zone][on][shared.article-block][populate][article_block][populate][news_image][fields][0]=url` +
-            `&populate[hero_zone][on][shared.media-block][populate]=media_block`,
-        { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
-        CACHE_TTL.NAV,
+    const res = await fetch(
+        `${import.meta.env.STRAPI_URL}/api/hero-zone?populate[hero_zone][on][shared.article-block][populate]=article_block&populate[hero_zone][on][shared.media-block][populate]=media_block`,
+        { headers: { Authorization: `Bearer ${import.meta.env.STRAPI_API_TOKEN}` } },
     );
-    const items: HeroZoneItem[] = json?.data?.hero_zone ?? [];
-    heroCards = items.map(toCard).filter((c): c is HeroCard => c !== null);
+    if (res.ok) {
+        const json = await res.json();
+        const items: HeroZoneItem[] = json.data?.hero_zone ?? [];
+        heroCards = items.map(toCard).filter((c): c is HeroCard => c !== null);
+    }
 } catch {
     heroCards = [];
 }
@@ -131,7 +119,7 @@ const [kvCard, ...listCards] = heroCards;
                                 {kvCard?.description}
                             </div>
                             <div class="more">
-                                <a href={kvCard?.href ?? '#'} target={kvCard?.external === false ? undefined : '_blank'} rel={kvCard?.external === false ? undefined : 'noopener noreferrer'}>
+                                <a href={kvCard?.href ?? '#'} target="_blank" rel="noopener noreferrer">
                                     <span>閱讀完整報導</span>
                                     <div class="arraw">
                                         <img width="28" height="28" src="/arraw-right-01.svg" alt="arraw" />
@@ -148,7 +136,7 @@ const [kvCard, ...listCards] = heroCards;
                 <ul>
                     {listCards.map((card) => (
                         <li>
-                            <a href={card.href} target={card.external ? '_blank' : undefined} rel={card.external ? 'noopener noreferrer' : undefined}>
+                            <a href={card.href} target="_blank" rel="noopener noreferrer">
                                 <div class="date">{card.date}</div>
                                 <div class="news">
                                     <div class="img">

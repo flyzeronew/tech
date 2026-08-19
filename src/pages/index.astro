@@ -11,32 +11,8 @@ import Publications from '../components/index/Publications.astro';
 import EditorPick from '../components/index/EditorPick.astro';
 import TechLeaders from '../components/index/TechLeaders.astro';
 import Partners from '../components/index/Partners.astro';
-
-const siteOrigin = Astro.url.origin;
-const jsonLd = {
-    '@context': 'https://schema.org',
-    '@graph': [
-        {
-            '@type': 'Organization',
-            '@id': `${siteOrigin}/#organization`,
-            name: 'TVBS TECH',
-            url: siteOrigin,
-            logo: {
-                '@type': 'ImageObject',
-                url: new URL('/tvbs-logo-b.svg', siteOrigin).toString(),
-            },
-        },
-        {
-            '@type': 'WebSite',
-            '@id': `${siteOrigin}/#website`,
-            name: 'TVBS TECH',
-            url: siteOrigin,
-            publisher: { '@id': `${siteOrigin}/#organization` },
-        },
-    ],
-};
 ---
-<Layout jsonLd={jsonLd}>
+<Layout title="TVBS TECH">
     <Hero />
     <New />
     <Issue />

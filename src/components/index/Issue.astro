@@ -1,9 +1,5 @@
 ---
-import { STRAPI_URL, STRAPI_API_TOKEN } from 'astro:env/server';
 import '../../styles/components/index/issue.css';
-import { resolveArticleLink } from '../../lib/articleLink';
-import { resolveArticleImage, type RawNewsImage } from '../../lib/articleImage';
-import { cachedFetchJson, CACHE_TTL } from '../../lib/fetchCache';
 
 // 垂直格線位置改用 CSS 變數 --issue-cell（正方形格子寬度佔 .bg 寬度的比例）算，不再是寫死的固定百分比：
 // --issue-cell 會依 .bg 當下的 16:9／9:16 比例在 issue.css 切換，格線與 .bgImage 縮放起點就能自動對齊新比例，不用另外重算。
@@ -12,64 +8,9 @@ import { cachedFetchJson, CACHE_TTL } from '../../lib/fetchCache';
 const horizontalLines = [0, 25, 50, 75, 100];
 const verticalLineOffsets = [-4, -3, -2, -1, 0, 1, 2, 3].map((k) => k + 0.5);
 const gridLineStagger = 0.09;
-
-interface IssueArticle {
-    news_title: string;
-    news_category: string | null;
-    news_article_id: string;
-    news_article_url: string | null;
-    news_featured_image_url: string | null;
-    news_image: RawNewsImage[] | null;
-    news_youtube_id: string | null;
-}
-
-interface IssueCard {
-    tag: string;
-    title: string;
-    href: string;
-    external: boolean;
-    image: string;
-    hasVideo: boolean;
-}
-
-// 後台部分文章的 news_youtube_id 存的是字串 "null"（不是真正的 null），
-// 判斷有沒有影片時要一併排除，不然會誤判成有 YouTube 影片可嵌入（跟 articleDetail.ts 同一套判斷）
-function hasYoutubeVideo(id: string | null): boolean {
-    return Boolean(id) && id !== 'null';
-}
-
-// 下面 6 則清單抓後台 article_source = issue 的文章（「亞利桑那觀察」系列），依發布時間新到舊取最新 6 篇
-let issueArticles: IssueArticle[] = [];
-try {
-    const json = await cachedFetchJson<{ data?: IssueArticle[] }>(
-        `${STRAPI_URL}/api/article-libs?filters[article_source][$eq]=issue&sort=news_published_at:desc&pagination[pageSize]=6` +
-            `&fields[0]=news_title&fields[1]=news_category&fields[2]=news_article_id&fields[3]=news_article_url&fields[4]=news_featured_image_url&fields[5]=news_youtube_id` +
-            `&populate[news_image][fields][0]=url`,
-        { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
-        CACHE_TTL.NEWS,
-    );
-    issueArticles = json?.data ?? [];
-} catch {
-    issueArticles = [];
-}
-
-const issueCards: IssueCard[] = issueArticles.map((a) => {
-    const link = resolveArticleLink(a.news_category, a.news_article_id, a.news_article_url);
-    return {
-        tag: a.news_category ?? '',
-        title: a.news_title,
-        href: link.href,
-        external: link.external,
-        image: resolveArticleImage(a.news_image, a.news_featured_image_url, '/issue-image-01.jpg'),
-        hasVideo: hasYoutubeVideo(a.news_youtube_id),
-    };
-});
-
-// 版面固定 3 欄 x 2 則，依原始順序（新到舊）依序分配進三欄，跟原本寫死的排法一致
-const issueColumns = [issueCards.slice(0, 2), issueCards.slice(2, 4), issueCards.slice(4, 6)];
 ---
 <section>
-    <div id="spotlight" data-nav="dark">
+    <div id="issue" data-nav="dark">
         <div class="bg">
             <div class="wipeStage">
                 <span class="wipeRow"></span>
@@ -109,61 +50,90 @@ const issueColumns = [issueCards.slice(0, 2), issueCards.slice(2, 4), issueCards
 
         <div class="issueList">
             <div class="inBox">
-                <div class="descRow">
-                    <p class="description">
-                        台積電落腳沙漠，不只帶來一座晶圓廠，而是帶動半導體供應鏈、造鎮開發、人才競爭與交通建設，甚至牽動醫療、AI產業的下一波升級。
-                        TVBS新聞網深度策展，帶你看懂一家台灣企業如何改變一座美國城市的命運。
-                    </p>
-                    <div class="more">
-                        <a href="https://news.tvbs.com.tw/topics/money/1583" target="_blank">
-                            <span class="full">更多專題報導</span>
-                            <span class="short">更多</span>
-                            <div class="arraw">
-                                <img width="28" height="28" src="/arraw-right-03.svg" alt="arraw" />
-                            </div>
-                        </a>
-                    </div>
-                </div>
+                <p class="description">
+                    台積電落腳沙漠，不只帶來一座晶圓廠，而是帶動半導體供應鏈、造鎮開發、人才培育、台灣美食、航太科技與直航航班。
+                    TVBS 新聞網深度策展，帶你看懂一家台灣企業如何改變一座美國城市的命運。
+                </p>
 
                 <div class="list">
-                    {issueColumns.map((col, colIndex) => (
-                        <div class="col">
-                            {col.map((card, itemIndex) => {
-                                const isSquare = colIndex === 0 && itemIndex === 0;
-                                return (
-                                    <div class="item">
-                                        <a
-                                            class="cardLink"
-                                            href={card.href}
-                                            target={card.external ? '_blank' : undefined}
-                                            rel={card.external ? 'noopener noreferrer' : undefined}
-                                        >
-                                            <div class="tag">
-                                                <span>{card.tag}</span>
-                                            </div>
-                                            <div class="title">
-                                                {card.title}
-                                            </div>
-                                            <div class:list={['img', { 'img--square': isSquare }]}>
-                                                {card.hasVideo ? (
-                                                    <div class="statusIcon playIcon"></div>
-                                                ) : (
-                                                    <div class="statusIcon linkIcon"></div>
-                                                )}
-                                                <img
-                                                    width="300"
-                                                    height={isSquare ? 300 : 169}
-                                                    src={card.image}
-                                                    alt={card.title}
-                                                    loading="lazy"
-                                                />
-                                            </div>
-                                        </a>
-                                    </div>
-                                );
-                            })}
+                    <div class="col">
+                        <div class="item">
+                            <div class="tag">
+                                <a href="#">Podcast</a>
+                            </div>
+                            <div class="title">
+                                【2100TVBS看世界】台積電加碼3.3兆投資美國 還在亞利桑那蓋研發中心 川普暫停對烏克蘭所有軍援
+                            </div>
+                            <div class="img img--square">
+                                <div class="statusIcon linkIcon"></div>
+                                <img width="300" height="300" src="/issue-image-01.jpg" alt="img" loading="lazy" />
+                            </div>
                         </div>
-                    ))}
+                        <div class="item">
+                            <div class="tag">
+                                <a href="#">專題報導</a>
+                            </div>
+                            <div class="title">
+                                150 億美元交通藍圖背後：亞利桑那正打造下一個 30 年的產業走廊
+                            </div>
+                            <div class="img">
+                                <div class="statusIcon linkIcon"></div>
+                                <img width="300" height="169" src="/issue-image-02.jpg" alt="img" loading="lazy" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="item">
+                            <div class="tag">
+                                <a href="#">專題報導</a>
+                            </div>
+                            <div class="title">
+                                雙城故事：當台北遇上鳳凰城　AI 時代最重要的新科技走廊正形成
+                            </div>
+                            <div class="img">
+                                <div class="statusIcon linkIcon"></div>
+                                <img width="300" height="169" src="/issue-image-03.jpg" alt="img" loading="lazy" />
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="tag">
+                                <a href="#">專題報導</a>
+                            </div>
+                            <div class="title">
+                                台積電帶動「台灣嬰兒潮」 鳳凰城市長：已誕生 500 個寶寶
+                            </div>
+                            <div class="img">
+                                <div class="statusIcon linkIcon"></div>
+                                <img width="300" height="169" src="/issue-image-04.jpg" alt="img" loading="lazy" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="item">
+                            <div class="tag">
+                                <a href="#">影片</a>
+                            </div>
+                            <div class="title">
+                                【黃仁勳專訪】黃仁勳:別怕AI搶飯碗! 從汽車發明看AI社會共存 親自使用AI縮小科技落差 黃仁勳再談能源重要性…
+                            </div>
+                            <div class="img">
+                                <div class="statusIcon linkIcon"></div>
+                                <img width="300" height="169" src="/issue-image-05.jpg" alt="img" loading="lazy" />
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="tag">
+                                <a href="#">專題報導</a>
+                            </div>
+                            <div class="title">
+                                150 億美元交通藍圖背後：亞利桑那正打造下一個 30 年的產業走廊
+                            </div>
+                            <div class="img">
+                                <div class="statusIcon linkIcon"></div>
+                                <img width="300" height="169" src="/issue-image-06.jpg" alt="img" loading="lazy" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -171,7 +141,7 @@ const issueColumns = [issueCards.slice(0, 2), issueCards.slice(2, 4), issueCards
 </section>
 
 <script>
-    // ===== 獨家專題（#spotlight）進場動畫 =====
+    // ===== 獨家專題（#issue）進場動畫 =====
     // 白畫面 → 階梯狀色塊由右往左收合成黑 → 格線背景 + 縮小的圖出現在正中間 → 圖放大到滿版、文字淡入
     // 用 requestAnimationFrame 每幀輪詢「區塊頂部與 viewport 頂端切齊」這一刻，而不是監聽 scroll 事件：
     // 導覽列點擊是用 JS rAF 迴圈自訂緩動捲動（見 Header.astro），搭配全域 scroll-behavior: smooth，
@@ -186,22 +156,12 @@ const issueColumns = [issueCards.slice(0, 2), issueCards.slice(2, 4), issueCards
     // 觸發後就停止輪詢，動畫只播放一次，之後不管怎麼捲動都不會再重播。
     // 頁面載入/重新整理當下如果就已經停留在區塊頂部（例如瀏覽器還原了捲動位置），直接觸發一次，
     // 不用等使用者先捲遠、再捲回來才播放。
-    const issueEl = document.getElementById('spotlight');
+    const issueEl = document.getElementById('issue');
     if (issueEl) {
         const NEAR = 2;
         let triggered = false;
-        // 直接以錨點連結進站（例如重新整理時網址列本來就帶 #spotlight，或從其他頁面點導覽列連回
-        // /#spotlight，見 Header.astro 的跨頁導回邏輯）時，一到頁面就已經在區塊頂端，不該播放這段
-        // 設計給「使用者往下捲動發現」情境的進場動畫——不然會有好幾秒畫面整個是白的（見上方
-        // #spotlight .bg 的初始 background-color: #fff），看起來像沒捲到定位。這種情況直接跳到
-        // 動畫播完的最終狀態（見 issue.css 的 .no-anim 規則）。
-        const skipAnim = location.hash === '#spotlight';
         const trigger = () => {
             triggered = true;
-            if (skipAnim) {
-                issueEl.classList.add('is-visible', 'no-anim');
-                return;
-            }
             window.setTimeout(() => {
                 issueEl.classList.add('is-visible');
             }, 50);
@@ -229,13 +189,13 @@ const issueColumns = [issueCards.slice(0, 2), issueCards.slice(2, 4), issueCards
 </script>
 
 <script>
-    // ===== 獨家專題（#spotlight）768～1023px：JS 真．瀑布流兩欄；768px 以下改回單欄，不需要分欄 =====
+    // ===== 獨家專題（#issue）768～1023px：JS 真．瀑布流兩欄；768px 以下改回單欄，不需要分欄 =====
     // 純 CSS Grid／多欄排版在「兩欄各放一半項目」時無法避免高度不一致造成的空隙（Grid 同列會被較高的那項卡住，
     // 多欄排版順序又會變成「左欄先填滿」而非交錯）。這裡改用貪婪演算法：依原始順序依序把每張卡片
     // 塞進「目前比較矮」的那一欄，卡片間就不會再多出空白，同時仍盡量保留接近原始的閱讀順序。
     // 量測高度需要在卡片還是正常版面（未搬移）時進行，所以先量測、算好分欄結果，才真正搬移 DOM。
     // 切回 1024px 以上時要能還原成原本三欄的 DOM 結構，所以先記住每張卡片原本的位置。
-    const issueList = document.querySelector<HTMLElement>('#spotlight .issueList .list');
+    const issueList = document.querySelector<HTMLElement>('#issue .issueList .list');
     if (issueList) {
         const items = Array.from(issueList.querySelectorAll<HTMLElement>('.item'));
         const originalSlots = items.map((item) => ({

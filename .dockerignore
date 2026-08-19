@@ -1,9 +1,0 @@
-.git
-.gitignore
-.github
-.astro
-node_modules
-*.md
-.env*
-Dockerfile
-.dockerignore

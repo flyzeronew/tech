@@ -1,13 +1,13 @@
 /* 最新 */
-#signals{
+#new{
     background-color: #F0F0F0;
 }
 /* 釘住捲動用的加高容器：高度 = 卡片數 * 100vh，JS 會依卡片數重新計算，這裡先給預設值避免版面閃動 */
-#signals .stickyWrap{
+#new .stickyWrap{
     position: relative;
     height: 300vh;
 }
-#signals .pinInner{
+#new .pinInner{
     position: sticky;
     top: 0;
     height: 100vh;
@@ -20,20 +20,20 @@
     background-position: center;
     background-repeat: no-repeat;
 }
-#signals .flex{
+#new .flex{
     align-items: center;
 }
-#signals .titleBox{
+#new .titleBox{
     width: 50%;
 }
-#signals .list{
+#new .list{
     position: relative;
     width: 50%;
     height: 100vh;
     /* 卡片要能從卡片本身遮罩範圍外（更下面、接近整個釘住視窗底部）滑上來，所以裁切範圍要比卡片本身還要大 */
     overflow: hidden;
 }
-#signals .titleBox .title{
+#new .titleBox .title{
     font-weight: 400;
     font-size: 80px;
     line-height: 100px;
@@ -42,17 +42,17 @@
        新文字接在下面、兩行一起往上位移，新文字才會被舊文字「推」出這個範圍才顯示出來 */
     overflow: hidden;
 }
-#signals .titleBox .titleTrack{
+#new .titleBox .titleTrack{
     /* 位移動畫（transform/transition）由 JS 控制 */
 }
-#signals .titleBox .itemTitle{
+#new .titleBox .itemTitle{
     margin-bottom: 20%;
 }
-#signals .titleBox .title span{
+#new .titleBox .title span{
     font-weight: 700;
 }
 /* itemTrack 只用來標記卡片「定位」時的位置與大小，本身不裁切內容 */
-#signals .list .itemTrack{
+#new .list .itemTrack{
     position: absolute;
     left: 0;
     top: 50%;
@@ -60,7 +60,7 @@
     height: 624px;
     transform: translateY(-50%);
 }
-#signals .list .item{
+#new .list .item{
     position: absolute;
     inset: 0;
     padding: 30px;
@@ -73,7 +73,7 @@
     transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.6s ease;
 }
 /* 用 data-rel 表示每張卡片與目前作用中卡片的相對位置：新卡片從下方邊界外滑上來、疊在舊卡片上方；舊卡片被蓋住後才縮小淡出消失 */
-#signals .list .item[data-rel="0"]{
+#new .list .item[data-rel="0"]{
     opacity: 1;
     transform: translateY(0) scale(1);
     filter: none;
@@ -81,28 +81,28 @@
     pointer-events: auto;
 }
 /* 即將發出的卡片：只疊一張，頂邊往上疊一點到主卡片裡面（露出的是卡片開頭），疊在舊卡片「上面」所以 z-index 比 rel=0 高 */
-#signals .list .item[data-rel="1"]{
+#new .list .item[data-rel="1"]{
     opacity: 1;
     transform: translateY(calc(100% - 15px)) scale(0.94);
     transform-origin: top center;
     z-index: 6;
 }
 /* 再往後排隊的卡片先不顯示，等排到 data-rel="1" 才淡入疊出來，畫面上永遠只疊一張 */
-#signals .list .item[data-rel="2"]{
+#new .list .item[data-rel="2"]{
     opacity: 0;
     transform: translateY(calc(100% - 24px)) scale(0.94);
     transform-origin: top center;
     z-index: 2;
 }
-#signals .list .item[data-rel="-1"]{
+#new .list .item[data-rel="-1"]{
     opacity: 0;
     transform: translateY(0) scale(0.94);
     z-index: 4;
 }
-#signals .list .item .cardLink{
+#new .list .item .cardLink{
     display: contents;
 }
-#signals .list .item .img::after{
+#new .list .item .img::after{
     content: '';
     position: absolute;
     inset: 0;
@@ -110,7 +110,7 @@
     opacity: 0;
     transition: opacity 0.3s;
 }
-#signals .list .item .img .cardArraw{
+#new .list .item .img .cardArraw{
     position: absolute;
     right: -60px;
     bottom: -60px;
@@ -124,13 +124,13 @@
     border: 1px solid #242EF7;
     transition: right 0.3s ease, bottom 0.3s ease;
 }
-#signals .list .item .img .cardArraw img{
+#new .list .item .img .cardArraw img{
     width: 28px;
     height: 28px;
     transform: rotate(-45deg);
 }
 /* 有影片時 playIcon 取代 .cardArraw（互斥渲染，見 New.astro），套用同樣的尺寸/位置/滑入動畫，讓右下角只會出現其中一個 */
-#signals .list .item .img .statusIcon.playIcon{
+#new .list .item .img .statusIcon.playIcon{
     right: -60px;
     bottom: -60px;
     left: auto;
@@ -140,21 +140,21 @@
     border: 1px solid #242EF7;
     transition: right 0.3s ease, bottom 0.3s ease;
 }
-#signals .list .item .img:hover .statusIcon.playIcon{
+#new .list .item .img:hover .statusIcon.playIcon{
     right: 0;
     bottom: 0;
 }
-#signals .list .item .cardLink:hover .img::after{
+#new .list .item .cardLink:hover .img::after{
     opacity: 1;
 }
-#signals .list .item .cardLink:hover .img .cardArraw{
+#new .list .item .cardLink:hover .img .cardArraw{
     right: 0;
     bottom: 0;
 }
-#signals .list .item .txtBox{
+#new .list .item .txtBox{
     padding: 30px 20px 0;
 }
-#signals .list .item .title{
+#new .list .item .title{
     font-weight: 700;
     font-size: 28px;
     line-height: 40px;
@@ -166,7 +166,7 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
 }
-#signals .list .item .description{
+#new .list .item .description{
     font-weight: 400;
     font-size: 16px;
     line-height: 22px;
@@ -178,11 +178,11 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
 }
-#signals .list .item .tag{
+#new .list .item .tag{
     display: flex;
     column-gap: 10px;
 }
-#signals .list .item .tag span{
+#new .list .item .tag span{
     font-weight: 400;
     font-size: 12px;
     line-height: 16px;
@@ -194,20 +194,20 @@
 /* 最新 ed*/
 
 @media (max-width:1279px) {
-    #signals .titleBox .title {
+    #new .titleBox .title {
         font-size: 60px;
         line-height: 80px;
         margin-bottom: 15px;
     }
-    #signals .list .item .txtBox {
+    #new .list .item .txtBox {
         padding: 15px 20px 0;
     }
-    #signals .list .item .title {
+    #new .list .item .title {
         font-size: 24px;
         line-height: 32px;
         margin-bottom: 15px;
     }
-    #signals .list .itemTrack {
+    #new .list .itemTrack {
         position: absolute;
         left: 0;
         top: 50%;
@@ -217,106 +217,85 @@
     }
 }
 @media (max-width:1023px) {
-    #signals .pinInner {
+    #new .pinInner {
         height: auto;
         overflow: visible;
     }
-    #signals .inBox {
+    #new .inBox {
         width: 100%;
         padding: 0 40px;
         box-sizing: border-box;
     }
-    #signals .flex {
+    #new .flex {
         padding-top: 100px;
         flex-direction: column;
         align-items: stretch;
         justify-content: center;
         height: 100%;
     }
-    #signals .titleBox {
+    #new .titleBox {
         width: 100%;
     }
-    #signals .titleBox .itemTitle {
+    #new .titleBox .itemTitle {
         margin-bottom: 12px;
     }
-    #signals .list .item .title {
+    #new .list .item .title {
         font-size: 28px;
         line-height: 40px;
     }
-    #signals .list .item {
+    #new .list .item {
         padding: 24px;
     }
-    #signals .list {
+    #new .list {
         width: 100%;
         height: 70vh;
     }
-    #signals .list .itemTrack {
+    #new .list .itemTrack {
         top: 45%;
         height: 580px;
     }
 }
 @media (max-width:767px) {    
-    #signals .inBox {
+    #new .inBox {
         padding: 0 20px;
     }
-    #signals .list .item {
+    #new .list .item {
         padding: 12px;
     }
-    #signals .titleBox .title {
+    #new .titleBox .title {
         font-size: 48px;
         line-height: 64px;
     }
-    #signals .list .item .title {
+    #new .list .item .title {
         font-size: 22px;
         line-height: 30px;
         -webkit-line-clamp: 2;
     }
-    #signals .list {
+    #new .list {
         height: 60vh;
     }
-    #signals .list .itemTrack {
+    #new .list .itemTrack {
         top: 40%;
         height: 425px;
     }
 }
 @media (max-width:413px) {
-    #signals .flex {
+    #new .flex {
         padding-top: 80px;
     }
-    #signals .titleBox .title {
+    #new .titleBox .title {
         font-size: 36px;
         line-height: 48px;
     }
-    #signals .list {
-        height: 70vh;
+    #new .list {
+        height: 60vh;
     }
-    #signals .list .itemTrack {
-        top: 35%;
-        height: 400px;
+    #new .list .itemTrack {
+        top: 48%;
+        height: 380px;
     }
-    #signals .list .item .txtBox {
+    #new .list .item .txtBox {
         padding: 15px ;
     }
 
-}
-/* max-width:413px 底下同時涵蓋 390×844、375×667 這類寬度相同但高度不同的機型，
-   單靠寬度斷點沒辦法讓兩者的 .list 高度不同，要疊加高度條件才能只蓋掉螢幕較矮的裝置 */
-@media (max-width:413px) and (max-height:700px) {
-    #signals .list {
-        height: 90vh;
-    }
-}
-/* 393×665 跟上面 375×667 只差 2px，量測誤差等級的差距不適合共用同一層，
-   另外切一個更窄的 666px 高度斷點只蓋掉 665 這邊，667 維持上面的 90vh */
-@media (max-width:413px) and (max-height:666px) {
-    #signals .list {
-        height: 75vh;
-    }
-}
-/* 360×740 高度介於上面 700px 那層跟 413px 預設（對應 390×844）之間，
-   itemTrack 的 top 需要單獨再疊一層 800px 的高度條件才不會跟兩邊互相蓋掉 */
-@media (max-width:413px) and (max-height:800px) {
-    #signals .list .itemTrack {
-        top: 40%;
-    }
 }

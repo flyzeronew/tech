@@ -1,95 +1,36 @@
 ---
-import { STRAPI_URL, STRAPI_API_TOKEN } from 'astro:env/server';
 import Layout from '../../layouts/Layout.astro';
 import '../../styles/pages/expert-detail.css';
 import { experts } from '../../data/experts';
-import { fetchExpertArticles, EXPERT_ARTICLES_PAGE_SIZE } from '../../lib/expertArticles';
-import { cachedFetchJson, CACHE_TTL } from '../../lib/fetchCache';
 
-// 這頁改成一般 SSR（不 prerender）：曾經加過 export const prerender = true，
-// 但這頁的作者/文章資料要在 request time 打 Strapi（見下面的 fetch），prerender 的話這些
-// fetch 會搬到 build time 執行，Docker build 階段沒有 STRAPI_URL/STRAPI_API_TOKEN
-// （這兩個是容器啟動後才由 K8s 注入，見 CLAUDE.md 的說明），會直接讓 `pnpm build` 失敗
-// （EnvInvalidVariables: STRAPI_URL is missing）。prerender 拿掉後 getStaticPaths 不會被呼叫，
-// 改成直接讀 Astro.params.slug 找對應的本地資料。
-const { slug } = Astro.params;
-const expert = experts.find((e) => e.slug === slug);
+export function getStaticPaths() {
+    return experts.map((expert) => ({
+        params: { slug: expert.slug },
+        props: { expert },
+    }));
+}
+
+const { expert } = Astro.props;
 if (!expert) {
     return Astro.rewrite('/404');
 }
-
-interface AuthorImage {
-    url: string;
-}
-
-interface Author {
-    author_name: string;
-    author_tag: string | null;
-    author_job_title: string | null;
-    author_image: AuthorImage | null;
-    author_qruote: string | null;
-}
-
-let author: Author | null = null;
-try {
-    const json = await cachedFetchJson<{ data?: Author[] }>(
-        `${STRAPI_URL}/api/authors?populate=author_image`,
-        { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
-        CACHE_TTL.NAV,
-    );
-    const authors: Author[] = json?.data ?? [];
-    const full = `${expert.firstName}${expert.lastName}`;
-    const spaced = `${expert.firstName} ${expert.lastName}`;
-    author = authors.find((a) => a.author_name === full || a.author_name === spaced) ?? null;
-} catch {
-    author = null;
-}
-
-// author_job_title 後台實際存放的是專家簡介文字（不是職稱），author_qruote 是格言（沿用既有的拼字）
-const authorName = author?.author_name ?? `${expert.firstName}${expert.lastName}`;
-const rawImage = author?.author_image?.url ?? null;
-const avatar = rawImage ? (rawImage.startsWith('http') ? rawImage : `${STRAPI_URL}${rawImage}`) : expert.avatar;
-const tags = author?.author_tag
-    ? author.author_tag.split(',').map((t) => t.trim()).filter(Boolean)
-    : expert.tags;
-const description = author?.author_job_title ?? expert.description;
-const quote = author?.author_qruote ?? expert.quote;
-
-const { articles, total } = await fetchExpertArticles(authorName, 1);
-const hasMore = EXPERT_ARTICLES_PAGE_SIZE < total;
-
-const pageTitle = `${authorName}｜TVBS TECH`;
-const canonicalUrl = new URL(Astro.url.pathname, Astro.url.origin).toString();
-const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Person',
-    name: authorName,
-    url: canonicalUrl,
-    image: avatar.startsWith('http') ? avatar : new URL(avatar, Astro.url.origin).toString(),
-    description,
-};
+// Figma 設計稿的文章列表展示 9 列，實際只有 3 篇真實文章資料，重複三輪填滿版面，跟列表頁 6 張卡片同樣的做法。
+const articles = [...expert.articles, ...expert.articles, ...expert.articles];
 ---
-<Layout
-    title={pageTitle}
-    description={description}
-    ogTitle={pageTitle}
-    ogDescription={description}
-    ogType="profile"
-    jsonLd={jsonLd}
->
+<Layout title={`${expert.firstName} ${expert.lastName} | 專家觀點 | TVBS TECH`}>
     <section data-nav="light">
         <div id="expertHero">
             <div class="portrait">
-                <img width="576" height="720" src={avatar} alt={`${expert.firstName} ${expert.lastName}`} loading="lazy" />
+                <img width="576" height="720" src={expert.avatar} alt={`${expert.firstName} ${expert.lastName}`} loading="lazy" />
             </div>
             <div class="profileInfo">
                 <div class="name">
                     <p class="nameText">{expert.firstName}<br />{expert.lastName}</p>
                     <div class="labelGroup">
-                        {tags.map((tag) => <span class="label">{tag}</span>)}
+                        {expert.tags.map((tag) => <span class="label">{tag}</span>)}
                     </div>
                 </div>
-                <p class="desc">{description}</p>
+                <p class="desc">{expert.description}</p>
             </div>
         </div>
     </section>
@@ -98,11 +39,11 @@ const jsonLd = {
             <div class="inBox">
                 <div class="quote">
                     <img class="deco deco-upper" width="37" height="31" src="/deco-upper-w.svg" alt="" />
-                    <p>{quote}</p>
+                    <p>{expert.quote}</p>
                     <img class="deco deco-lower" width="37" height="31" src="/deco-lower-w.svg" alt="" />
                 </div>
 
-                <div class="newsSection" data-author={authorName} data-page="1">
+                <div class="newsSection">
                     <div class="breadcrumbs">
                         <a href="/">首頁</a>
                         <a href="/experts">專家觀點</a>
@@ -110,7 +51,7 @@ const jsonLd = {
                     </div>
                     <p class="fromTitle">From {expert.firstName} {expert.lastName}</p>
 
-                    <div class="newsGroup" id="newsGroup">
+                    <div class="newsGroup">
                         {articles.map((article) => (
                             <div class="newsRow">
                                 <a href={article.href}>
@@ -130,105 +71,16 @@ const jsonLd = {
                         ))}
                     </div>
 
-                    {hasMore && (
-                        <div class="more" id="moreControl">
-                            <button type="button">
-                                <span>Read more</span>
-                                <div class="arraw">
-                                    <img width="28" height="28" src="/arraw-right-03.svg" alt="arraw" />
-                                </div>
-                            </button>
-                        </div>
-                    )}
+                    <div class="more">
+                        <a href="#">
+                            <span>Read more</span>
+                            <div class="arraw">
+                                <img width="28" height="28" src="/arraw-right-03.svg" alt="arraw" />
+                            </div>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 </Layout>
-
-<script>
-    // ===== 專家內頁文章分頁載入（每次 10 則） =====
-    // Strapi Token 是 server-only 密鑰，前端不能直接打 Strapi，所以「更多」改成呼叫站內的
-    // /api/expert-articles 代理端點，由伺服器端用密鑰去查 Strapi 再把結果轉發回來。
-    (() => {
-        const section = document.querySelector<HTMLElement>('#expertBody .newsSection');
-        const group = document.getElementById('newsGroup');
-        const moreControl = document.getElementById('moreControl');
-        if (!section || !group || !moreControl) return;
-
-        const authorName = section.dataset.author ?? '';
-        let page = Number(section.dataset.page ?? '1');
-
-        interface ArticleItem {
-            date: string;
-            image: string;
-            title: string;
-            description: string;
-            href: string;
-        }
-
-        function createRow(article: ArticleItem): HTMLElement {
-            const row = document.createElement('div');
-            row.className = 'newsRow';
-
-            const a = document.createElement('a');
-            a.href = article.href;
-
-            const imgBox = document.createElement('div');
-            imgBox.className = 'img';
-            const img = document.createElement('img');
-            img.width = 200;
-            img.height = 113;
-            img.src = article.image;
-            img.alt = 'img';
-            img.loading = 'lazy';
-            imgBox.appendChild(img);
-
-            const titleBox = document.createElement('div');
-            titleBox.className = 'titleBox';
-            const date = document.createElement('p');
-            date.className = 'date';
-            date.textContent = article.date;
-            const title = document.createElement('p');
-            title.className = 'rowTitle';
-            title.textContent = article.title;
-            const desc = document.createElement('p');
-            desc.className = 'rowDesc';
-            desc.textContent = article.description;
-            titleBox.append(date, title, desc);
-
-            const arraw = document.createElement('div');
-            arraw.className = 'arraw';
-            const arrowImg = document.createElement('img');
-            arrowImg.width = 24;
-            arrowImg.height = 24;
-            arrowImg.src = '/arraw-right-03.svg';
-            arrowImg.alt = 'arraw';
-            arraw.appendChild(arrowImg);
-
-            a.append(imgBox, titleBox, arraw);
-            row.appendChild(a);
-            return row;
-        }
-
-        const button = moreControl.querySelector('button');
-        button?.addEventListener('click', async () => {
-            button.disabled = true;
-            page += 1;
-            try {
-                const res = await fetch(`/api/expert-articles?name=${encodeURIComponent(authorName)}&page=${page}`);
-                if (!res.ok) return;
-                const json: { articles: ArticleItem[]; hasMore: boolean } = await res.json();
-                json.articles.forEach((article) => group.appendChild(createRow(article)));
-                if (!json.hasMore) {
-                    const noMore = document.createElement('p');
-                    noMore.className = 'noMore';
-                    noMore.textContent = '----　沒有更多文章　----';
-                    moreControl.replaceWith(noMore);
-                }
-            } finally {
-                button.disabled = false;
-            }
-        });
-    })();
-</script>

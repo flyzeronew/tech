@@ -1,17 +1,9 @@
 ---
-import { STRAPI_URL, STRAPI_API_TOKEN } from 'astro:env/server';
 import '../../styles/components/index/tech-leaders.css';
-import { resolveArticleLink } from '../../lib/articleLink';
-import { resolveSummary } from '../../lib/articleSummary';
-import { cachedFetchJson, CACHE_TTL } from '../../lib/fetchCache';
 
 interface TechTitanArticle {
-    id: number;
-    news_article_id: string;
     news_title: string;
-    news_category: string | null;
     news_content_html: string | null;
-    news_summary: string | null;
     news_article_url: string | null;
     news_published_at: string | null;
 }
@@ -38,10 +30,9 @@ interface ListCard {
     title: string;
     description: string;
     href: string;
-    external: boolean;
 }
 
-// news_summary 是後台可選填的摘要欄位，優先用它；沒填才退回用 news_content_html 截斷全文
+// news_content_html 是完整文章全文，後台目前沒有獨立的摘要欄位，暫時用截斷全文取代（跟 Hero.astro 的做法一致）
 function stripHtml(html: string | null, maxLength: number): string {
     if (!html) return '';
     const text = html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
@@ -55,13 +46,15 @@ function formatDate(dateStr: string | null): string {
 
 let techTitan: TechTitan | null = null;
 try {
-    const json = await cachedFetchJson<{ data?: { s9_2_tech_titan?: TechTitan | null } }>(
-        `${STRAPI_URL}/api/index-page?populate[s9_2_tech_titan][populate]=*`,
-        { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
-        CACHE_TTL.NAV,
+    const res = await fetch(
+        `${import.meta.env.STRAPI_URL}/api/index-page?populate[s9_2_tech_titan][populate]=*`,
+        { headers: { Authorization: `Bearer ${import.meta.env.STRAPI_API_TOKEN}` } },
     );
-    // s9_2_tech_titan 是單一 component（不是可放多筆的關聯），回傳就是物件本身，不需要 [0] 取第一筆
-    techTitan = json?.data?.s9_2_tech_titan ?? null;
+    if (res.ok) {
+        const json = await res.json();
+        // s9_2_tech_titan 是單一 component（不是可放多筆的關聯），回傳就是物件本身，不需要 [0] 取第一筆
+        techTitan = json.data?.s9_2_tech_titan ?? null;
+    }
 } catch {
     techTitan = null;
 }
@@ -71,31 +64,19 @@ const jobTitle = techTitan?.tech_titan_job_title ?? 'NVIDIA 共同創辦人暨�
 const peoTitle = techTitan?.tech_titan_title ?? '';
 const rawImage = techTitan?.tech_titan_image?.[0]?.url ?? null;
 const image = rawImage
-    ? (rawImage.startsWith('http') ? rawImage : `${STRAPI_URL}${rawImage}`)
+    ? (rawImage.startsWith('http') ? rawImage : `${import.meta.env.STRAPI_URL}${rawImage}`)
     : '/techLeader01.jpg';
+// 上方大圖＋人物介紹的連結來自 tech_titan_media（人物相關的影音報導），跟下面「相關報導」清單的 tech_titan_articles 是分開的欄位
+const mediaHref = techTitan?.tech_titan_media?.media_url ?? '#';
 
-const articles = techTitan?.tech_titan_articles ?? [];
-const hasMedia = Boolean(techTitan?.tech_titan_media?.media_url);
-
-// 上方大圖＋人物介紹的連結優先用 tech_titan_media（人物相關的影音報導）；
-// 後台沒選影音時，退回用 tech_titan_articles 的第一則文章連結頂部，這則文章就不再重複出現在
-// 下面的「更多文章」清單裡（清單從第二則開始）。有選影音則清單維持從第一則開始。
-const media = hasMedia
-    ? { href: techTitan!.tech_titan_media!.media_url as string, external: true }
-    : resolveArticleLink(articles[0]?.news_category, articles[0]?.news_article_id, articles[0]?.news_article_url);
-
-// 「更多文章」最多顯示 2 則
-const listArticles = (hasMedia ? articles : articles.slice(1)).slice(0, 2);
-const listCards: ListCard[] = listArticles.map((a) => {
-    const link = resolveArticleLink(a.news_category, a.news_article_id, a.news_article_url);
-    return {
-        time: formatDate(a.news_published_at),
-        title: a.news_title,
-        description: resolveSummary(a.news_summary, stripHtml(a.news_content_html, 60)),
-        href: link.href,
-        external: link.external,
-    };
-});
+// 「相關報導」清單只來自後台 tech_titan_articles 這個欄位，現在已經改成可放多筆的關聯，
+// 直接依後台實際筆數渲染，不假設固定 1 or 2 則
+const listCards: ListCard[] = (techTitan?.tech_titan_articles ?? []).map((a) => ({
+    time: formatDate(a.news_published_at),
+    title: a.news_title,
+    description: stripHtml(a.news_content_html, 60),
+    href: a.news_article_url ?? '#',
+}));
 ---
 <section data-nav="dark">
     <div id="leaders">
@@ -111,7 +92,7 @@ const listCards: ListCard[] = listArticles.map((a) => {
                 </div>
             </div>
             <div class="people">
-                <a class="cardLink" href={media.href} target={media.external ? '_blank' : undefined} rel={media.external ? 'noopener noreferrer' : undefined}>
+                <a class="cardLink" href={mediaHref} target="_blank" rel="noopener noreferrer">
                     <div class="img">
                         <img width="1280" height="720" src={image} alt={name} loading="lazy" />
                     </div>
@@ -124,7 +105,7 @@ const listCards: ListCard[] = listArticles.map((a) => {
                         <ul>
                             {listCards.map((card) => (
                                 <li>
-                                    <a href={card.href} target={card.external ? '_blank' : undefined} rel={card.external ? 'noopener noreferrer' : undefined}>
+                                    <a href={card.href} target="_blank" rel="noopener noreferrer">
                                         <div class="time">
                                             {card.time}
                                         </div>

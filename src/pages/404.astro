@@ -2,22 +2,14 @@
 import Layout from '../layouts/Layout.astro';
 import '../styles/pages/not-found.css';
 ---
-<Layout title="找不到頁面 | TVBS TECH" showChrome={false}>
+<Layout title="找不到頁面 | TVBS TECH">
     <section>
         <div id="notFound">
             <div class="inBox">
-                <div class="content">
-                    <div class="title">
-                        <div class="img404">
-                            <img width="172" height="94" src="/404-illustration.svg" alt="404" />
-                        </div>
-                        <p class="titleText">找不到這個頁面</p>
-                        <p class="desc">很抱歉，這個頁面不存在，可能是連結失效或網址錯誤。</p>
-                    </div>
-                    <a class="button" href="/">
-                        <span>回到首頁</span>
-                    </a>
-                </div>
+                <p class="code">404</p>
+                <p class="title">找不到這個頁面</p>
+                <p class="desc">您要找的頁面不存在，或已經被移除。</p>
+                <a class="back" href="/">回到首頁</a>
             </div>
         </div>
     </section>

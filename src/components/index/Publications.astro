@@ -1,7 +1,5 @@
 ---
-import { STRAPI_URL, STRAPI_API_TOKEN } from 'astro:env/server';
 import '../../styles/components/index/publications.css';
-import { cachedFetchJson, CACHE_TTL } from '../../lib/fetchCache';
 
 interface BookZoneItem {
     book_name: string;
@@ -19,12 +17,14 @@ interface BookCard {
 
 let bookItems: BookZoneItem[] = [];
 try {
-    const json = await cachedFetchJson<{ data?: { s6_book_zone?: BookZoneItem[] } }>(
-        `${STRAPI_URL}/api/index-page?populate[s6_book_zone][populate]=book_image`,
-        { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
-        CACHE_TTL.NAV,
+    const res = await fetch(
+        `${import.meta.env.STRAPI_URL}/api/index-page?populate[s6_book_zone][populate]=book_image`,
+        { headers: { Authorization: `Bearer ${import.meta.env.STRAPI_API_TOKEN}` } },
     );
-    bookItems = json?.data?.s6_book_zone ?? [];
+    if (res.ok) {
+        const json = await res.json();
+        bookItems = json.data?.s6_book_zone ?? [];
+    }
 } catch {
     bookItems = [];
 }
@@ -34,7 +34,7 @@ const bookCards: BookCard[] = bookItems.map((b) => ({
     description: b.book_description ?? '',
     href: b.book_url ?? '#',
     image: b.book_image?.url
-        ? (b.book_image.url.startsWith('http') ? b.book_image.url : `${STRAPI_URL}${b.book_image.url}`)
+        ? (b.book_image.url.startsWith('http') ? b.book_image.url : `${import.meta.env.STRAPI_URL}${b.book_image.url}`)
         : '/real-book1.png',
 }));
 

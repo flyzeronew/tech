@@ -11,8 +11,8 @@ header nav .pc{
 header nav .pc .navBlur{
     position: absolute;
     inset: 0;
-    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     pointer-events: none;
 }
 header nav .box{
@@ -205,8 +205,8 @@ header nav .pc.type2 .menu a.dropdown.act .arraw{
 header nav .pc.type1 .menu .subMenu{
     background-color: rgba(0, 0, 0, 0.1);
     color: #fff;
-    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 header nav .pc.type1 .menu .subMenu a{
     color: #fff;
@@ -214,8 +214,8 @@ header nav .pc.type1 .menu .subMenu a{
 header nav .pc.type2 .menu .subMenu{
     background-color: rgba(255, 255, 255, 0.1);
     color: #000;
-    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 header nav .pc.type2 .menu .subMenu a{
     color: #000;

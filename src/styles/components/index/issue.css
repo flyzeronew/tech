@@ -1,8 +1,8 @@
 /* 議題 */
-#spotlight{
+#issue{
     background-color: #1A1A1A;
 }
-#spotlight .bg{
+#issue .bg{
     position: relative;
     aspect-ratio: 16/9;
     /* 正方形格子寬度佔 .bg 寬度的比例＝0.25（列高比例）× 高寬比，16:9 時＝0.25×(9/16)。
@@ -16,13 +16,13 @@
 
 /* 階段 2：白畫面上疊 4 條階梯狀色塊，觸發時各自延遲一點時間、從右往左收合蓋成黑色 */
 /* z-index 放最底層：收合完成後它會變成純黑背景，後面的隔線、圖片、文字都要疊在它上面才看得到 */
-#spotlight .bg .wipeStage{
+#issue .bg .wipeStage{
     position: absolute;
     inset: 0;
     z-index: 1;
     pointer-events: none;
 }
-#spotlight .bg .wipeStage .wipeRow{
+#issue .bg .wipeStage .wipeRow{
     position: absolute;
     left: 0;
     width: 100%;
@@ -32,21 +32,21 @@
     transform-origin: right center;
     transition: transform 0.75s ease-out;
 }
-#spotlight .bg .wipeStage .wipeRow:nth-child(1){ top: 0%; }
-#spotlight .bg .wipeStage .wipeRow:nth-child(2){ top: 25%; }
-#spotlight .bg .wipeStage .wipeRow:nth-child(3){ top: 50%; }
-#spotlight .bg .wipeStage .wipeRow:nth-child(4){ top: 75%; }
-#spotlight.is-visible .bg .wipeStage .wipeRow{
+#issue .bg .wipeStage .wipeRow:nth-child(1){ top: 0%; }
+#issue .bg .wipeStage .wipeRow:nth-child(2){ top: 25%; }
+#issue .bg .wipeStage .wipeRow:nth-child(3){ top: 50%; }
+#issue .bg .wipeStage .wipeRow:nth-child(4){ top: 75%; }
+#issue.is-visible .bg .wipeStage .wipeRow{
     transform: scaleX(1);
 }
-#spotlight.is-visible .bg .wipeStage .wipeRow:nth-child(1){ transition-delay: 0s; }
-#spotlight.is-visible .bg .wipeStage .wipeRow:nth-child(2){ transition-delay: 0.12s; }
-#spotlight.is-visible .bg .wipeStage .wipeRow:nth-child(3){ transition-delay: 0.24s; }
-#spotlight.is-visible .bg .wipeStage .wipeRow:nth-child(4){ transition-delay: 0.36s; }
+#issue.is-visible .bg .wipeStage .wipeRow:nth-child(1){ transition-delay: 0s; }
+#issue.is-visible .bg .wipeStage .wipeRow:nth-child(2){ transition-delay: 0.12s; }
+#issue.is-visible .bg .wipeStage .wipeRow:nth-child(3){ transition-delay: 0.24s; }
+#issue.is-visible .bg .wipeStage .wipeRow:nth-child(4){ transition-delay: 0.36s; }
 
 /* 階段 3：黑色收合完後，格線一條一條依序畫出來（水平線對齊階梯色塊邊界，垂直線用跟 .bgImage 同樣的 1:1 格子間距） */
 /* 全部畫完後，整組格線再淡出隱藏，接著才輪到圖片放大 */
-#spotlight .bg .gridLines{
+#issue .bg .gridLines{
     position: absolute;
     inset: 0;
     z-index: 2;
@@ -54,35 +54,35 @@
     opacity: 1;
     transition: opacity 0.6s ease;
 }
-#spotlight.is-visible .bg .gridLines{
+#issue.is-visible .bg .gridLines{
     opacity: 0;
     transition-delay: 2.6s;
 }
-#spotlight .bg .gridLines .gridLine{
+#issue .bg .gridLines .gridLine{
     position: absolute;
     background-color: rgba(255, 255, 255, 0.3);
     opacity: 0;
     transition: transform 0.55s ease-out, opacity 0.55s ease-out;
 }
-#spotlight .bg .gridLines .gridLine--h{
+#issue .bg .gridLines .gridLine--h{
     left: 0;
     width: 100%;
     height: 1px;
     transform: scaleX(0);
     transform-origin: left center;
 }
-#spotlight .bg .gridLines .gridLine--v{
+#issue .bg .gridLines .gridLine--v{
     top: 0;
     width: 1px;
     height: 100%;
     transform: scaleY(0);
     transform-origin: top center;
 }
-#spotlight.is-visible .bg .gridLines .gridLine--h{
+#issue.is-visible .bg .gridLines .gridLine--h{
     opacity: 1;
     transform: scaleX(1);
 }
-#spotlight.is-visible .bg .gridLines .gridLine--v{
+#issue.is-visible .bg .gridLines .gridLine--v{
     opacity: 1;
     transform: scaleY(1);
 }
@@ -96,7 +96,7 @@
    （之前誤用 37.5%，也就是 25~50% 那一格的中點，算出來的縮小狀態會偏移 +3.125 個百分點，跟格線對不齊）。
    X 軸的目標區間剛好對稱於 50%，所以 origin-x 用 50% 是正確的，不需要另外套公式。
    縮放時這個點不會動，達到「從那一格長大到滿版」的效果 */
-#spotlight .bg .bgImage{
+#issue .bg .bgImage{
     position: absolute;
     inset: 0;
     z-index: 3;
@@ -109,18 +109,18 @@
     transform-origin: 50% 33.333%;
     transition: opacity 0.9s ease, transform 2s cubic-bezier(0.16, 1, 0.3, 1);
 }
-#spotlight.is-visible .bg .bgImage{
+#issue.is-visible .bg .bgImage{
     opacity: 1;
     transform: scale(1, 1);
     transition-delay: 2.5s, 3.1s;
 }
-#spotlight .inBox{
+#issue .inBox{
     position: relative;
     z-index: 4;
     height: 100%;
 }
 /* 階段 4：文字接在圖片放大動作後面淡入上移 */
-#spotlight .txtBox{
+#issue .txtBox{
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -129,24 +129,12 @@
     transform: translateY(24px);
     transition: opacity 1.2s ease, transform 1.2s ease;
 }
-#spotlight.is-visible .txtBox{
+#issue.is-visible .txtBox{
     opacity: 1;
     transform: translateY(0);
     transition-delay: 5.2s;
 }
-
-/* 直接以錨點連結進站（見 Issue.astro 的 skipAnim）：跳過整段進場動畫，直接呈現播完的最終畫面 */
-#spotlight.no-anim .bg{
-    background-color: #1A1A1A;
-}
-#spotlight.no-anim .bg .wipeStage .wipeRow,
-#spotlight.no-anim .bg .gridLines,
-#spotlight.no-anim .bg .gridLines .gridLine,
-#spotlight.no-anim .bg .bgImage,
-#spotlight.no-anim .txtBox{
-    transition: none !important;
-}
-#spotlight .txtBox .itemTitle{
+#issue .txtBox .itemTitle{
     width: 100%;
     padding-top: 150px;
     font-weight: 700;
@@ -154,65 +142,41 @@
     line-height: 28px;
     letter-spacing: 0%;
 }
-#spotlight .txtBox .itemTitle p{
+#issue .txtBox .itemTitle p{
     color: #fff;
 }
-#spotlight .txtBox .title{
+#issue .txtBox .title{
     width: 100%;
     padding-bottom: 200px;
 }
-#spotlight .txtBox .title p{
+#issue .txtBox .title p{
     font-weight: 700;
     font-size: 28px;
     line-height: 40px;
     letter-spacing: 0%;
 }
-#spotlight .txtBox .title p.big{
+#issue .txtBox .title p.big{
     font-weight: 700;
     font-size: 80px;
     line-height: 100px;
     letter-spacing: 0%;
 }
-#spotlight .issueList{
+#issue .issueList{
     padding: 120px 0 60px;
 }
-#spotlight .issueList .descRow{
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 40px;
-    margin-bottom: 60px;
-}
-#spotlight .issueList .description{
+#issue .issueList .description{
     width: 60%;
     color: #fff;
     font-weight: 400;
     font-size: 22px;
     line-height: 30px;
     letter-spacing: 0%;
+    margin-bottom: 60px;
 }
-#spotlight .issueList .more{
-    flex-shrink: 0;
-}
-#spotlight .issueList .more a{
-    border: 1px solid #fff;
-}
-#spotlight .issueList .more a:hover{
-    background-color: rgba(255, 255, 255, 0.1);
-}
-#spotlight .issueList .more a span{
-    color: #fff;
-}
-#spotlight .issueList .more a .short{
-    display: none;
-}
-#spotlight .issueList .more a .arraw{
-    border-left: 1px solid #fff;
-}
-#spotlight .issueList .list{
+#issue .issueList .list{
     display: flex;
 }
-#spotlight .issueList .list .col{
+#issue .issueList .list .col{
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -220,16 +184,13 @@
     padding:0 20px;
     border-left: 1px solid #505050;
 }
-#spotlight .issueList .list .col:last-child{
+#issue .issueList .list .col:last-child{
     border-right: 1px solid #505050;
 }
-#spotlight .issueList .list .item{
+#issue .issueList .list .item{
     cursor: pointer;
 }
-#spotlight .issueList .list .item .cardLink{
-    display: contents;
-}
-#spotlight .issueList .list .item .tag span{
+#issue .issueList .list .item .tag a{
     display: inline-block;
     font-weight: 400;
     font-size: 12px;
@@ -240,7 +201,7 @@
     padding: 2px 10px;
     margin-bottom: 15px;
 }
-#spotlight .issueList .list .item .title{
+#issue .issueList .list .item .title{
     color: #fff;
     margin-bottom: 20px;
     font-weight: 700;
@@ -248,17 +209,17 @@
     line-height: 30px;
     letter-spacing: 0%;
 }
-#spotlight .issueList .list .item .img{
+#issue .issueList .list .item .img{
     position: relative;
     aspect-ratio: 16/9;
     overflow: hidden;
 }
-#spotlight .issueList .list .item .img img{
+#issue .issueList .list .item .img img{
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
-#spotlight .issueList .list .item .img::before{
+#issue .issueList .list .item .img::before{
     content: "";
     position: absolute;
     inset: 0;
@@ -268,77 +229,74 @@
     transition: opacity 0.3s ease;
     pointer-events: none;
 }
-#spotlight .issueList .list .item:hover .img::before{
+#issue .issueList .list .item:hover .img::before{
     opacity: 1;
 }
-#spotlight .issueList .list .col:first-child .item:first-child .img{
+#issue .issueList .list .col:first-child .item:first-child .img{
     aspect-ratio: 1/1;
 }
 /* 1024px 以下 JS 會把卡片搬進 .masonryCol，不再位於 .col 底下，上面那條結構選取器就抓不到了，
    改用這個 class 直接標記，不管卡片被搬到哪一欄都能保持正方形。
    選擇器要疊 .img.img--square（多一層 class）而不是只用 .img--square，
    優先權才會贏過預設的 .item .img{aspect-ratio:16/9}，不然手機版分欄後圖片比例會被蓋掉 */
-#spotlight .issueList .list .item .img.img--square{
+#issue .issueList .list .item .img.img--square{
     aspect-ratio: 1/1;
 }
 /* 議題 ed*/
 
 @media (max-width: 1279px) {
-    #spotlight .bg{
+    #issue .bg{
         aspect-ratio: 1024/768;
         --issue-cell: 0.140625;
     }
-    #spotlight .txtBox .itemTitle {
+    #issue .txtBox .itemTitle {
         padding-top: 100px;
         font-size: 16px;
     }
-    #spotlight .txtBox .title p {
+    #issue .txtBox .title p {
         font-size: 24px;
     }
-    #spotlight .txtBox .title p.big {
+    #issue .txtBox .title p.big {
         font-size: 60px;
     }
-    #spotlight .txtBox .title {
+    #issue .txtBox .title {
         padding-bottom: 80px;
     }
-    #spotlight .issueList {
+    #issue .issueList {
         padding: 60px 0 60px;
     }
-    #spotlight .issueList .description {
+    #issue .issueList .description {
         width: 60%;
         color: #fff;
         font-weight: 400;
         font-size: 22px;
         line-height: 30px;
+        margin-bottom: 60px;
     }
-    #spotlight .issueList .list .item .title {
+    #issue .issueList .list .item .title {
         margin-bottom: 20px;
         font-size: 18px;
         line-height: 30px;
     }
-
+    
 }
 @media (max-width:1023px) {
-    #spotlight .inBox {
+    #issue .inBox {
         padding: 40px;
     }
-    #spotlight .bg {
+    #issue .bg {
         /* 不用固定比例猜測，直接讓容器撐滿目前裝置實際可視區域的寬高，形狀就會等於手機當下的長寬比 */
         aspect-ratio: auto;
         width: 100%;
         height: 100vh;
         --issue-cell: 0.444444;
     }
-    #spotlight .issueList .descRow {
-        flex-direction: column;
-        align-items: flex-end;
-        margin-bottom: 60px;
-    }
-    #spotlight .issueList .description {
+    #issue .issueList .description {
         width: 100%;
         font-size: 20px;
+        margin-bottom: 60px;
     }
-    #spotlight .issueList .list {
+    #issue .issueList .list {
         position: relative;
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -347,7 +305,7 @@
         border-left: 1px solid #505050;
         border-right: 1px solid #505050;
     }
-    #spotlight .issueList .list::after {
+    #issue .issueList .list::after {
         content: "";
         position: absolute;
         top: 0;
@@ -356,19 +314,19 @@
         width: 1px;
         background-color: #505050;
     }
-    #spotlight .issueList .list .col {
+    #issue .issueList .list .col {
         display: contents;
     }
-    #spotlight .issueList .list .item {
+    #issue .issueList .list .item {
         padding: 0 20px;
     }
     /* JS（Issue.astro）量完各卡片高度後，會把卡片搬進這兩個 .masonryCol、取代上面用 Grid 排的版面；
        沒有 JS 時就維持上面 Grid 的版本當退回方案 */
-    #spotlight .issueList .list.is-masonry {
+    #issue .issueList .list.is-masonry {
         display: flex;
         column-gap: 0;
     }
-    #spotlight .issueList .list .masonryCol {
+    #issue .issueList .list .masonryCol {
         width: 50%;
         display: flex;
         flex-direction: column;
@@ -376,29 +334,23 @@
     }
 }
 @media (max-width:767px) {
-    #spotlight .inBox {
+    #issue .inBox {
         padding: 20px;
-    }
-    #spotlight .issueList .more a .full{
-        display: none;
-    }
-    #spotlight .issueList .more a .short{
-        display: inline;
     }
     /* 768px 以下改單欄呈現，不需要分欄，JS 也不會建立 .masonryCol，
        這裡把兩欄版面（含 .masonryCol 的 flex 設定）覆蓋回單欄，並取消欄與欄之間的格線 */
-    #spotlight .issueList .list,
-    #spotlight .issueList .list.is-masonry {
+    #issue .issueList .list,
+    #issue .issueList .list.is-masonry {
         display: flex;
         flex-direction: column;
         row-gap: 40px;
         border-left: 0;
         border-right: 0;
     }
-    #spotlight .issueList .list::after {
+    #issue .issueList .list::after {
         content: none;
     }
-    #spotlight .issueList .list .item {
+    #issue .issueList .list .item {
         padding: 0 24px;
     }
 }

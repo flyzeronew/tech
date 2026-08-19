@@ -1,25 +1,15 @@
 ---
-import { STRAPI_URL, STRAPI_API_TOKEN } from 'astro:env/server';
 import '../../styles/components/index/new.css';
-import { resolveArticleLink } from '../../lib/articleLink';
-import { resolveSummary } from '../../lib/articleSummary';
-import { resolveArticleImage, type RawNewsImage } from '../../lib/articleImage';
-import { cachedFetchJson, CACHE_TTL } from '../../lib/fetchCache';
 
 interface ArticleTag {
     name: string;
 }
 
 interface ArticleData {
-    id: number;
-    news_article_id: string;
     news_title: string;
-    news_category: string | null;
     news_tag: ArticleTag[] | null;
     news_content_html: string | null;
-    news_summary: string | null;
     news_featured_image_url: string | null;
-    news_image: RawNewsImage[] | null;
     news_article_url: string | null;
     news_youtube_id: string | null;
 }
@@ -36,11 +26,10 @@ interface NewsCard {
     description: string;
     tags: string[];
     href: string;
-    external: boolean;
     hasVideo: boolean;
 }
 
-// news_summary 是後台可選填的摘要欄位，優先用它；沒填才退回用 news_content_html 截斷全文
+// news_content_html 是完整文章全文，後台目前沒有獨立的摘要欄位，暫時用截斷全文取代（跟 Hero.astro 的做法一致）
 function stripHtml(html: string | null, maxLength: number): string {
     if (!html) return '';
     const text = html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
@@ -65,34 +54,32 @@ function wrapEvery4Chars(text: string): string {
 // 不需要另外寫兩層捲動邏輯。
 let techZoneEntries: TechZoneEntry[] = [];
 try {
-    const json = await cachedFetchJson<{ data?: { s1_tech_zone?: TechZoneEntry[] } }>(
-        `${STRAPI_URL}/api/index-page?populate[s1_tech_zone][populate][articles][populate][news_image][fields][0]=url`,
-        { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
-        CACHE_TTL.NAV,
+    const res = await fetch(
+        `${import.meta.env.STRAPI_URL}/api/index-page?populate[s1_tech_zone][populate]=articles`,
+        { headers: { Authorization: `Bearer ${import.meta.env.STRAPI_API_TOKEN}` } },
     );
-    techZoneEntries = json?.data?.s1_tech_zone ?? [];
+    if (res.ok) {
+        const json = await res.json();
+        techZoneEntries = json.data?.s1_tech_zone ?? [];
+    }
 } catch {
     techZoneEntries = [];
 }
 
 const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
-    (entry.articles ?? []).map((a) => {
-        const link = resolveArticleLink(a.news_category, a.news_article_id, a.news_article_url);
-        return {
-            bigTitle: wrapEvery4Chars(entry.tech_title),
-            image: resolveArticleImage(a.news_image, a.news_featured_image_url, '/news-image-01.jpg'),
-            title: a.news_title,
-            description: resolveSummary(a.news_summary, stripHtml(a.news_content_html, 60)),
-            tags: (a.news_tag ?? []).map((t) => t.name),
-            href: link.href,
-            external: link.external,
-            hasVideo: Boolean(a.news_youtube_id),
-        };
-    }),
+    (entry.articles ?? []).map((a) => ({
+        bigTitle: wrapEvery4Chars(entry.tech_title),
+        image: a.news_featured_image_url ?? '/news-image-01.jpg',
+        title: a.news_title,
+        description: stripHtml(a.news_content_html, 60),
+        tags: (a.news_tag ?? []).map((t) => t.name),
+        href: a.news_article_url ?? '#',
+        hasVideo: Boolean(a.news_youtube_id),
+    })),
 );
 ---
 <section data-nav="light">
-    <div id="signals">
+    <div id="new">
         <div class="stickyWrap">
             <div class="pinInner">
                 <div class="inBox">
@@ -112,7 +99,7 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
                             <div class="itemTrack">
                                 {newsItems.map((item, i) => (
                                     <div class="item" class:list={{ 'is-active': i === 0 }} data-index={i} data-rel={Math.min(2, i)} data-big-title={item.bigTitle}>
-                                        <a href={item.href} class="cardLink" target={item.external ? '_blank' : undefined} rel={item.external ? 'noopener noreferrer' : undefined}>
+                                        <a href={item.href} class="cardLink" target="_blank" rel="noopener noreferrer">
                                             <div class="img">
                                                 <img width="600" height="342" src={item.image} alt="img" />
                                                 {item.hasVideo ? (
@@ -147,15 +134,15 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
 </section>
 
 <script>
-    // ===== 最新科技情報（#signals）：捲動連動切換 3 則新聞卡 =====
+    // ===== 最新科技情報（#new）：捲動連動切換 3 則新聞卡 =====
     // 用一段「釘住 + 加高」的區塊模擬 Apple 官網式 scrollytelling：
     // 區塊釘在畫面上，使用者往下捲動時依序切到下一則新聞卡；捲完最後一則後自然放行接續到下一區塊。
     // 因為是純粹依據捲動位置計算（而非攔截 wheel 事件），滾輪、觸控板、鍵盤、觸控捲動都能正確運作，往上捲動也會自動反向切換。
-    const stickyWrap = document.querySelector<HTMLElement>('#signals .stickyWrap');
-    const pinInner = document.querySelector<HTMLElement>('#signals .pinInner');
-    const items = document.querySelectorAll<HTMLElement>('#signals .list .item');
-    const titleEl = document.querySelector<HTMLElement>('#signals .titleBox .title');
-    const titleTrackEl = document.querySelector<HTMLElement>('#signals .titleBox .titleTrack');
+    const stickyWrap = document.querySelector<HTMLElement>('#new .stickyWrap');
+    const pinInner = document.querySelector<HTMLElement>('#new .pinInner');
+    const items = document.querySelectorAll<HTMLElement>('#new .list .item');
+    const titleEl = document.querySelector<HTMLElement>('#new .titleBox .title');
+    const titleTrackEl = document.querySelector<HTMLElement>('#new .titleBox .titleTrack');
 
     if (stickyWrap && pinInner && items.length) {
         // 1024px 以下：pinInner 高度是隨內容撐開（非固定 100vh），實際放行時機以量到的高度為準，
@@ -260,32 +247,6 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
         }
 
         setHeight();
-
-        // #signals 的 stickyWrap 高度是這裡才用 JS 撐開（最多可達好幾個 items.length*100vh），在這之前
-        // #signals 後面所有區塊（#spotlight、#video…）在版面上的位置都還是「撐開前」的暫時位置。如果使用者是
-        // 直接以帶 hash 的網址進站（例如書籤／分享連結 /#spotlight；跨頁導覽列點擊已改用 Header.astro 的
-        // sessionStorage 機制，不會再帶 hash），瀏覽器原生的錨點捲動可能已經用「撐開前」的錯誤位置捲完了，
-        // 撐開後目標區塊的位置整個往下移，捲動位置就會停在 #signals 撐開後的某個中間點（看起來像卡在某一動）。這裡撐開高度後，
-        // 立刻用目前算好的最終版面位置重新捲一次到同一個錨點做校正；用 behavior:'auto' 瞬間跳
-        // （不需要滾動效果，見前面 Header.astro 同樣的處理方式），避免又疊加一段平滑捲動動畫。
-        //
-        // 這裡同步執行的時機不保證一定晚於瀏覽器原生的錨點捲動——實測發現真的用滑鼠點連結、
-        // 觸發完整換頁時，原生捲動有時比這段同步 script 更晚才發生，單靠這裡校正一次會被原生捲動
-        // 蓋回去。所以除了進站當下立刻校正一次，額外在 window 的 load 事件（所有資源都載入完成，
-        // 保證比瀏覽器原生錨點捲動更晚）再校正一次，確保無論原生捲動實際發生在哪個時間點都能蓋回正確位置。
-        function correctHashScroll() {
-            if (location.hash.length <= 1) return;
-            const target = document.getElementById(location.hash.slice(1));
-            if (!target) return;
-            const html = document.documentElement;
-            const prevScrollBehavior = html.style.scrollBehavior;
-            html.style.scrollBehavior = 'auto';
-            target.scrollIntoView({ block: 'start' });
-            html.style.scrollBehavior = prevScrollBehavior;
-        }
-        correctHashScroll();
-        window.addEventListener('load', correctHashScroll);
-
         update();
         window.addEventListener('scroll', update, { passive: true });
         window.addEventListener('resize', () => {
