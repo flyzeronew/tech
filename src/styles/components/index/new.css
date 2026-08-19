@@ -232,7 +232,7 @@
         box-sizing: border-box;
     }
     #signals .flex {
-        padding-top: 100px;
+        padding-top: 120px;
         flex-direction: column;
         align-items: stretch;
         justify-content: center;
