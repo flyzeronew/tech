@@ -309,41 +309,6 @@
     }
 
 }
-@media (max-height:960px) {
-    #signals .list {
-        height: 58vh;
-    }
-}
-@media (max-height:940px) {
-    #signals .list {
-        height: 65vh;
-    }
-}
-@media (max-height:932px) {
-    #signals .list {
-        height: 60vh;
-    }
-}
-@media (max-height:915px) {
-    #signals .list {
-        height: 63vh;
-    }
-}
-@media (max-height:882px) {
-    #signals .list {
-        height: 70vh;
-    }
-}
-@media (max-height:800px) {
-    #signals .list {
-        height: 65vh;
-    }
-}
-@media (max-height:780px) {
-    #signals .list {
-        height: 67vh;
-    }
-}
 @media (max-height:700px) {
     #signals .list {
         height: 76vh;
