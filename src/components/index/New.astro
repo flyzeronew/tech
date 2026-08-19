@@ -166,6 +166,11 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
         const mobileQuery = window.matchMedia('(max-width: 1023px)');
         const MOBILE_STEP_VH = 65;
         const MOBILE_TAIL_VH = 12;
+        // 桌機原本把整段高度拆成「卡片數 × 100vh」，每張卡要滑大半個螢幕才切，
+        // 滾輪往往要 2–3 格才有反應。改成跟手機同一套 step：滑滿一段就切一張。
+        // 32vh 大約對應一般滑鼠 1 格（視窗約 1080–1440 時），仍留一點餘裕避免觸控板輕掃就連跳兩張。
+        const DESKTOP_STEP_VH = 32;
+        const DESKTOP_TAIL_VH = 8;
 
         let cachedScrollable = 0;
         let cachedStepPx = 1;
@@ -174,18 +179,18 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
         let sectionInView = true;
 
         function setHeight() {
-            if (mobileQuery.matches) {
-                // 用當下視窗高度鎖定 step，之後捲動中不再重算——iOS 網址列收合會讓 innerHeight
-                // 變大，若每幀跟著改 step，卡片索引會在手指還在滑時跳動。
-                const vh = window.visualViewport?.height ?? window.innerHeight;
-                cachedStepPx = (MOBILE_STEP_VH / 100) * vh;
-                const tailPx = (MOBILE_TAIL_VH / 100) * vh;
-                cachedScrollable = (items.length - 1) * cachedStepPx + tailPx;
-                stickyWrap!.style.height = `${pinInner!.offsetHeight + cachedScrollable}px`;
-            } else {
-                stickyWrap!.style.height = `${items.length * 100}vh`;
-                cachedScrollable = stickyWrap!.offsetHeight - window.innerHeight;
-            }
+            const isMobile = mobileQuery.matches;
+            const stepVh = isMobile ? MOBILE_STEP_VH : DESKTOP_STEP_VH;
+            const tailVh = isMobile ? MOBILE_TAIL_VH : DESKTOP_TAIL_VH;
+            // 用當下視窗高度鎖定 step，之後捲動中不再重算——iOS 網址列收合會讓 innerHeight
+            // 變大，若每幀跟著改 step，卡片索引會在手指還在滑時跳動。
+            const vh = isMobile
+                ? (window.visualViewport?.height ?? window.innerHeight)
+                : window.innerHeight;
+            cachedStepPx = (stepVh / 100) * vh;
+            const tailPx = (tailVh / 100) * vh;
+            cachedScrollable = (items.length - 1) * cachedStepPx + tailPx;
+            stickyWrap!.style.height = `${pinInner!.offsetHeight + cachedScrollable}px`;
         }
 
         let activeIndex = 0;
@@ -253,13 +258,8 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
                 return;
             }
             const scrolled = Math.min(Math.max(-stickyWrap!.getBoundingClientRect().top, 0), cachedScrollable);
-            if (mobileQuery.matches) {
-                const index = Math.min(items.length - 1, Math.floor(scrolled / cachedStepPx));
-                setActive(index);
-            } else {
-                const index = Math.min(items.length - 1, Math.floor((scrolled / cachedScrollable) * items.length));
-                setActive(index);
-            }
+            const index = Math.min(items.length - 1, Math.floor(scrolled / cachedStepPx));
+            setActive(index);
         }
 
         function onScroll() {
