@@ -306,22 +306,21 @@
     }
 
 }
-/* max-width:413px 底下同時涵蓋 390×844、375×667 這類寬度相同但高度不同的機型，
-   單靠寬度斷點沒辦法讓兩者的 .list 高度不同，要疊加高度條件才能只蓋掉螢幕較矮的裝置 */
-@media (max-width:413px) and (max-height:700px) {
+@media (max-height:924px) {
+    #signals .list {
+        height: 65vh;
+    }
+}
+@media (max-height:700px) {
     #signals .list {
         height: 76vh;
     }
 }
-/* 393×665 跟上面 375×667 只差 2px，量測誤差等級的差距不適合共用同一層，
-   另外切一個更窄的 666px 高度斷點只蓋掉 665 這邊，667 維持上面的 76vh */
-@media (max-width:413px) and (max-height:666px) {
+@media (max-height:666px) {
     #signals .list {
         height: 75vh;
     }
 }
-/* 360×740 高度介於上面 700px 那層跟 413px 預設（對應 390×844）之間，
-   itemTrack 的 top 需要單獨再疊一層 800px 的高度條件才不會跟兩邊互相蓋掉 */
 @media (max-width:413px) and (max-height:800px) {
     #signals .list .itemTrack {
         top: 40%;
