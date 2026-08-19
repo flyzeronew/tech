@@ -364,6 +364,11 @@
         top: 37%;
     }
 }
+@media (max-width:385px) and (max-height:716px) {
+    #signals .list .itemTrack {
+        top: 40%;
+    }
+}
 @media (max-width:375px) and (max-height:667px) {
     #signals .list .itemTrack {
         top: 41%;
