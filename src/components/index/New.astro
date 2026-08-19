@@ -259,30 +259,6 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
             }
         }
 
-        // 手機版目前純靠捲動位置換算 index，放手後停在哪都行，滑起來沒有「卡一下」的錨點感。
-        // 這裡在使用者停止捲動（含放手後的慣性滑動結束）後，把目前位置吸附到最近一個 item 的
-        // 起點：超過該 step 一半就吸附到下一張，沒超過一半就吸回目前這張，體感等同 scroll-snap。
-        // 尾端的 MOBILE_TAIL_VH 緩衝區刻意不吸附，讓它自然放行、接續捲到下一個區塊。
-        let snapTimer: number | undefined;
-        function scheduleSnap() {
-            if (!mobileQuery.matches) return;
-            window.clearTimeout(snapTimer);
-            snapTimer = window.setTimeout(() => {
-                const rect = stickyWrap!.getBoundingClientRect();
-                const scrollable = stickyWrap!.offsetHeight - pinInner!.offsetHeight;
-                if (scrollable <= 0) return;
-                const scrolled = Math.min(Math.max(-rect.top, 0), scrollable);
-                if (scrolled <= 0 || scrolled >= scrollable) return;
-                const stepPx = (MOBILE_STEP_VH / 100) * window.innerHeight;
-                const lastStepStart = (items.length - 1) * stepPx;
-                if (scrolled > lastStepStart) return;
-                const target = Math.round(scrolled / stepPx) * stepPx;
-                const delta = target - scrolled;
-                if (Math.abs(delta) < 1) return;
-                window.scrollBy({ top: delta, behavior: 'smooth' });
-            }, 120);
-        }
-
         setHeight();
 
         // #signals 的 stickyWrap 高度是這裡才用 JS 撐開（最多可達好幾個 items.length*100vh），在這之前
@@ -311,12 +287,8 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
         window.addEventListener('load', correctHashScroll);
 
         update();
-        window.addEventListener('scroll', () => {
-            update();
-            scheduleSnap();
-        }, { passive: true });
+        window.addEventListener('scroll', update, { passive: true });
         window.addEventListener('resize', () => {
-            window.clearTimeout(snapTimer);
             setHeight();
             update();
         });
