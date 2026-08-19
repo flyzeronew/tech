@@ -163,8 +163,8 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
         // 手機跟桌機用同一套 step 算法，但手指一次滑過的距離比滾輪 1 格大，
         // 所以手機 step 拉長，避免一次滑就連切好幾張。
         const mobileQuery = window.matchMedia('(max-width: 1023px)');
-        const MOBILE_STEP_VH = 32;
-        const MOBILE_TAIL_VH = 8;
+        const MOBILE_STEP_VH = 45;
+        const MOBILE_TAIL_VH = 10;
         const DESKTOP_STEP_VH = 32;
         const DESKTOP_TAIL_VH = 8;
 
@@ -173,6 +173,41 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
         let lastViewportWidth = window.innerWidth;
         let ticking = false;
         let sectionInView = true;
+        let switching = false;
+        let lockY = 0;
+        let switchTimer: number | undefined;
+
+        // 跟 CSS 換卡 transition 對齊：≤767 是 1s，平板 0.35s。鎖住期間不讓手指把捲動疊加到下一張。
+        function switchDuration() {
+            if (window.matchMedia('(max-width: 767px)').matches) return 1000;
+            if (mobileQuery.matches) return 350;
+            return 0;
+        }
+
+        function preventTouchScroll(e: TouchEvent) {
+            e.preventDefault();
+        }
+
+        function unlockSwitch() {
+            switching = false;
+            window.removeEventListener('touchmove', preventTouchScroll);
+            document.documentElement.style.touchAction = '';
+        }
+
+        function lockForSwitch(index: number) {
+            const ms = switchDuration();
+            if (ms <= 0) return;
+            const currentScrolled = -stickyWrap!.getBoundingClientRect().top;
+            const targetScrolled = index * cachedStepPx;
+            const nextY = window.scrollY + (targetScrolled - currentScrolled);
+            window.scrollTo(0, nextY);
+            lockY = nextY;
+            switching = true;
+            document.documentElement.style.touchAction = 'none';
+            window.addEventListener('touchmove', preventTouchScroll, { passive: false });
+            window.clearTimeout(switchTimer);
+            switchTimer = window.setTimeout(unlockSwitch, ms);
+        }
 
         function setHeight() {
             const isMobile = mobileQuery.matches;
@@ -236,7 +271,14 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
         }
 
         function setActive(index: number) {
-            if (index === activeIndex && stickyWrap!.dataset.inited) return;
+            if (switching) return;
+            const inited = Boolean(stickyWrap!.dataset.inited);
+            if (index === activeIndex && inited) return;
+            // 手機動畫期間一次只走一張，避免慣性滑動一次跳過多張；桌機維持原本跟滾輪走
+            if (inited && mobileQuery.matches) {
+                if (index > activeIndex) index = activeIndex + 1;
+                else if (index < activeIndex) index = activeIndex - 1;
+            }
             activeIndex = index;
             stickyWrap!.dataset.inited = 'true';
             items.forEach((item, i) => {
@@ -246,11 +288,12 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
                 if (item.dataset.rel !== rel) item.dataset.rel = rel;
             });
             pushBigTitle(items[index]?.dataset.bigTitle ?? '');
+            if (inited) lockForSwitch(index);
         }
 
         function update() {
-            if (cachedScrollable <= 0) {
-                setActive(0);
+            if (switching || cachedScrollable <= 0) {
+                if (!switching) setActive(0);
                 return;
             }
             const scrolled = Math.min(Math.max(-stickyWrap!.getBoundingClientRect().top, 0), cachedScrollable);
@@ -259,6 +302,10 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
         }
 
         function onScroll() {
+            if (switching) {
+                if (window.scrollY !== lockY) window.scrollTo(0, lockY);
+                return;
+            }
             if (!sectionInView || ticking) return;
             ticking = true;
             requestAnimationFrame(() => {
