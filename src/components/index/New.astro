@@ -164,8 +164,8 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
         // 約 3/4 個螢幕切一張，比半螢幕慢一點、又不會回到整屏才換卡。
         // 尾段留一點緩衝讓最後一張還能停一下再放行。
         const mobileQuery = window.matchMedia('(max-width: 1023px)');
-        const MOBILE_STEP_VH = 75;
-        const MOBILE_TAIL_VH = 16;
+        const MOBILE_STEP_VH = 65;
+        const MOBILE_TAIL_VH = 12;
 
         let cachedScrollable = 0;
         let cachedStepPx = 1;
