@@ -175,6 +175,8 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
         let sectionInView = true;
         let switching = false;
         let switchTimer: number | undefined;
+        let freezeRaf = 0;
+        let lockScrollY: number | null = null;
         let touchActive = false;
         let pendingLock = false;
         // 導覽列錨點是一次跳過整段 #signals（見 Header.astro 的 tvbs:nav-scroll）。
@@ -188,19 +190,58 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
             return mobileQuery.matches ? 800 : 0;
         }
 
+        function getScrolled() {
+            return Math.min(Math.max(-stickyWrap!.getBoundingClientRect().top, 0), cachedScrollable);
+        }
+
         function preventTouchScroll(e: TouchEvent) {
             e.preventDefault();
         }
 
-        function unlockSwitch() {
-            switching = false;
+        function stopFreezeLoop() {
+            window.cancelAnimationFrame(freezeRaf);
+            freezeRaf = 0;
+        }
+
+        function freezeToLockY() {
+            if (lockScrollY === null) return;
+            if (Math.abs(window.scrollY - lockScrollY) > 0.5) {
+                window.scrollTo(0, lockScrollY);
+            }
+        }
+
+        function freezeLoop() {
+            if (!switching || lockScrollY === null) return;
+            freezeToLockY();
+            freezeRaf = window.requestAnimationFrame(freezeLoop);
+        }
+
+        function clearSwitchLock() {
+            stopFreezeLoop();
             pendingLock = false;
+            lockScrollY = null;
+            switching = false;
+            window.clearTimeout(switchTimer);
             window.removeEventListener('touchmove', preventTouchScroll);
             document.documentElement.style.touchAction = '';
         }
 
+        function unlockSwitch() {
+            // 先對齊再放行：iOS 慣性在 0.8s 內多半已經走完，這時 scrollTo 才站得住。
+            // 若先把 switching 設回 false，下一個 scroll 會用「多滑出去的距離」再切一張。
+            stopFreezeLoop();
+            pendingLock = false;
+            window.removeEventListener('touchmove', preventTouchScroll);
+            document.documentElement.style.touchAction = '';
+            if (lockScrollY !== null) window.scrollTo(0, lockScrollY);
+            snapToActiveCard();
+            lockScrollY = null;
+            switching = false;
+        }
+
         window.addEventListener('tvbs:nav-scroll', () => {
-            unlockSwitch();
+            // 不能走 unlockSwitch：那會 snap 回目前卡片，把導覽列的目標捲動拉回 #signals。
+            clearSwitchLock();
             ignoreProgrammaticUntil = performance.now() + 1000;
         });
 
@@ -208,28 +249,34 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
             const ms = switchDuration();
             if (ms <= 0) {
                 switching = false;
+                lockScrollY = null;
                 return;
             }
+            snapToActiveCard();
             document.documentElement.style.touchAction = 'none';
             window.addEventListener('touchmove', preventTouchScroll, { passive: false });
             window.clearTimeout(switchTimer);
+            stopFreezeLoop();
+            freezeLoop();
             switchTimer = window.setTimeout(unlockSwitch, ms);
         }
 
         function snapToActiveCard() {
             if (performance.now() < ignoreProgrammaticUntil) return;
-            const currentScrolled = Math.min(Math.max(-stickyWrap!.getBoundingClientRect().top, 0), cachedScrollable);
+            const currentScrolled = getScrolled();
             // 對齊到這一張的中段，不要停在門檻上，慣性才不會立刻再跨一張
             const targetScrolled = Math.min(
                 cachedScrollable,
                 activeIndex * cachedStepPx + cachedStepPx * 0.4,
             );
             const delta = targetScrolled - currentScrolled;
+            // 目標 Y 先記下來：iOS 慣性中第一次 scrollTo 常被忽略，後續 freezeLoop 還是要往這裡拉。
+            lockScrollY = window.scrollY + delta;
             if (Math.abs(delta) < 4) return;
             const html = document.documentElement;
             const prev = html.style.scrollBehavior;
             html.style.scrollBehavior = 'auto';
-            window.scrollTo(0, window.scrollY + delta);
+            window.scrollTo(0, lockScrollY);
             html.style.scrollBehavior = prev;
         }
 
@@ -243,7 +290,6 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
                 pendingLock = true;
                 return;
             }
-            snapToActiveCard();
             armTouchLock();
         }
 
@@ -259,7 +305,6 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
             }
             if (!pendingLock) return;
             pendingLock = false;
-            snapToActiveCard();
             armTouchLock();
         }
 
@@ -329,10 +374,9 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
             const inited = Boolean(stickyWrap!.dataset.inited);
             if (index === activeIndex && inited) return;
             const prev = activeIndex;
-            // 手指滑動一次只切一張；導覽列那種一次跳過多張的程式捲動不能 clamp，
-            // 否則 lockForSwitch 會把畫面 snap 回 #signals 裡的下一張。
-            const jumped = Math.abs(index - activeIndex) > 1;
-            if (inited && mobileQuery.matches && !jumped) {
+            // 手機一次只切一張。導覽列一次跳過多張走 ignoreProgrammaticUntil，
+            // 不能再用「跨兩張就放行」——iOS 一次 flick 的 scroll 事件也常直接跨兩格。
+            if (inited && mobileQuery.matches) {
                 if (index > activeIndex) index = activeIndex + 1;
                 else if (index < activeIndex) index = activeIndex - 1;
             }
@@ -347,7 +391,7 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
             pushBigTitle(items[index]?.dataset.bigTitle ?? '');
             // 只在「往下、且還不是最後一張」時凍結。滑回第一張、或最後一張再往下離開區塊時，
             // scrollTo 拉回會跟手指慣性／iOS 彈性捲動互搶，畫面會抖。
-            if (inited && !jumped && index > prev && index < items.length - 1) lockForSwitch();
+            if (inited && index > prev && index < items.length - 1) lockForSwitch();
         }
 
         function indexFromScroll(scrolled: number) {
@@ -357,24 +401,32 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
             if (!stickyWrap!.dataset.inited) {
                 return Math.min(maxIndex, Math.max(0, Math.floor(raw)));
             }
-            if (raw >= activeIndex + 1) return Math.min(maxIndex, Math.floor(raw));
-            if (raw < activeIndex - BACK_HYSTERESIS) return Math.max(0, Math.floor(raw));
+            // 一定只回傳 ±1：Math.floor(raw) 在 iOS 大力一滑時會直接變成 +2。
+            if (raw >= activeIndex + 1) return Math.min(maxIndex, activeIndex + 1);
+            if (raw < activeIndex - BACK_HYSTERESIS) return Math.max(0, activeIndex - 1);
             return activeIndex;
         }
 
         function update() {
             if (performance.now() < ignoreProgrammaticUntil) return;
-            if (switching || cachedScrollable <= 0) {
-                if (!switching) setActive(0);
+            if (switching) {
+                freezeToLockY();
                 return;
             }
-            const scrolled = Math.min(Math.max(-stickyWrap!.getBoundingClientRect().top, 0), cachedScrollable);
-            setActive(indexFromScroll(scrolled));
+            if (cachedScrollable <= 0) {
+                setActive(0);
+                return;
+            }
+            setActive(indexFromScroll(getScrolled()));
         }
 
         function onScroll() {
             if (performance.now() < ignoreProgrammaticUntil) return;
-            if (switching) return;
+            // 鎖定時不能忽略 scroll：iOS 慣性不是 touchmove，必須當場把位置拉回。
+            if (switching) {
+                freezeToLockY();
+                return;
+            }
             if (!sectionInView || ticking) return;
             ticking = true;
             requestAnimationFrame(() => {
