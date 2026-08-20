@@ -164,9 +164,9 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
         // 所以手機 step 拉長，避免一次滑就連切好幾張。
         const mobileQuery = window.matchMedia('(max-width: 1023px)');
         const MOBILE_STEP_VH = 32;
-        const MOBILE_TAIL_VH = 8;
+        const MOBILE_TAIL_VH = 15;
         const DESKTOP_STEP_VH = 32;
-        const DESKTOP_TAIL_VH = 8;
+        const DESKTOP_TAIL_VH = 15;
 
         let cachedScrollable = 0;
         let cachedStepPx = 1;
