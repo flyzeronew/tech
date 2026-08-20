@@ -190,14 +190,13 @@ const issueColumns = [issueCards.slice(0, 2), issueCards.slice(2, 4), issueCards
     if (issueEl) {
         const NEAR = 2;
         let triggered = false;
-        // 直接以錨點進站（網址帶 #spotlight）或手機導覽列瞬間跳過來（見 Header.astro 的
-        // tvbs:nav-scroll）時，一到區塊頂端就不該播放這段設計給「使用者往下捲動發現」的進場動畫
-        // ——開頭是整塊白畫面（#spotlight .bg 的初始 background-color: #fff），跳過來當下看起來
-        // 會像沒捲到定位。這種情況直接跳到動畫播完的最終狀態（見 issue.css 的 .no-anim 規則）。
-        let skipAnim = location.hash === '#spotlight';
-        window.addEventListener('tvbs:nav-scroll', (e) => {
-            if ((e as CustomEvent<{ id?: string }>).detail?.id === 'spotlight') skipAnim = true;
-        });
+        // 直接以錨點連結進站（例如重新整理時網址列本來就帶 #spotlight，或從其他頁面點導覽列連回
+        // /#spotlight，見 Header.astro 的跨頁導回邏輯）時，一到頁面就已經在區塊頂端，不該播放這段
+        // 設計給「使用者往下捲動發現」情境的進場動畫——不然會有好幾秒畫面整個是白的（見上方
+        // #spotlight .bg 的初始 background-color: #fff），看起來像沒捲到定位。這種情況直接跳到
+        // 動畫播完的最終狀態（見 issue.css 的 .no-anim 規則）。
+        // 同一頁點導覽列滑過來不算這種情況，到位後照常播動畫。
+        const skipAnim = location.hash === '#spotlight';
         const trigger = () => {
             triggered = true;
             if (skipAnim) {
