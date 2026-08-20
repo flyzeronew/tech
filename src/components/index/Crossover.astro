@@ -149,7 +149,10 @@ const newsCards: CrossoverCard[] = crossoverItems.map((a) => ({
         // 直接以錨點連結進站（例如從其他頁面點導覽列連回 /#crossover，見 Header.astro 的跨頁導回
         // 邏輯）時，一到頁面就已經在區塊頂端，不該播放設計給「使用者往下捲動發現」情境的進場動畫，
         // 改成直接跳到動畫播完的最終狀態（見 crossover.css 的 .no-anim 規則），跟 #spotlight 同一套處理方式。
-        const skipAnim = location.hash === '#crossover';
+        let skipAnim = location.hash === '#crossover';
+        window.addEventListener('tvbs:nav-scroll', (e) => {
+            if ((e as CustomEvent<{ id?: string }>).detail?.id === 'crossover') skipAnim = true;
+        });
         const trigger = () => {
             triggered = true;
             crossoverEl.classList.add('is-visible');

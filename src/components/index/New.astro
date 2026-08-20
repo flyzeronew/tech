@@ -177,6 +177,10 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
         let switchTimer: number | undefined;
         let touchActive = false;
         let pendingLock = false;
+        // 導覽列錨點是一次跳過整段 #signals（見 Header.astro 的 tvbs:nav-scroll）。
+        // 這段期間若仍依捲動位置換卡，手機會把目標索引 clamp 成「只進一張」再 snap 回來，
+        // 使用者就會停在最新科技情報中間，到不了後面的 #spotlight。
+        let ignoreProgrammaticUntil = 0;
         // iOS 彈性捲動很容易在門檻附近來回幾個 px；往回要再滑過這段才換回上一張
         const BACK_HYSTERESIS = 0.35;
 
@@ -195,6 +199,11 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
             document.documentElement.style.touchAction = '';
         }
 
+        window.addEventListener('tvbs:nav-scroll', () => {
+            unlockSwitch();
+            ignoreProgrammaticUntil = performance.now() + 1000;
+        });
+
         function armTouchLock() {
             const ms = switchDuration();
             if (ms <= 0) {
@@ -208,6 +217,7 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
         }
 
         function snapToActiveCard() {
+            if (performance.now() < ignoreProgrammaticUntil) return;
             const currentScrolled = Math.min(Math.max(-stickyWrap!.getBoundingClientRect().top, 0), cachedScrollable);
             // 對齊到這一張的中段，不要停在門檻上，慣性才不會立刻再跨一張
             const targetScrolled = Math.min(
@@ -243,6 +253,10 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
 
         function onTouchEnd() {
             touchActive = false;
+            if (performance.now() < ignoreProgrammaticUntil) {
+                pendingLock = false;
+                return;
+            }
             if (!pendingLock) return;
             pendingLock = false;
             snapToActiveCard();
@@ -315,8 +329,10 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
             const inited = Boolean(stickyWrap!.dataset.inited);
             if (index === activeIndex && inited) return;
             const prev = activeIndex;
-            // 手機往下切卡一次只走一張，避免慣性滑動一次跳過多張；桌機維持原本跟滾輪走
-            if (inited && mobileQuery.matches) {
+            // 手指滑動一次只切一張；導覽列那種一次跳過多張的程式捲動不能 clamp，
+            // 否則 lockForSwitch 會把畫面 snap 回 #signals 裡的下一張。
+            const jumped = Math.abs(index - activeIndex) > 1;
+            if (inited && mobileQuery.matches && !jumped) {
                 if (index > activeIndex) index = activeIndex + 1;
                 else if (index < activeIndex) index = activeIndex - 1;
             }
@@ -331,7 +347,7 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
             pushBigTitle(items[index]?.dataset.bigTitle ?? '');
             // 只在「往下、且還不是最後一張」時凍結。滑回第一張、或最後一張再往下離開區塊時，
             // scrollTo 拉回會跟手指慣性／iOS 彈性捲動互搶，畫面會抖。
-            if (inited && index > prev && index < items.length - 1) lockForSwitch();
+            if (inited && !jumped && index > prev && index < items.length - 1) lockForSwitch();
         }
 
         function indexFromScroll(scrolled: number) {
@@ -347,6 +363,7 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
         }
 
         function update() {
+            if (performance.now() < ignoreProgrammaticUntil) return;
             if (switching || cachedScrollable <= 0) {
                 if (!switching) setActive(0);
                 return;
@@ -356,6 +373,7 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
         }
 
         function onScroll() {
+            if (performance.now() < ignoreProgrammaticUntil) return;
             if (switching) return;
             if (!sectionInView || ticking) return;
             ticking = true;

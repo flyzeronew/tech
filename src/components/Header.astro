@@ -242,12 +242,31 @@ function anchorId(url: string): string | undefined {
             // 部分行動瀏覽器對 scrollTo() 傳入 behavior:'auto' 不會確實覆蓋掉 global.css 的
             // html{scroll-behavior:smooth}，還是會生成平滑捲動；改成先暫時把 <html> 的
             // scroll-behavior 用 inline style 蓋成 auto，跳轉後再還原，才能保證真的是瞬間跳轉。
+            //
+            // 不能在 click 當下立刻 scrollTo 完又立刻把 scroll-behavior 還原：iOS Safari 的
+            // scrollTo 是非同步的，inline style 一拿掉就會吃回 CSS 的 smooth，再疊上
+            // #signals 換卡時的 snapToActiveCard（見 New.astro），會被拉回最新科技情報中間，
+            // 看起來像「亞利桑那觀察」沒捲到定位。本機 Chrome 裝置模式通常同步吃掉 scrollTo，
+            // 所以同一段程式在 localhost 會過、實機／測試站不會。
+            // 收合 100vh 選單後也要等一幀再量位置、再跳，Safari 才不會忽略這次捲動。
             if (window.matchMedia('(max-width: 1023px)').matches) {
-                const html = document.documentElement;
-                const prevScrollBehavior = html.style.scrollBehavior;
-                html.style.scrollBehavior = 'auto';
-                window.scrollTo({ top: targetY, behavior: 'auto' });
-                html.style.scrollBehavior = prevScrollBehavior;
+                window.dispatchEvent(new CustomEvent('tvbs:nav-scroll', { detail: { id } }));
+                const jumpNow = () => {
+                    const y = isTopLink
+                        ? 0
+                        : target
+                            ? target.getBoundingClientRect().top + window.scrollY
+                            : 0;
+                    const html = document.documentElement;
+                    const prevScrollBehavior = html.style.scrollBehavior;
+                    html.style.scrollBehavior = 'auto';
+                    window.scrollTo({ top: y, behavior: 'auto' });
+                    requestAnimationFrame(() => {
+                        html.style.scrollBehavior = prevScrollBehavior;
+                    });
+                };
+                requestAnimationFrame(() => requestAnimationFrame(jumpNow));
+                window.setTimeout(jumpNow, 120);
                 return;
             }
 
