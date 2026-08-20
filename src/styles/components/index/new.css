@@ -254,6 +254,13 @@
         top: 45%;
         height: 580px;
     }
+    /* .statusIcon（有影片時的播放圖示）、.cardArraw（沒影片時的箭頭）都只在桌機 hover 才滑入畫面；
+       手機沒有真正的 hover，部分瀏覽器 tap 後會把 :hover 樣式卡住不放（實測 cardArraw 就是這樣被
+       卡出現的，不是 statusIcon——目前資料剛好沒有影片項目），兩個都改成手機版直接隱藏，不賭瀏覽器行為 */
+    #signals .list .item .img .statusIcon,
+    #signals .list .item .img .cardArraw {
+        display: none;
+    }
 }
 @media (max-width:767px) {    
     #signals .inBox {

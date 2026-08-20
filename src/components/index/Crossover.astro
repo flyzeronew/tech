@@ -37,20 +37,39 @@ function stripHtml(html: string | null, maxLength: number): string {
     return text.length > maxLength ? `${text.slice(0, maxLength)}…` : text;
 }
 
-// 改成直接撈 news_category=money 的最新 6 篇（不再靠後台 s4_1 手動關聯挑選），
-// 一定是 money 分類，全部連到 /money/{id} 內頁
-let crossoverItems: CrossoverArticle[] = [];
+const MAX_ITEMS = 6;
+
+// 後台可在 the_crossover 手動挑選文章；選不足 6 則時，用 money 分類最新文章遞補到滿 6 則
+// （已手動選過的文章不會在遞補清單中重複出現），全部連到 /money/{id} 內頁
+let pickedItems: CrossoverArticle[] = [];
 try {
-    const json = await cachedFetchJson<{ data?: CrossoverArticle[] }>(
-        `${STRAPI_URL}/api/article-libs?filters[news_category][$eq]=money&sort=news_published_at:desc&pagination[pageSize]=6` +
-            `&fields[0]=news_title&fields[1]=news_featured_image_url&fields[2]=news_published_at&fields[3]=news_content_html&fields[4]=news_summary&fields[5]=news_article_id` +
-            `&populate[news_image][fields][0]=url`,
+    const json = await cachedFetchJson<{ data?: { the_crossover?: CrossoverArticle[] } }>(
+        `${STRAPI_URL}/api/index-page?populate[the_crossover][fields][0]=news_title&populate[the_crossover][fields][1]=news_featured_image_url&populate[the_crossover][fields][2]=news_published_at&populate[the_crossover][fields][3]=news_content_html&populate[the_crossover][fields][4]=news_summary&populate[the_crossover][fields][5]=news_article_id` +
+            `&populate[the_crossover][populate][news_image][fields][0]=url`,
         { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
-        CACHE_TTL.NEWS,
+        CACHE_TTL.NAV,
     );
-    crossoverItems = json?.data ?? [];
+    pickedItems = (json?.data?.the_crossover ?? []).slice(0, MAX_ITEMS);
 } catch {
-    crossoverItems = [];
+    pickedItems = [];
+}
+
+let crossoverItems: CrossoverArticle[] = pickedItems;
+if (pickedItems.length < MAX_ITEMS) {
+    try {
+        const pickedIds = new Set(pickedItems.map((a) => a.news_article_id));
+        const json = await cachedFetchJson<{ data?: CrossoverArticle[] }>(
+            `${STRAPI_URL}/api/article-libs?filters[news_category][$eq]=money&sort=news_published_at:desc&pagination[pageSize]=${MAX_ITEMS}` +
+                `&fields[0]=news_title&fields[1]=news_featured_image_url&fields[2]=news_published_at&fields[3]=news_content_html&fields[4]=news_summary&fields[5]=news_article_id` +
+                `&populate[news_image][fields][0]=url`,
+            { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
+            CACHE_TTL.NEWS,
+        );
+        const fillers = (json?.data ?? []).filter((a) => !pickedIds.has(a.news_article_id));
+        crossoverItems = [...pickedItems, ...fillers.slice(0, MAX_ITEMS - pickedItems.length)];
+    } catch {
+        // 遞補失敗就只顯示手動選的文章，不讓整區塊掛掉
+    }
 }
 
 const newsCards: CrossoverCard[] = crossoverItems.map((a) => ({

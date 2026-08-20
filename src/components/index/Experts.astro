@@ -40,12 +40,12 @@ interface ExpertCard {
 
 let authorColumns: AuthorColumnItem[] = [];
 try {
-    const json = await cachedFetchJson<{ data?: { s5_author_column?: AuthorColumnItem[] } }>(
-        `${STRAPI_URL}/api/index-page?populate[s5_author_column][populate][author][populate]=*&populate[s5_author_column][populate][author_article][fields][0]=news_title&populate[s5_author_column][populate][author_article][fields][1]=news_article_url&populate[s5_author_column][populate][author_article][fields][2]=news_category&populate[s5_author_column][populate][author_article][fields][3]=news_article_id`,
+    const json = await cachedFetchJson<{ data?: { experts?: AuthorColumnItem[] } }>(
+        `${STRAPI_URL}/api/index-page?populate[experts][populate][author][populate]=*&populate[experts][populate][author_article][fields][0]=news_title&populate[experts][populate][author_article][fields][1]=news_article_url&populate[experts][populate][author_article][fields][2]=news_category&populate[experts][populate][author_article][fields][3]=news_article_id`,
         { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
         CACHE_TTL.NAV,
     );
-    authorColumns = json?.data?.s5_author_column ?? [];
+    authorColumns = json?.data?.experts ?? [];
 } catch {
     authorColumns = [];
 }
@@ -74,7 +74,7 @@ const expertCards: ExpertCard[] = authorColumns
                 : [],
             description: item.author.author_job_title ?? '',
             avatar: rawImage ? (rawImage.startsWith('http') ? rawImage : `${STRAPI_URL}${rawImage}`) : '/expert01.jpg',
-            articles: (item.author_article ?? []).map((a) => {
+            articles: (item.author_article ?? []).slice(0, 3).map((a) => {
                 const link = resolveArticleLink(a.news_category, a.news_article_id, a.news_article_url);
                 return { title: a.news_title, href: link.href, external: link.external };
             }),

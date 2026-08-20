@@ -61,6 +61,8 @@
 }
 #crossover .newslist ul li .titleBox {
     display: block;
+    flex: 1;
+    min-width: 0;
     margin-bottom: 0px;
 }
 #crossover .newslist ul li a{
@@ -70,6 +72,9 @@
 #crossover .newslist ul li .news{
     display: flex;
     align-items: flex-start;
+}
+#crossover .newslist ul li .news .img{
+    flex-shrink: 0;
 }
 #crossover .newslist ul li .titleBox .description {
     display: block;  

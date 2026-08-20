@@ -102,6 +102,10 @@
 #publications .books .book.real:hover .img{
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
 }
+#publications .books .book.real .img{
+    width: 360px;
+    aspect-ratio: 360 / 494;
+}
 #publications .books ul li:has(.book.real:hover) .book:not(.real){
     transform: rotate(-1.5deg) translateX(-4px);
 }

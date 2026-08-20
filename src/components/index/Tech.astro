@@ -37,20 +37,39 @@ function stripHtml(html: string | null, maxLength: number): string {
     return text.length > maxLength ? `${text.slice(0, maxLength)}…` : text;
 }
 
-// 改成直接撈 news_category=tech 的最新 6 篇（不再靠後台 s_4_2s 手動關聯挑選），
-// 一定是 tech 分類，全部連到 /tech/{id} 內頁
-let techArticles: TechArticle[] = [];
+const MAX_ITEMS = 6;
+
+// 後台可在 everyday_tech 手動挑選文章；選不足 6 則時，用 tech 分類最新文章遞補到滿 6 則
+// （已手動選過的文章不會在遞補清單中重複出現），全部連到 /tech/{id} 內頁
+let pickedItems: TechArticle[] = [];
 try {
-    const json = await cachedFetchJson<{ data?: TechArticle[] }>(
-        `${STRAPI_URL}/api/article-libs?filters[news_category][$eq]=tech&sort=news_published_at:desc&pagination[pageSize]=6` +
-            `&fields[0]=news_title&fields[1]=news_featured_image_url&fields[2]=news_published_at&fields[3]=news_content_html&fields[4]=news_summary&fields[5]=news_article_id` +
-            `&populate[news_image][fields][0]=url`,
+    const json = await cachedFetchJson<{ data?: { everyday_tech?: TechArticle[] } }>(
+        `${STRAPI_URL}/api/index-page?populate[everyday_tech][fields][0]=news_title&populate[everyday_tech][fields][1]=news_featured_image_url&populate[everyday_tech][fields][2]=news_published_at&populate[everyday_tech][fields][3]=news_content_html&populate[everyday_tech][fields][4]=news_summary&populate[everyday_tech][fields][5]=news_article_id` +
+            `&populate[everyday_tech][populate][news_image][fields][0]=url`,
         { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
-        CACHE_TTL.NEWS,
+        CACHE_TTL.NAV,
     );
-    techArticles = json?.data ?? [];
+    pickedItems = (json?.data?.everyday_tech ?? []).slice(0, MAX_ITEMS);
 } catch {
-    techArticles = [];
+    pickedItems = [];
+}
+
+let techArticles: TechArticle[] = pickedItems;
+if (pickedItems.length < MAX_ITEMS) {
+    try {
+        const pickedIds = new Set(pickedItems.map((a) => a.news_article_id));
+        const json = await cachedFetchJson<{ data?: TechArticle[] }>(
+            `${STRAPI_URL}/api/article-libs?filters[news_category][$eq]=tech&sort=news_published_at:desc&pagination[pageSize]=${MAX_ITEMS}` +
+                `&fields[0]=news_title&fields[1]=news_featured_image_url&fields[2]=news_published_at&fields[3]=news_content_html&fields[4]=news_summary&fields[5]=news_article_id` +
+                `&populate[news_image][fields][0]=url`,
+            { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
+            CACHE_TTL.NEWS,
+        );
+        const fillers = (json?.data ?? []).filter((a) => !pickedIds.has(a.news_article_id));
+        techArticles = [...pickedItems, ...fillers.slice(0, MAX_ITEMS - pickedItems.length)];
+    } catch {
+        // 遞補失敗就只顯示手動選的文章，不讓整區塊掛掉
+    }
 }
 
 const newsCards: TechCard[] = techArticles.map((a) => ({

@@ -52,6 +52,8 @@
 
 #tech .newslist ul li .titleBox {
     display: block;
+    flex: 1;
+    min-width: 0;
     margin-bottom: 0px;
 }
 #tech .newslist ul li a {
@@ -61,6 +63,9 @@
 #tech .newslist ul li .news{
     display: flex;
     align-items: flex-start;
+}
+#tech .newslist ul li .news .img{
+    flex-shrink: 0;
 }
 #tech .newslist ul li .titleBox .description {
     display: -webkit-box;

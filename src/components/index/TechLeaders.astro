@@ -25,12 +25,12 @@ interface TechTitanMedia {
 }
 
 interface TechTitan {
-    tech_titan_name: string;
-    tech_titan_job_title: string;
-    tech_titan_title: string;
-    tech_titan_image: TechTitanImage[] | null;
-    tech_titan_articles: TechTitanArticle[] | null;
-    tech_titan_media: TechTitanMedia | null;
+    leader_name: string;
+    leader_position_title: string;
+    leader_hero_title: string;
+    leader_image: TechTitanImage[] | null;
+    leader_articles: TechTitanArticle[] | null;
+    leader_media: TechTitanMedia | null;
 }
 
 interface ListCard {
@@ -55,33 +55,33 @@ function formatDate(dateStr: string | null): string {
 
 let techTitan: TechTitan | null = null;
 try {
-    const json = await cachedFetchJson<{ data?: { s9_2_tech_titan?: TechTitan | null } }>(
-        `${STRAPI_URL}/api/index-page?populate[s9_2_tech_titan][populate]=*`,
+    const json = await cachedFetchJson<{ data?: { tech_leaders?: TechTitan | null } }>(
+        `${STRAPI_URL}/api/index-page?populate[tech_leaders][populate]=*`,
         { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
         CACHE_TTL.NAV,
     );
-    // s9_2_tech_titan 是單一 component（不是可放多筆的關聯），回傳就是物件本身，不需要 [0] 取第一筆
-    techTitan = json?.data?.s9_2_tech_titan ?? null;
+    // tech_leaders 是單一 component（不是可放多筆的關聯），回傳就是物件本身，不需要 [0] 取第一筆
+    techTitan = json?.data?.tech_leaders ?? null;
 } catch {
     techTitan = null;
 }
 
-const name = techTitan?.tech_titan_name ?? '黃仁勳';
-const jobTitle = techTitan?.tech_titan_job_title ?? 'NVIDIA 共同創辦人暨執行長';
-const peoTitle = techTitan?.tech_titan_title ?? '';
-const rawImage = techTitan?.tech_titan_image?.[0]?.url ?? null;
+const name = techTitan?.leader_name ?? '黃仁勳';
+const jobTitle = techTitan?.leader_position_title ?? 'NVIDIA 共同創辦人暨執行長';
+const peoTitle = techTitan?.leader_hero_title ?? '';
+const rawImage = techTitan?.leader_image?.[0]?.url ?? null;
 const image = rawImage
     ? (rawImage.startsWith('http') ? rawImage : `${STRAPI_URL}${rawImage}`)
     : '/techLeader01.jpg';
 
-const articles = techTitan?.tech_titan_articles ?? [];
-const hasMedia = Boolean(techTitan?.tech_titan_media?.media_url);
+const articles = techTitan?.leader_articles ?? [];
+const hasMedia = Boolean(techTitan?.leader_media?.media_url);
 
-// 上方大圖＋人物介紹的連結優先用 tech_titan_media（人物相關的影音報導）；
-// 後台沒選影音時，退回用 tech_titan_articles 的第一則文章連結頂部，這則文章就不再重複出現在
+// 上方大圖＋人物介紹的連結優先用 leader_media（人物相關的影音報導）；
+// 後台沒選影音時，退回用 leader_articles 的第一則文章連結頂部，這則文章就不再重複出現在
 // 下面的「更多文章」清單裡（清單從第二則開始）。有選影音則清單維持從第一則開始。
 const media = hasMedia
-    ? { href: techTitan!.tech_titan_media!.media_url as string, external: true }
+    ? { href: techTitan!.leader_media!.media_url as string, external: true }
     : resolveArticleLink(articles[0]?.news_category, articles[0]?.news_article_id, articles[0]?.news_article_url);
 
 // 「更多文章」最多顯示 2 則

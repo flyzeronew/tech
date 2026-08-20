@@ -59,18 +59,18 @@ function wrapEvery4Chars(text: string): string {
 }
 
 // 「最新科技情報／TECH SIGNALS」這組小標題前台固定寫死，不從後台拉——
-// s1_tech_zone 是 3 筆，各自帶自己的 tech_title（滾動卡片上方的大標題文字）+ 一組文章（目前各 3 篇，不一定固定 3）。
+// tech_signals 是 3 筆，各自帶自己的 tech_title（滾動卡片上方的大標題文字）+ 一組文章（目前各 3 篇，不一定固定 3）。
 // 前台把每一筆底下的文章攤平成依序的卡片清單，每張卡片各自標記自己所屬的 tech_title；
 // 捲動時同一筆底下的文章共用同一個大標題，捲過該筆最後一篇才會自然換到下一筆的大標題，
 // 不需要另外寫兩層捲動邏輯。
 let techZoneEntries: TechZoneEntry[] = [];
 try {
-    const json = await cachedFetchJson<{ data?: { s1_tech_zone?: TechZoneEntry[] } }>(
-        `${STRAPI_URL}/api/index-page?populate[s1_tech_zone][populate][articles][populate][news_image][fields][0]=url`,
+    const json = await cachedFetchJson<{ data?: { tech_signals?: TechZoneEntry[] } }>(
+        `${STRAPI_URL}/api/index-page?populate[tech_signals][populate][articles][populate][news_image][fields][0]=url`,
         { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
         CACHE_TTL.NAV,
     );
-    techZoneEntries = json?.data?.s1_tech_zone ?? [];
+    techZoneEntries = json?.data?.tech_signals ?? [];
 } catch {
     techZoneEntries = [];
 }

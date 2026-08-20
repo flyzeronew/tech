@@ -13,12 +13,12 @@ const DEFAULT_PARTNER_LOGO = '/logo_AXIOSPhoenix.png';
 
 let footerPartners: FooterPartner[] = [];
 try {
-    const json = await cachedFetchJson<{ data?: { footer_partner?: FooterPartner[] } }>(
-        `${STRAPI_URL}/api/footer?populate[footer_partner][populate][link_icon]=true`,
+    const json = await cachedFetchJson<{ data?: { media_partners?: FooterPartner[] } }>(
+        `${STRAPI_URL}/api/footer?populate[media_partners][populate][link_icon]=true`,
         { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
         CACHE_TTL.NAV,
     );
-    footerPartners = json?.data?.footer_partner ?? [];
+    footerPartners = json?.data?.media_partners ?? [];
 } catch {
     footerPartners = [];
 }

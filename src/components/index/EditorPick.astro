@@ -30,17 +30,17 @@ interface TitleArticleNews {
 }
 
 interface TitleArticle {
-    tiitle: string;
+    title: string;
     summary: string;
     article: TitleArticleNews | null;
 }
 
 interface EditorZone {
-    editor_qruote: string | null;
-    editor_title: string | null;
-    editor_description: string | null;
-    efitor: EditorProfile | null;
-    tiitle_article: TitleArticle[] | null;
+    editor_quote: string | null;
+    pick_title: string | null;
+    pick_description: string | null;
+    editor: EditorProfile | null;
+    title_article: TitleArticle[] | null;
 }
 
 interface PickCard {
@@ -63,25 +63,25 @@ function stripHtml(html: string | null, maxLength: number): string {
 
 let editorZone: EditorZone | null = null;
 try {
-    const json = await cachedFetchJson<{ data?: { s9_1_editor_zone?: EditorZone | null } }>(
-        `${STRAPI_URL}/api/index-page?populate[s9_1_editor_zone][populate][efitor][populate]=*` +
-            `&populate[s9_1_editor_zone][populate][tiitle_article][populate][article][fields][0]=news_title` +
-            `&populate[s9_1_editor_zone][populate][tiitle_article][populate][article][fields][1]=news_content_html` +
-            `&populate[s9_1_editor_zone][populate][tiitle_article][populate][article][fields][2]=news_featured_image_url` +
-            `&populate[s9_1_editor_zone][populate][tiitle_article][populate][article][fields][3]=news_article_url` +
-            `&populate[s9_1_editor_zone][populate][tiitle_article][populate][article][fields][4]=news_category` +
-            `&populate[s9_1_editor_zone][populate][tiitle_article][populate][article][fields][5]=news_summary` +
-            `&populate[s9_1_editor_zone][populate][tiitle_article][populate][article][fields][6]=news_article_id` +
-            `&populate[s9_1_editor_zone][populate][tiitle_article][populate][article][populate][news_image][fields][0]=url`,
+    const json = await cachedFetchJson<{ data?: { editor_pick?: EditorZone | null } }>(
+        `${STRAPI_URL}/api/index-page?populate[editor_pick][populate][editor][populate]=*` +
+            `&populate[editor_pick][populate][title_article][populate][article][fields][0]=news_title` +
+            `&populate[editor_pick][populate][title_article][populate][article][fields][1]=news_content_html` +
+            `&populate[editor_pick][populate][title_article][populate][article][fields][2]=news_featured_image_url` +
+            `&populate[editor_pick][populate][title_article][populate][article][fields][3]=news_article_url` +
+            `&populate[editor_pick][populate][title_article][populate][article][fields][4]=news_category` +
+            `&populate[editor_pick][populate][title_article][populate][article][fields][5]=news_summary` +
+            `&populate[editor_pick][populate][title_article][populate][article][fields][6]=news_article_id` +
+            `&populate[editor_pick][populate][title_article][populate][article][populate][news_image][fields][0]=url`,
         { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
         CACHE_TTL.NAV,
     );
-    editorZone = json?.data?.s9_1_editor_zone ?? null;
+    editorZone = json?.data?.editor_pick ?? null;
 } catch {
     editorZone = null;
 }
 
-const editor = editorZone?.efitor ?? null;
+const editor = editorZone?.editor ?? null;
 const editorName = editor?.author_name ?? '';
 const editorJob = editor?.author_tag
     ? editor.author_tag.split(',').map((t) => t.trim()).filter(Boolean).join('・')
@@ -93,16 +93,16 @@ const editorImage = rawEditorImage
     ? (rawEditorImage.startsWith('http') ? rawEditorImage : `${STRAPI_URL}${rawEditorImage}`)
     : '/expert02.jpg';
 
-const motto = editorZone?.editor_qruote ?? '';
-const pickTitle = editorZone?.editor_title ?? '';
-const pickDescription = editorZone?.editor_description ?? '';
+const motto = editorZone?.editor_quote ?? '';
+const pickTitle = editorZone?.pick_title ?? '';
+const pickDescription = editorZone?.pick_description ?? '';
 
-const pickCards: PickCard[] = (editorZone?.tiitle_article ?? [])
+const pickCards: PickCard[] = (editorZone?.title_article ?? [])
     .filter((item): item is TitleArticle & { article: TitleArticleNews } => item.article !== null)
     .map((item) => {
         const link = resolveArticleLink(item.article.news_category, item.article.news_article_id, item.article.news_article_url);
         return {
-            projectTitle: item.tiitle,
+            projectTitle: item.title,
             projectSummary: item.summary,
             tag: '專題',
             title: item.article.news_title,

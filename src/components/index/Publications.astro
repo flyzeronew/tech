@@ -19,12 +19,12 @@ interface BookCard {
 
 let bookItems: BookZoneItem[] = [];
 try {
-    const json = await cachedFetchJson<{ data?: { s6_book_zone?: BookZoneItem[] } }>(
-        `${STRAPI_URL}/api/index-page?populate[s6_book_zone][populate]=book_image`,
+    const json = await cachedFetchJson<{ data?: { publications?: BookZoneItem[] } }>(
+        `${STRAPI_URL}/api/index-page?populate[publications][populate]=book_image`,
         { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
         CACHE_TTL.NAV,
     );
-    bookItems = json?.data?.s6_book_zone ?? [];
+    bookItems = json?.data?.publications ?? [];
 } catch {
     bookItems = [];
 }
