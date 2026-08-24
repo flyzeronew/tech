@@ -11,6 +11,7 @@ interface Props {
     ogTitle?: string;
     ogDescription?: string;
     ogImage?: string;
+    favicon?: string;
     ogUrl?: string;
     ogType?: string;
     ogSiteName?: string;
@@ -27,6 +28,7 @@ const {
     ogDescription = '深度報導半導體、AI 與科技產業趨勢，服務企業高階主管、科技從業者與投資人的專業科技媒體。',
     ogUrl = new URL(Astro.url.pathname, APP_URL).toString(),
     ogImage = new URL('/ogImage.webp', APP_URL).toString(),
+    favicon = new URL('/favicon.ico', APP_URL).toString(),
     ogType = 'website',
     ogSiteName = 'TVBS TECH',
     canonical = ogUrl,
@@ -63,7 +65,7 @@ const {
         <meta property="og:type" content={ogType}>
         <meta property="og:site_name" content={ogSiteName}>
         <link rel="canonical" href={canonical}>
-        <link rel="icon" href="" type="image/icon">
+        <link rel="icon" href={favicon} type="image/x-icon">
         {jsonLd && (
             <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
         )}

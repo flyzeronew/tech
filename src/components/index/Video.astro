@@ -19,15 +19,27 @@ interface VideoCard {
 // youtube／apple_podcast 各抓 4 則（依 createdAt 由新到舊），再依固定順序排列：
 // youtube, youtube, apple_podcast, youtube, apple_podcast, apple_podcast, youtube, apple_podcast。
 // 每個來源各自依 createdAt 新到舊的順序，依序被抽出放進對應的位置。
+// apple_podcast 用標題 $or：命中任一關鍵字即可（media-libraries 沒有分類欄位）。
+// 「矽沙漠崛起－錢進亞利桑那」是指定系列；「科技」涵蓋科技類相關集數。
+const PODCAST_TITLE_KEYWORDS = ['矽沙漠崛起－錢進亞利桑那'];
+
 const DISPLAY_ORDER = [
     'youtube', 'youtube', 'apple_podcast', 'youtube',
     'apple_podcast', 'apple_podcast', 'youtube', 'apple_podcast',
 ] as const;
 
-async function fetchMediaBySource(source: string): Promise<MediaItem[]> {
+async function fetchMediaBySource(source: string, titleContains?: string[]): Promise<MediaItem[]> {
     try {
+        let url = `${STRAPI_URL}/api/media-libraries?filters[media_source][$eq]=${encodeURIComponent(source)}&sort=createdAt:desc&pagination[pageSize]=4`;
+        if (titleContains?.length === 1) {
+            url += `&filters[media_title][$contains]=${encodeURIComponent(titleContains[0])}`;
+        } else if (titleContains && titleContains.length > 1) {
+            titleContains.forEach((keyword, i) => {
+                url += `&filters[$or][${i}][media_title][$contains]=${encodeURIComponent(keyword)}`;
+            });
+        }
         const res = await fetch(
-            `${STRAPI_URL}/api/media-libraries?filters[media_source][$eq]=${encodeURIComponent(source)}&sort=createdAt:desc&pagination[pageSize]=4`,
+            url,
             { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
         );
         if (res.ok) {
@@ -42,7 +54,7 @@ async function fetchMediaBySource(source: string): Promise<MediaItem[]> {
 
 const [youtubeItems, applePodcastItems] = await Promise.all([
     fetchMediaBySource('youtube'),
-    fetchMediaBySource('apple_podcast'),
+    fetchMediaBySource('apple_podcast', PODCAST_TITLE_KEYWORDS),
 ]);
 
 const sourceQueues: Record<string, MediaItem[]> = {
