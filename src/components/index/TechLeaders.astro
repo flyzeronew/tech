@@ -66,13 +66,21 @@ try {
     techTitan = null;
 }
 
-const name = techTitan?.leader_name ?? '黃仁勳';
-const jobTitle = techTitan?.leader_position_title ?? 'NVIDIA 共同創辦人暨執行長';
+// 人名、影音、文章、大圖四欄缺一就不渲染整段，避免半套資料或假資料撐版面
+const hasLeader = Boolean(
+    techTitan?.leader_name &&
+    techTitan.leader_media?.media_url &&
+    techTitan.leader_articles?.length &&
+    techTitan.leader_image?.[0]?.url
+);
+
+const name = techTitan?.leader_name ?? '';
+const jobTitle = techTitan?.leader_position_title ?? '';
 const peoTitle = techTitan?.leader_hero_title ?? '';
 const rawImage = techTitan?.leader_image?.[0]?.url ?? null;
 const image = rawImage
     ? (rawImage.startsWith('http') ? rawImage : `${STRAPI_URL}${rawImage}`)
-    : '/techLeader01.jpg';
+    : '';
 
 const articles = techTitan?.leader_articles ?? [];
 const hasMedia = Boolean(techTitan?.leader_media?.media_url);
@@ -83,6 +91,8 @@ const hasMedia = Boolean(techTitan?.leader_media?.media_url);
 const media = hasMedia
     ? { href: techTitan!.leader_media!.media_url as string, external: true }
     : resolveArticleLink(articles[0]?.news_category, articles[0]?.news_article_id, articles[0]?.news_article_url);
+const hasHeroLink = Boolean(media.href && media.href !== '#');
+const HeroTag = hasHeroLink ? 'a' : 'div';
 
 // 「更多文章」最多顯示 2 則
 const listArticles = (hasMedia ? articles : articles.slice(1)).slice(0, 2);
@@ -97,6 +107,7 @@ const listCards: ListCard[] = listArticles.map((a) => {
     };
 });
 ---
+{hasLeader && (
 <section data-nav="dark">
     <div id="leaders">
         <div class="inBox">
@@ -111,14 +122,19 @@ const listCards: ListCard[] = listArticles.map((a) => {
                 </div>
             </div>
             <div class="people">
-                <a class="cardLink" href={media.href} target={media.external ? '_blank' : undefined} rel={media.external ? 'noopener noreferrer' : undefined}>
+                <HeroTag
+                    class="cardLink"
+                    href={hasHeroLink ? media.href : undefined}
+                    target={hasHeroLink && media.external ? '_blank' : undefined}
+                    rel={hasHeroLink && media.external ? 'noopener noreferrer' : undefined}
+                >
                     <div class="img">
-                        <img width="1280" height="720" src={image} alt={name} loading="lazy" />
+                        {image && <img width="1280" height="720" src={image} alt={name} loading="lazy" />}
                     </div>
                     <div class="peoTitle">
                         {peoTitle}
                     </div>
-                </a>
+                </HeroTag>
                 {listCards.length > 0 && (
                     <div class="list">
                         <ul>
@@ -144,3 +160,4 @@ const listCards: ListCard[] = listArticles.map((a) => {
         </div>
     </div>
 </section>
+)}

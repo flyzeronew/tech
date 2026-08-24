@@ -38,17 +38,23 @@ function hasYoutubeVideo(id: string | null): boolean {
     return Boolean(id) && id !== 'null';
 }
 
-// 下面 6 則清單抓後台 article_source = issue 的文章（「亞利桑那觀察」系列），依發布時間新到舊取最新 6 篇
+// 下面 6 則清單抓後台 article_source = issue 的文章，依發布時間新到舊取最新 6 篇。
+// news_title 含「亞利桑那觀察」的是系列標示文，不進這份議題包清單。
+const ISSUE_TITLE_EXCLUDE = '亞利桑那觀察';
 let issueArticles: IssueArticle[] = [];
 try {
     const json = await cachedFetchJson<{ data?: IssueArticle[] }>(
-        `${STRAPI_URL}/api/article-libs?filters[article_source][$eq]=issue&sort=news_published_at:desc&pagination[pageSize]=6` +
+        `${STRAPI_URL}/api/article-libs?filters[article_source][$eq]=issue` +
+            `&filters[news_title][$notContains]=${encodeURIComponent(ISSUE_TITLE_EXCLUDE)}` +
+            `&sort=news_published_at:desc&pagination[pageSize]=12` +
             `&fields[0]=news_title&fields[1]=news_category&fields[2]=news_article_id&fields[3]=news_article_url&fields[4]=news_featured_image_url&fields[5]=news_youtube_id` +
             `&populate[news_image][fields][0]=url`,
         { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
         CACHE_TTL.NEWS,
     );
-    issueArticles = json?.data ?? [];
+    issueArticles = (json?.data ?? [])
+        .filter((a) => !a.news_title.includes(ISSUE_TITLE_EXCLUDE))
+        .slice(0, 6);
 } catch {
     issueArticles = [];
 }

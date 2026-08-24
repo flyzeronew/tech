@@ -1,6 +1,7 @@
 ---
 import '../../styles/components/index/experts.css';
 import { fetchIndexExperts } from '../../lib/indexExperts';
+import { authorHref } from '../../lib/authors';
 
 const expertCards = await fetchIndexExperts();
 
@@ -72,7 +73,7 @@ const isGridMode = expertCards.length > 5;
                                     </div>
 
                                     <div class="more">
-                                        <a href={`/experts/${card.slug}`}>
+                                        <a href={authorHref(card.name)}>
                                             <span>完整介紹與觀點</span>
                                             <div class="arraw">
                                                 <img width="28" height="28" src="/arraw-right-03.svg" alt="arraw" />

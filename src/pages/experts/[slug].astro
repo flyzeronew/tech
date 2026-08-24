@@ -5,11 +5,9 @@ import { fetchExpertArticles, EXPERT_ARTICLES_PAGE_SIZE } from '../../lib/expert
 import {
     fetchAuthors,
     findAuthorBySlug,
-    authorSlug,
-    splitAuthorName,
+    authorHref,
     parseAuthorTags,
     resolveAuthorImage,
-    findLocalExpertByName,
 } from '../../lib/authors';
 
 // 這頁改成一般 SSR（不 prerender）：曾經加過 export const prerender = true，
@@ -17,8 +15,7 @@ import {
 // fetch 會搬到 build time 執行，Docker build 階段沒有 STRAPI_URL/STRAPI_API_TOKEN
 // （這兩個是容器啟動後才由 K8s 注入，見 CLAUDE.md 的說明），會直接讓 `pnpm build` 失敗
 // （EnvInvalidVariables: STRAPI_URL is missing）。prerender 拿掉後 getStaticPaths 不會被呼叫，
-// slug 對 Strapi 作者庫；簡介／標籤沒填時才用 src/data/experts.ts 代替資料。
-// author_quotes 沒填就留空，不套本地格言。
+// slug 就是作者庫 author_name；欄位沒填就留空，不套本地代替資料。
 const { slug } = Astro.params;
 if (!slug) {
     return Astro.rewrite('/404');
@@ -30,14 +27,10 @@ if (!author) {
 }
 
 const authorName = author.author_name;
-const local = findLocalExpertByName(authorName);
-const { firstName, lastName } = splitAuthorName(authorName);
-const slugPath = authorSlug(authorName);
-const avatar = resolveAuthorImage(author.author_image?.url) || local?.avatar || '';
-const cmsTags = parseAuthorTags(author.author_tag);
-const tags = cmsTags.length ? cmsTags : (local?.tags ?? []);
-const description = author.author_description || local?.description || '';
-const quote = author.author_quotes?.trim() || '';
+const avatar = resolveAuthorImage(author.author_image?.url);
+const tags = parseAuthorTags(author.author_tag);
+const description = author.author_description || '';
+const quote = author.author_quotes || '';
 
 // 個人頁文章只看文章庫 news_authors 有沒有這位姓名；沒寫就不顯示，
 // 也不用首頁設定的 author_article、也不用本地代替資料。
@@ -45,7 +38,7 @@ const { articles, total } = await fetchExpertArticles(authorName, 1);
 const hasMore = EXPERT_ARTICLES_PAGE_SIZE < total;
 
 const pageTitle = `${authorName}｜TVBS TECH`;
-const canonicalUrl = new URL(Astro.url.pathname, Astro.url.origin).toString();
+const canonicalUrl = new URL(authorHref(authorName), Astro.url.origin).toString();
 const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Person',
@@ -72,7 +65,7 @@ const jsonLd = {
             </div>
             <div class="profileInfo">
                 <div class="name">
-                    <p class="nameText">{firstName}{lastName && <><br />{lastName}</>}</p>
+                    <p class="nameText">{authorName}</p>
                     <div class="labelGroup">
                         {tags.map((tag) => <span class="label">{tag}</span>)}
                     </div>
@@ -96,7 +89,7 @@ const jsonLd = {
                     <div class="breadcrumbs">
                         <a href="/">首頁</a>
                         <a href="/experts">專家觀點</a>
-                        <a href={`/experts/${slugPath}`}>{authorName}</a>
+                        <a href={authorHref(authorName)}>{authorName}</a>
                     </div>
                     <p class="fromTitle">From {authorName}</p>
 

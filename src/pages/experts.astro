@@ -1,9 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import '../styles/pages/experts.css';
-import { fetchIndexExperts } from '../lib/indexExperts';
+import { fetchExpertsList } from '../lib/indexExperts';
+import { authorHref } from '../lib/authors';
 
-const experts = await fetchIndexExperts();
+const experts = await fetchExpertsList();
 
 const canonicalUrl = new URL(Astro.url.pathname, Astro.url.origin).toString();
 const jsonLd = {
@@ -25,7 +26,7 @@ const jsonLd = {
                     ...(expert.avatar
                         ? { image: expert.avatar.startsWith('http') ? expert.avatar : new URL(expert.avatar, Astro.url.origin).toString() }
                         : {}),
-                    url: new URL(`/experts/${expert.slug}`, Astro.url.origin).toString(),
+                    url: new URL(authorHref(expert.name), Astro.url.origin).toString(),
                 },
             })),
     },
@@ -77,7 +78,7 @@ const jsonLd = {
                                 <div class="newsGroup">
                                     {expert.articles.map((article) => (
                                         <div class="newsRow">
-                                            <a href={article.href}>
+                                            <a href={article.href} target={article.external ? '_blank' : undefined} rel={article.external ? 'noopener noreferrer' : undefined}>
                                                 <span class="rowTitle">{article.title}</span>
                                                 <span class="arraw">
                                                     <img width="24" height="24" src="/arraw-right-03.svg" alt="arraw" />
@@ -87,7 +88,7 @@ const jsonLd = {
                                     ))}
                                 </div>
                                 <div class="more">
-                                    <a href={`/experts/${expert.slug}`}>
+                                    <a href={authorHref(expert.name)}>
                                         <span>完整介紹與觀點</span>
                                         <div class="arraw">
                                             <img width="24" height="24" src="/arraw-right-03.svg" alt="arraw" />

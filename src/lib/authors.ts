@@ -1,5 +1,4 @@
 import { STRAPI_URL, STRAPI_API_TOKEN } from 'astro:env/server';
-import { experts as localExperts, type Expert } from '../data/experts';
 import { cachedFetchJson, CACHE_TTL } from './fetchCache';
 
 export interface AuthorImage {
@@ -14,76 +13,71 @@ export interface Author {
     author_image: AuthorImage | null;
 }
 
-function compactName(name: string): string {
-    return name.replace(/\s+/g, '');
-}
-
-export function findLocalExpertByName(authorName: string): Expert | undefined {
-    const name = compactName(authorName);
-    return localExperts.find((e) => compactName(`${e.firstName}${e.lastName}`) === name);
-}
-
-export function findLocalExpertBySlug(slug: string): Expert | undefined {
-    let decoded = slug;
+function decodeSlug(slug: string): string {
     try {
-        decoded = decodeURIComponent(slug);
+        return decodeURIComponent(slug);
     } catch {
-        decoded = slug;
+        return slug;
     }
-    return localExperts.find((e) => e.slug === slug || e.slug === decoded);
 }
 
-// 後台作者庫沒有獨立 slug 欄位。中文名直接當 path（/experts/王瑀玟），
-// 英文名有本地代替資料才沿用既有 slug（richard-brown），其餘轉 ASCII。
-export function authorSlug(name: string): string {
-    const trimmed = name.trim();
-    if (/[\u4e00-\u9fff]/.test(trimmed)) {
-        return trimmed.replace(/\s+/g, '');
-    }
-    const local = findLocalExpertByName(name);
-    if (local) return local.slug;
-    const ascii = trimmed
+// news_authors.name 常帶職稱／媒體後綴。搜尋字串用作者庫 author_name 原文，
+// 文章欄位只要包含這段文字就算對上，不改寫作者名。
+export function authorNameMatches(articleAuthorName: string, authorName: string): boolean {
+    const article = articleAuthorName.trim().toLowerCase();
+    const author = authorName.trim().toLowerCase();
+    return Boolean(article && author && article.includes(author));
+}
+
+export function parseArticleAuthorNames(raw: unknown): string[] {
+    if (!raw) return [];
+    const list = Array.isArray(raw) ? raw : [raw];
+    return list
+        .map((item) => {
+            if (typeof item === 'string') return item.trim();
+            if (item && typeof item === 'object' && 'name' in item) {
+                const name = (item as { name?: unknown }).name;
+                return typeof name === 'string' ? name.trim() : '';
+            }
+            return '';
+        })
+        .filter(Boolean);
+}
+
+// article-lib 的 news_authors 是 JSON，不能用 filters[news_authors][name][$eq]。
+// 搜尋字串就是 author_name 欄位原文，不分大小寫包含即可。
+export function buildNewsAuthorsNameFilter(authorName: string): string {
+    return `filters[news_authors][$containsi]=${encodeURIComponent(authorName)}`;
+}
+
+function legacyKebabSlug(name: string): string {
+    return name
         .normalize('NFKD')
         .replace(/[\u0300-\u036f]/g, '')
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '');
-    return ascii || trimmed;
+}
+
+// path 直接用作者庫 author_name，不轉成 richard-brown。
+export function authorSlug(name: string): string {
+    return name;
+}
+
+export function authorHref(name: string): string {
+    return `/experts/${encodeURIComponent(name)}`;
 }
 
 export function findAuthorBySlug(authors: Author[], slug: string): Author | undefined {
-    let decoded = slug;
-    try {
-        decoded = decodeURIComponent(slug);
-    } catch {
-        decoded = slug;
-    }
-    const byGenerated = authors.find((a) => {
-        const generated = authorSlug(a.author_name);
-        return generated === slug || generated === decoded;
-    });
-    if (byGenerated) return byGenerated;
-
-    const byName = authors.find((a) => compactName(a.author_name) === compactName(decoded));
+    const decoded = decodeSlug(slug);
+    const byName = authors.find((a) => a.author_name === slug || a.author_name === decoded);
     if (byName) return byName;
 
-    const local = findLocalExpertBySlug(slug);
-    if (!local) return undefined;
-    const localName = compactName(`${local.firstName}${local.lastName}`);
-    return authors.find((a) => compactName(a.author_name) === localName);
-}
-
-// 英文用空白切開（Richard / Brown）；中文姓名預設第一個字是姓。
-export function splitAuthorName(name: string): { firstName: string; lastName: string } {
-    const trimmed = name.trim();
-    const parts = trimmed.split(/\s+/).filter(Boolean);
-    if (parts.length >= 2) {
-        return { firstName: parts[0], lastName: parts.slice(1).join(' ') };
-    }
-    if (/^[\u4e00-\u9fff]{2,}$/.test(trimmed)) {
-        return { firstName: trimmed.slice(0, 1), lastName: trimmed.slice(1) };
-    }
-    return { firstName: trimmed, lastName: '' };
+    // 舊連結 /experts/richard-brown 仍可開，新連結不再產出這種 path
+    return authors.find((a) => {
+        const kebab = legacyKebabSlug(a.author_name);
+        return kebab && (kebab === slug || kebab === decoded);
+    });
 }
 
 export function parseAuthorTags(tag: string | null | undefined): string[] {
