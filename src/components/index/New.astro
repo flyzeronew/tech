@@ -194,6 +194,12 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
             return Math.min(Math.max(-stickyWrap!.getBoundingClientRect().top, 0), cachedScrollable);
         }
 
+        // 人已經捲過整段 #signals（例如錨點跳到 #spotlight）：bottom 貼齊或高於視窗頂。
+        // 這時不能再依「只進一張 + snap」把捲軸拉回卡片中段。
+        function hasLeftSection() {
+            return stickyWrap!.getBoundingClientRect().bottom <= 16;
+        }
+
         function preventTouchScroll(e: TouchEvent) {
             e.preventDefault();
         }
@@ -205,6 +211,10 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
 
         function freezeToLockY() {
             if (lockScrollY === null) return;
+            if (hasLeftSection()) {
+                clearSwitchLock();
+                return;
+            }
             if (Math.abs(window.scrollY - lockScrollY) > 0.5) {
                 window.scrollTo(0, lockScrollY);
             }
@@ -229,6 +239,10 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
         function unlockSwitch() {
             // 先對齊再放行：iOS 慣性在 0.8s 內多半已經走完，這時 scrollTo 才站得住。
             // 若先把 switching 設回 false，下一個 scroll 會用「多滑出去的距離」再切一張。
+            if (hasLeftSection()) {
+                clearSwitchLock();
+                return;
+            }
             stopFreezeLoop();
             pendingLock = false;
             window.removeEventListener('touchmove', preventTouchScroll);
@@ -239,10 +253,29 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
             switching = false;
         }
 
-        window.addEventListener('tvbs:nav-scroll', () => {
+        // 導覽列一次跳過 #signals 時，卡片索引也要立刻跟到位，不能等 ignore 視窗結束。
+        // 否則之後第一次 scroll 會從第 0 張 clamp +1 再 snap，把人從 #spotlight 拉回來。
+        function syncActiveForNav(id?: string) {
+            const last = items.length - 1;
+            if (!id || id === 'top' || id === 'signals') {
+                setActive(0, { skipLock: true, skipClamp: true });
+                return;
+            }
+            const target = document.getElementById(id);
+            const signalsEl = document.getElementById('signals');
+            if (!target || !signalsEl) return;
+            if (target.compareDocumentPosition(signalsEl) & Node.DOCUMENT_POSITION_FOLLOWING) {
+                setActive(0, { skipLock: true, skipClamp: true });
+                return;
+            }
+            setActive(last, { skipLock: true, skipClamp: true });
+        }
+
+        window.addEventListener('tvbs:nav-scroll', (e: Event) => {
             // 不能走 unlockSwitch：那會 snap 回目前卡片，把導覽列的目標捲動拉回 #signals。
             clearSwitchLock();
             ignoreProgrammaticUntil = performance.now() + 1000;
+            syncActiveForNav((e as CustomEvent<{ id?: string }>).detail?.id);
         });
 
         function armTouchLock() {
@@ -263,6 +296,7 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
 
         function snapToActiveCard() {
             if (performance.now() < ignoreProgrammaticUntil) return;
+            if (hasLeftSection()) return;
             const currentScrolled = getScrolled();
             // 對齊到這一張的中段，不要停在門檻上，慣性才不會立刻再跨一張
             const targetScrolled = Math.min(
@@ -369,14 +403,14 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
             }, 350);
         }
 
-        function setActive(index: number) {
-            if (switching) return;
+        function setActive(index: number, opts?: { skipLock?: boolean; skipClamp?: boolean }) {
+            if (switching && !opts?.skipLock) return;
             const inited = Boolean(stickyWrap!.dataset.inited);
             if (index === activeIndex && inited) return;
             const prev = activeIndex;
             // 手機一次只切一張。導覽列一次跳過多張走 ignoreProgrammaticUntil，
             // 不能再用「跨兩張就放行」——iOS 一次 flick 的 scroll 事件也常直接跨兩格。
-            if (inited && mobileQuery.matches) {
+            if (inited && mobileQuery.matches && !opts?.skipClamp) {
                 if (index > activeIndex) index = activeIndex + 1;
                 else if (index < activeIndex) index = activeIndex - 1;
             }
@@ -391,7 +425,7 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
             pushBigTitle(items[index]?.dataset.bigTitle ?? '');
             // 只在「往下、且還不是最後一張」時凍結。滑回第一張、或最後一張再往下離開區塊時，
             // scrollTo 拉回會跟手指慣性／iOS 彈性捲動互搶，畫面會抖。
-            if (inited && index > prev && index < items.length - 1) lockForSwitch();
+            if (!opts?.skipLock && inited && index > prev && index < items.length - 1) lockForSwitch();
         }
 
         function indexFromScroll(scrolled: number) {
@@ -415,6 +449,10 @@ const newsItems: NewsCard[] = techZoneEntries.flatMap((entry) =>
             }
             if (cachedScrollable <= 0) {
                 setActive(0);
+                return;
+            }
+            if (hasLeftSection()) {
+                setActive(items.length - 1, { skipLock: true, skipClamp: true });
                 return;
             }
             setActive(indexFromScroll(getScrolled()));
