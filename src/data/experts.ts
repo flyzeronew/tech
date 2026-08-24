@@ -83,12 +83,12 @@ export const experts: Expert[] = [
         ],
     },
     {
-        slug: 'local-observer',
+        slug: '王瑀玟',
         avatar: '/expert03.jpg',
-        firstName: '在地產業',
-        lastName: '觀察者',
-        tags: ['鳳凰城現場'],
-        description: '長駐亞利桑那，第一線協助台灣企業落地，從文化、人才到供應鏈，記錄台美半導體聚落的真實樣貌。',
+        firstName: '王',
+        lastName: '瑀玟',
+        tags: ['亞利桑那觀察'],
+        description: '常駐亞利桑那，第一線協助台灣企業落地，從文化、人才到供應鏈，記錄台美半導體聚落的真實樣貌。',
         quote: 'A semiconductor cluster isn’t built by machines alone—it’s built by the people who choose to move their lives across the Pacific.',
         articles: [
             {

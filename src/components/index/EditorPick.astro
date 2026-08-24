@@ -13,7 +13,7 @@ interface EditorImage {
 interface EditorProfile {
     author_name: string;
     author_tag: string | null;
-    author_job_title: string | null;
+    author_description: string | null;
     author_image: EditorImage | null;
 }
 
@@ -86,8 +86,7 @@ const editorName = editor?.author_name ?? '';
 const editorJob = editor?.author_tag
     ? editor.author_tag.split(',').map((t) => t.trim()).filter(Boolean).join('・')
     : '';
-// author_job_title 後台實際存放的是簡介文字（不是職稱），依內容比對而非欄位名稱決定用途
-const editorDescription = editor?.author_job_title ?? '';
+const editorDescription = editor?.author_description || '';
 const rawEditorImage = editor?.author_image?.url ?? null;
 const editorImage = rawEditorImage
     ? (rawEditorImage.startsWith('http') ? rawEditorImage : `${STRAPI_URL}${rawEditorImage}`)

@@ -1,60 +1,46 @@
 ---
-import { STRAPI_URL, STRAPI_API_TOKEN } from 'astro:env/server';
 import Layout from '../../layouts/Layout.astro';
 import '../../styles/pages/expert-detail.css';
-import { experts } from '../../data/experts';
 import { fetchExpertArticles, EXPERT_ARTICLES_PAGE_SIZE } from '../../lib/expertArticles';
-import { cachedFetchJson, CACHE_TTL } from '../../lib/fetchCache';
+import {
+    fetchAuthors,
+    findAuthorBySlug,
+    authorSlug,
+    splitAuthorName,
+    parseAuthorTags,
+    resolveAuthorImage,
+    findLocalExpertByName,
+} from '../../lib/authors';
 
 // 這頁改成一般 SSR（不 prerender）：曾經加過 export const prerender = true，
 // 但這頁的作者/文章資料要在 request time 打 Strapi（見下面的 fetch），prerender 的話這些
 // fetch 會搬到 build time 執行，Docker build 階段沒有 STRAPI_URL/STRAPI_API_TOKEN
 // （這兩個是容器啟動後才由 K8s 注入，見 CLAUDE.md 的說明），會直接讓 `pnpm build` 失敗
 // （EnvInvalidVariables: STRAPI_URL is missing）。prerender 拿掉後 getStaticPaths 不會被呼叫，
-// 改成直接讀 Astro.params.slug 找對應的本地資料。
+// slug 對 Strapi 作者庫；簡介／標籤沒填時才用 src/data/experts.ts 代替資料。
+// author_quotes 沒填就留空，不套本地格言。
 const { slug } = Astro.params;
-const expert = experts.find((e) => e.slug === slug);
-if (!expert) {
+if (!slug) {
     return Astro.rewrite('/404');
 }
 
-interface AuthorImage {
-    url: string;
+const author = findAuthorBySlug(await fetchAuthors(), slug);
+if (!author) {
+    return Astro.rewrite('/404');
 }
 
-interface Author {
-    author_name: string;
-    author_tag: string | null;
-    author_job_title: string | null;
-    author_image: AuthorImage | null;
-    author_qruote: string | null;
-}
+const authorName = author.author_name;
+const local = findLocalExpertByName(authorName);
+const { firstName, lastName } = splitAuthorName(authorName);
+const slugPath = authorSlug(authorName);
+const avatar = resolveAuthorImage(author.author_image?.url) || local?.avatar || '';
+const cmsTags = parseAuthorTags(author.author_tag);
+const tags = cmsTags.length ? cmsTags : (local?.tags ?? []);
+const description = author.author_description || local?.description || '';
+const quote = author.author_quotes?.trim() || '';
 
-let author: Author | null = null;
-try {
-    const json = await cachedFetchJson<{ data?: Author[] }>(
-        `${STRAPI_URL}/api/authors?populate=author_image`,
-        { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
-        CACHE_TTL.NAV,
-    );
-    const authors: Author[] = json?.data ?? [];
-    const full = `${expert.firstName}${expert.lastName}`;
-    const spaced = `${expert.firstName} ${expert.lastName}`;
-    author = authors.find((a) => a.author_name === full || a.author_name === spaced) ?? null;
-} catch {
-    author = null;
-}
-
-// author_job_title 後台實際存放的是專家簡介文字（不是職稱），author_qruote 是格言（沿用既有的拼字）
-const authorName = author?.author_name ?? `${expert.firstName}${expert.lastName}`;
-const rawImage = author?.author_image?.url ?? null;
-const avatar = rawImage ? (rawImage.startsWith('http') ? rawImage : `${STRAPI_URL}${rawImage}`) : expert.avatar;
-const tags = author?.author_tag
-    ? author.author_tag.split(',').map((t) => t.trim()).filter(Boolean)
-    : expert.tags;
-const description = author?.author_job_title ?? expert.description;
-const quote = author?.author_qruote ?? expert.quote;
-
+// 個人頁文章只看文章庫 news_authors 有沒有這位姓名；沒寫就不顯示，
+// 也不用首頁設定的 author_article、也不用本地代替資料。
 const { articles, total } = await fetchExpertArticles(authorName, 1);
 const hasMore = EXPERT_ARTICLES_PAGE_SIZE < total;
 
@@ -65,58 +51,64 @@ const jsonLd = {
     '@type': 'Person',
     name: authorName,
     url: canonicalUrl,
-    image: avatar.startsWith('http') ? avatar : new URL(avatar, Astro.url.origin).toString(),
+    ...(avatar
+        ? { image: avatar.startsWith('http') ? avatar : new URL(avatar, Astro.url.origin).toString() }
+        : {}),
     description,
 };
 ---
 <Layout
     title={pageTitle}
-    description={description}
+    description={description || undefined}
     ogTitle={pageTitle}
-    ogDescription={description}
+    ogDescription={description || undefined}
     ogType="profile"
     jsonLd={jsonLd}
 >
     <section data-nav="light">
         <div id="expertHero">
             <div class="portrait">
-                <img width="576" height="720" src={avatar} alt={`${expert.firstName} ${expert.lastName}`} loading="lazy" />
+                {avatar && <img width="576" height="720" src={avatar} alt={authorName} loading="lazy" />}
             </div>
             <div class="profileInfo">
                 <div class="name">
-                    <p class="nameText">{expert.firstName}<br />{expert.lastName}</p>
+                    <p class="nameText">{firstName}{lastName && <><br />{lastName}</>}</p>
                     <div class="labelGroup">
                         {tags.map((tag) => <span class="label">{tag}</span>)}
                     </div>
                 </div>
-                <p class="desc">{description}</p>
+                {description && <p class="desc">{description}</p>}
             </div>
         </div>
     </section>
     <section data-nav="dark">
         <div id="expertBody">
             <div class="inBox">
-                <div class="quote">
-                    <img class="deco deco-upper" width="37" height="31" src="/deco-upper-w.svg" alt="" />
-                    <p>{quote}</p>
-                    <img class="deco deco-lower" width="37" height="31" src="/deco-lower-w.svg" alt="" />
-                </div>
+                {quote && (
+                    <div class="quote">
+                        <img class="deco deco-upper" width="37" height="31" src="/deco-upper-w.svg" alt="" />
+                        <p>{quote}</p>
+                        <img class="deco deco-lower" width="37" height="31" src="/deco-lower-w.svg" alt="" />
+                    </div>
+                )}
 
                 <div class="newsSection" data-author={authorName} data-page="1">
                     <div class="breadcrumbs">
                         <a href="/">首頁</a>
                         <a href="/experts">專家觀點</a>
-                        <a href={`/experts/${expert.slug}`}>{expert.firstName} {expert.lastName}</a>
+                        <a href={`/experts/${slugPath}`}>{authorName}</a>
                     </div>
-                    <p class="fromTitle">From {expert.firstName} {expert.lastName}</p>
+                    <p class="fromTitle">From {authorName}</p>
 
                     <div class="newsGroup" id="newsGroup">
                         {articles.map((article) => (
                             <div class="newsRow">
                                 <a href={article.href}>
-                                    <div class="img">
-                                        <img width="200" height="113" src={article.image} alt="img" loading="lazy" />
-                                    </div>
+                                    {article.image && (
+                                        <div class="img">
+                                            <img width="200" height="113" src={article.image} alt="" loading="lazy" />
+                                        </div>
+                                    )}
                                     <div class="titleBox">
                                         <p class="date">{article.date}</p>
                                         <p class="rowTitle">{article.title}</p>
@@ -176,13 +168,16 @@ const jsonLd = {
 
             const imgBox = document.createElement('div');
             imgBox.className = 'img';
-            const img = document.createElement('img');
-            img.width = 200;
-            img.height = 113;
-            img.src = article.image;
-            img.alt = 'img';
-            img.loading = 'lazy';
-            imgBox.appendChild(img);
+            if (article.image) {
+                const img = document.createElement('img');
+                img.width = 200;
+                img.height = 113;
+                img.src = article.image;
+                img.alt = '';
+                img.loading = 'lazy';
+                imgBox.appendChild(img);
+                a.appendChild(imgBox);
+            }
 
             const titleBox = document.createElement('div');
             titleBox.className = 'titleBox';
@@ -206,7 +201,7 @@ const jsonLd = {
             arrowImg.alt = 'arraw';
             arraw.appendChild(arrowImg);
 
-            a.append(imgBox, titleBox, arraw);
+            a.append(titleBox, arraw);
             row.appendChild(a);
             return row;
         }

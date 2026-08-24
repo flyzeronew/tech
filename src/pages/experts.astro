@@ -1,98 +1,9 @@
 ---
-import { STRAPI_URL, STRAPI_API_TOKEN } from 'astro:env/server';
 import Layout from '../layouts/Layout.astro';
 import '../styles/pages/experts.css';
-import { experts as expertsData } from '../data/experts';
-import { resolveArticleLink } from '../lib/articleLink';
-import { cachedFetchJson, CACHE_TTL } from '../lib/fetchCache';
+import { fetchIndexExperts } from '../lib/indexExperts';
 
-interface AuthorImage {
-    url: string;
-}
-
-interface Author {
-    author_name: string;
-    author_tag: string | null;
-    author_job_title: string | null;
-    author_image: AuthorImage | null;
-}
-
-interface ArticleLibItem {
-    id: number;
-    news_article_id: string;
-    news_title: string;
-    news_article_url: string | null;
-    news_category: string | null;
-}
-
-interface ExpertCard {
-    slug: string;
-    name: string;
-    tags: string[];
-    description: string;
-    avatar: string;
-    articles: { title: string; href: string; external: boolean }[];
-}
-
-let authors: Author[] = [];
-try {
-    const json = await cachedFetchJson<{ data?: Author[] }>(
-        `${STRAPI_URL}/api/authors?populate=author_image`,
-        { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
-        CACHE_TTL.NAV,
-    );
-    authors = json?.data ?? [];
-} catch {
-    authors = [];
-}
-
-// 文章庫（article-lib）的 news_authors 是 JSON 陣列（如 [{"name":"Richard Brown","role":"作者"}]），
-// 不是關聯欄位，用 filters[news_authors][name][$eq] 這種巢狀 key 查會回 400 Invalid key，
-// 只能對整個 JSON 欄位用 $contains 做字串比對來找出該作者名字的文章。
-async function fetchLatestArticles(authorName: string): Promise<ArticleLibItem[]> {
-    try {
-        const json = await cachedFetchJson<{ data?: ArticleLibItem[] }>(
-            `${STRAPI_URL}/api/article-libs?filters[news_authors][$contains]=${encodeURIComponent(authorName)}&sort=news_published_at:desc&pagination[pageSize]=3&fields[0]=news_title&fields[1]=news_article_url&fields[2]=news_category&fields[3]=news_article_id`,
-            { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
-            CACHE_TTL.NEWS,
-        );
-        return json?.data ?? [];
-    } catch {
-        return [];
-    }
-}
-
-// 後台「作者庫」目前沒有獨立的 slug 欄位，靠姓名比對 src/data/experts.ts 既有的 slug
-// 才能連到 /experts/[slug] 詳細頁（該頁目前仍讀本地靜態資料，尚未套版）。
-function findSlug(authorName: string): string {
-    const match = expertsData.find((e) => {
-        const full = `${e.firstName}${e.lastName}`;
-        const spaced = `${e.firstName} ${e.lastName}`;
-        return full === authorName || spaced === authorName;
-    });
-    return match?.slug ?? '';
-}
-
-// author_job_title 後台實際存放的是專家簡介文字（不是職稱），依內容比對而非欄位名稱決定用途
-const experts: ExpertCard[] = await Promise.all(
-    authors.map(async (author) => {
-        const rawImage = author.author_image?.url ?? null;
-        const articles = await fetchLatestArticles(author.author_name);
-        return {
-            slug: findSlug(author.author_name),
-            name: author.author_name,
-            tags: author.author_tag
-                ? author.author_tag.split(',').map((t) => t.trim()).filter(Boolean)
-                : [],
-            description: author.author_job_title ?? '',
-            avatar: rawImage ? (rawImage.startsWith('http') ? rawImage : `${STRAPI_URL}${rawImage}`) : '/expert01.jpg',
-            articles: articles.map((a) => {
-                const link = resolveArticleLink(a.news_category, a.news_article_id, a.news_article_url);
-                return { title: a.news_title, href: link.href, external: link.external };
-            }),
-        };
-    }),
-);
+const experts = await fetchIndexExperts();
 
 const canonicalUrl = new URL(Astro.url.pathname, Astro.url.origin).toString();
 const jsonLd = {
@@ -111,7 +22,9 @@ const jsonLd = {
                     '@type': 'Person',
                     name: expert.name,
                     description: expert.description,
-                    image: expert.avatar.startsWith('http') ? expert.avatar : new URL(expert.avatar, Astro.url.origin).toString(),
+                    ...(expert.avatar
+                        ? { image: expert.avatar.startsWith('http') ? expert.avatar : new URL(expert.avatar, Astro.url.origin).toString() }
+                        : {}),
                     url: new URL(`/experts/${expert.slug}`, Astro.url.origin).toString(),
                 },
             })),
@@ -148,7 +61,7 @@ const jsonLd = {
                         <div class="author">
                             <div class="avatar">
                                 <div class="img">
-                                    <img width="137" height="137" src={expert.avatar} alt={expert.name} loading="lazy" />
+                                    {expert.avatar && <img width="137" height="137" src={expert.avatar} alt={expert.name} loading="lazy" />}
                                 </div>
                             </div>
                             <div class="profile">
@@ -158,7 +71,7 @@ const jsonLd = {
                                         {expert.tags.map((tag) => <span class="label">{tag}</span>)}
                                     </div>
                                 </div>
-                                <p class="desc">{expert.description}</p>
+                                {expert.description && <p class="desc">{expert.description}</p>}
                             </div>
                             <div class="content">
                                 <div class="newsGroup">

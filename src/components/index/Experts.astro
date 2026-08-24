@@ -1,85 +1,8 @@
 ---
-import { STRAPI_URL, STRAPI_API_TOKEN } from 'astro:env/server';
 import '../../styles/components/index/experts.css';
-import { experts as expertsData } from '../../data/experts';
-import { resolveArticleLink } from '../../lib/articleLink';
-import { cachedFetchJson, CACHE_TTL } from '../../lib/fetchCache';
+import { fetchIndexExperts } from '../../lib/indexExperts';
 
-interface AuthorArticle {
-    id: number;
-    news_article_id: string;
-    news_title: string;
-    news_article_url: string | null;
-    news_category: string | null;
-}
-
-interface AuthorImage {
-    url: string;
-}
-
-interface AuthorProfile {
-    author_name: string;
-    author_tag: string | null;
-    author_job_title: string | null;
-    author_image: AuthorImage | null;
-}
-
-interface AuthorColumnItem {
-    author: AuthorProfile | null;
-    author_article: AuthorArticle[] | null;
-}
-
-interface ExpertCard {
-    slug: string;
-    name: string;
-    tags: string[];
-    description: string;
-    avatar: string;
-    articles: { title: string; href: string; external: boolean }[];
-}
-
-let authorColumns: AuthorColumnItem[] = [];
-try {
-    const json = await cachedFetchJson<{ data?: { experts?: AuthorColumnItem[] } }>(
-        `${STRAPI_URL}/api/index-page?populate[experts][populate][author][populate]=*&populate[experts][populate][author_article][fields][0]=news_title&populate[experts][populate][author_article][fields][1]=news_article_url&populate[experts][populate][author_article][fields][2]=news_category&populate[experts][populate][author_article][fields][3]=news_article_id`,
-        { headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` } },
-        CACHE_TTL.NAV,
-    );
-    authorColumns = json?.data?.experts ?? [];
-} catch {
-    authorColumns = [];
-}
-
-// 後台「作者庫」目前沒有獨立的 slug 欄位，靠姓名比對 src/data/experts.ts 既有的 slug
-// 才能連到 /experts/[slug] 詳細頁，跟 experts.astro 列表頁的做法一致。
-function findSlug(authorName: string): string {
-    const match = expertsData.find((e) => {
-        const full = `${e.firstName}${e.lastName}`;
-        const spaced = `${e.firstName} ${e.lastName}`;
-        return full === authorName || spaced === authorName;
-    });
-    return match?.slug ?? '';
-}
-
-// author_job_title 後台實際存放的是專家簡介文字（不是職稱），依內容比對而非欄位名稱決定用途
-const expertCards: ExpertCard[] = authorColumns
-    .filter((item): item is AuthorColumnItem & { author: AuthorProfile } => item.author !== null)
-    .map((item) => {
-        const rawImage = item.author.author_image?.url ?? null;
-        return {
-            slug: findSlug(item.author.author_name),
-            name: item.author.author_name,
-            tags: item.author.author_tag
-                ? item.author.author_tag.split(',').map((t) => t.trim()).filter(Boolean)
-                : [],
-            description: item.author.author_job_title ?? '',
-            avatar: rawImage ? (rawImage.startsWith('http') ? rawImage : `${STRAPI_URL}${rawImage}`) : '/expert01.jpg',
-            articles: (item.author_article ?? []).slice(0, 3).map((a) => {
-                const link = resolveArticleLink(a.news_category, a.news_article_id, a.news_article_url);
-                return { title: a.news_title, href: link.href, external: link.external };
-            }),
-        };
-    });
+const expertCards = await fetchIndexExperts();
 
 // 首頁最多顯示 6 位；超過 5 位時排版改成比照 /experts 列表頁的三欄格線卡片，
 // 並在右上角加「更多專家」按鈕連到 /experts。5 位（含）以內維持原本靠右一排直向清單的版型。
@@ -114,7 +37,7 @@ const isGridMode = expertCards.length > 5;
                             <div class="item">
                                 <div class="imgBox">
                                     <div class="img">
-                                        <img width="400" height="400" src={card.avatar} alt={card.name} loading="lazy" />
+                                        {card.avatar && <img width="400" height="400" src={card.avatar} alt={card.name} loading="lazy" />}
                                     </div>
                                     <div class="nameBox mobile">
                                         <div class="name">{card.name}</div>
