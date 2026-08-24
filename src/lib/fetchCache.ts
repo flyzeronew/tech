@@ -8,8 +8,8 @@ const cache = new Map<string, { expires: number; data: unknown }>();
 // （後台手動關聯挑選、改動頻率低，可以放久一點）。文章/專家內頁單篇內容發布後基本不太會再改，
 // 也歸在 NAV 這檔，減少對高流量單篇頁面的 Strapi 打擾。
 export const CACHE_TTL = {
-    NEWS: 3 * 60 * 1000,
-    NAV: 10 * 60 * 1000,
+    NEWS: 1 * 60 * 1000,
+    NAV: 3 * 60 * 1000,
 } as const;
 
 // 呼叫端寫法跟原本裸 fetch 幾乎一樣：await cachedFetchJson<T>(url, { headers }, CACHE_TTL.XXX)，
