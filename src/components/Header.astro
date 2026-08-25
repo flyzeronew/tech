@@ -162,11 +162,50 @@ function anchorId(url: string): string | undefined {
     // 但一般左鍵點擊會被下面第二段攔截，改成不帶 hash、用 sessionStorage 記錄目標後導回首頁，
     // 進站後在 window 的 load 事件才真正捲動（見下方「跨頁捲動」說明，兩段共用同一個 SCROLL_TARGET_KEY）。
     const SCROLL_TARGET_KEY = 'tvbsScrollTarget';
-    const DURATION = 1200; // 捲動時間（毫秒），數字越大滑動越慢
+    const DURATION_MIN = 500;
+    const DURATION_MAX = 1000;
     // 導覽列是浮在內容上方的透明懸浮列，捲動時直接讓區塊頂到「視窗最頂端」即可，不用再扣除導覽列高度
 
-    function easeInOutCubic(t: number) {
-        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    // quad 比 cubic 起步快：cubic 前 20% 時間只走 3% 距離，疊上 CSS smooth 會看起來黏住
+    function easeInOutQuad(t: number) {
+        return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    }
+
+    let scrollRaf = 0;
+
+    function stopCustomScroll() {
+        if (scrollRaf) {
+            cancelAnimationFrame(scrollRaf);
+            scrollRaf = 0;
+        }
+        document.documentElement.style.removeProperty('scroll-behavior');
+    }
+
+    // 自訂 rAF 緩動期間必須把 CSS scroll-behavior 蓋成 auto。
+    // scrollTo({ behavior: 'auto' }) 在現行規格裡是「跟著 CSS」，html 寫了 smooth 就等於
+    // 每一幀再做一次平滑捲動；部分較新的 Chrome / Edge / Safari 會一直卡在 smooth 的
+    // ease-in 起步，看起來像一開始滑超慢。兩參數 scrollTo(0, y) 在 inline auto 下才是 instant。
+    function animateScrollTo(targetY: number) {
+        stopCustomScroll();
+        const html = document.documentElement;
+        html.style.scrollBehavior = 'auto';
+
+        const startY = window.scrollY;
+        const distance = Math.abs(targetY - startY);
+        const duration = Math.min(DURATION_MAX, Math.max(DURATION_MIN, distance * 0.45));
+        const startTime = performance.now();
+
+        function tick(now: number) {
+            const t = Math.min((now - startTime) / duration, 1);
+            window.scrollTo(0, startY + (targetY - startY) * easeInOutQuad(t));
+            if (t < 1) {
+                scrollRaf = requestAnimationFrame(tick);
+            } else {
+                scrollRaf = 0;
+                html.style.removeProperty('scroll-behavior');
+            }
+        }
+        scrollRaf = requestAnimationFrame(tick);
     }
 
     function scrollToElementInstant(el: HTMLElement) {
@@ -270,14 +309,8 @@ function anchorId(url: string): string | undefined {
                 return;
             }
 
-            const startTime = performance.now();
-            function tick(now: number) {
-                const t = Math.min((now - startTime) / DURATION, 1);
-                // 明確指定 behavior: 'auto'，避免與 CSS 的 scroll-behavior: smooth 疊加造成頓挫
-                window.scrollTo({ top: startY + (targetY - startY) * easeInOutCubic(t), behavior: 'auto' });
-                if (t < 1) requestAnimationFrame(tick);
-            }
-            requestAnimationFrame(tick);
+            window.dispatchEvent(new CustomEvent('tvbs:nav-scroll', { detail: { id } }));
+            animateScrollTo(targetY);
         });
     });
 </script>
