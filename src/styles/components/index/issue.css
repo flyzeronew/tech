@@ -296,7 +296,13 @@
         font-size: 24px;
     }
     #spotlight .txtBox .title p.big {
-        font-size: 60px;
+        font-size: 56px;
+        line-height: 72px;
+        margin-bottom: 10px;
+    }
+    #spotlight .txtBox .title p {
+        font-size: 20px;
+        line-height: 28px;
     }
     #spotlight .txtBox .title {
         padding-bottom: 80px;
@@ -400,5 +406,12 @@
     }
     #spotlight .issueList .list .item {
         padding: 0 24px;
+    }
+}
+@media (max-width:413px) {
+    #spotlight .txtBox .title p.big {
+        font-size: 48px;
+        line-height: 64px;
+        margin-bottom: 10px;
     }
 }

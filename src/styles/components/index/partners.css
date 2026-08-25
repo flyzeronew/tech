@@ -238,4 +238,16 @@
         line-height: 28px;
     }
 }
+@media (max-width:413px) {
+    #collaboration .bigTitleBox .title {
+        font-size: 48px;
+        line-height: 64px;
+    }
+}
+@media (max-width:359px) {
+    #collaboration .bigTitleBox .title {
+        font-size: 36px;
+        line-height: 48px;
+    }
+}
 /* 國際媒體夥伴 ed*/

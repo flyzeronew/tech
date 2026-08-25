@@ -19,7 +19,7 @@ export const CATEGORY_META: Record<string, { title: string; en: string; descript
     money: {
         title: '科技×財經觀點',
         en: 'THE CROSSOVER',
-        description: '從掌中裝置到資本浪潮，解碼消費科技背後的產業商機。',
+        description: '從產業趨勢到資本市場，解碼科技如何驅動財經新局。',
         metaDescription: 'TVBS TECH 財經類報導，涵蓋半導體、科技股市場動態與產業財經觀點。',
     },
     tech: {

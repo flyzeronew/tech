@@ -178,3 +178,10 @@
         aspect-ratio: 428/240;
     }
 }
+
+@media (max-width:413px) {
+    #category .cateTitle .title {
+        font-size: 36px;
+        line-height: 48px;
+    }
+}
